@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>听风阁 - 暴风雨夜的最后一餐</title>
+    <style>
+        /* ==================== 基础样式重置 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background-color: #0f0f12;
+            color: #e8e6e1;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ==================== 头部区域 ==================== */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 2px solid #c0392b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c0392b' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #c0392b;
+            text-shadow: 0 0 20px rgba(192, 57, 43, 0.5);
+            margin-bottom: 10px;
+            position: relative;
+            letter-spacing: 8px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .meta-item {
+            background: rgba(192, 57, 43, 0.1);
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* ==================== 导航栏 ==================== */
+        .navbar {
+            background: #1a1a2e;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-link {
+            padding: 10px 25px;
+            background: #16213e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            background: #c0392b;
+            border-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.3);
+        }
+
+        /* ==================== 主内容区域 ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .section {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #c0392b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #c0392b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: "◆";
+            color: #c0392b;
+        }
+
+        /* ==================== 游戏规则 ==================== */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .rule-card {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .rule-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .rule-card.phase1 {
+            border-left-color: #2980b9;
+        }
+
+        .rule-card.phase2 {
+            border-left-color: #d4ac0d;
+        }
+
+        .rule-card.phase3 {
+            border-left-color: #c0392b;
+        }
+
+        .rule-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .rule-card.phase1 h3 {
+            color: #2980b9;
+        }
+
+        .rule-card.phase2 h3 {
+            color: #d4ac0d;
+        }
+
+        .rule-card.phase3 h3 {
+            color: #c0392b;
+        }
+
+        .rule-card p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* ==================== 角色表格 ==================== */
+        .roles-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .roles-table table {
+            width: 100%;
+            min-width: 600px;
+        }
+
+        .roles-table th,
+        .roles-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .roles-table th {
+            background: #16213e;
+            color: #c0392b;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .roles-table tr:hover {
+            background: rgba(192, 57, 43, 0.05);
+        }
+
+        .roles-table td {
+            font-size: 0.95rem;
+        }
+
+        .role-name {
+            font-weight: bold;
+            color: #c0392b;
+        }
+
+        /* ==================== 别墅平面图 ==================== */
+        .floor-plan {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .floor {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .floor:hover {
+            transform: scale(1.01);
+        }
+
+        .floor-3 {
+            border-color: #c0392b;
+        }
+
+        .floor-2 {
+            border-color: #d4ac0d;
+        }
+
+        .floor-1 {
+            border-color: #2980b9;
+        }
+
+        .floor-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .floor-3 .floor-title {
+            color: #c0392b;
+        }
+
+        .floor-2 .floor-title {
+            color: #d4ac0d;
+        }
+
+        .floor-1 .floor-title {
+            color: #2980b9;
+        }
+
+        .floor-rooms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .room {
+            background: #0f0f12;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .room:hover {
+            border-color: #c0392b;
+            box-shadow: 0 0 15px rgba(192, 57, 43, 0.2);
+        }
+
+        .room-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .room-occupant {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* ==================== 页脚 ==================== */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #555;
+            font-size: 0.85rem;
+            border-top: 1px solid #333;
+            margin-top: 50px;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+                letter-spacing: 4px;
+            }
+
+            .header .meta-info {
+                gap: 15px;
+            }
+
+            .meta-item {
+                padding: 6px 15px;
+                font-size: 0.8rem;
+            }
+
+            .navbar {
+                gap: 10px;
+            }
+
+            .nav-link {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .roles-table th,
+            .roles-table td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ==================== 动画效果 ==================== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .section:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .section:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .section:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .section:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <header class="header">
+        <h1>听风阁</h1>
+        <p class="subtitle">暴风雨夜的最后一餐</p>
+        <div class="meta-info">
+            <span class="meta-item">8人游戏</span>
+            <span class="meta-item">4-5小时</span>
+            <span class="meta-item">中等难度</span>
+            <span class="meta-item">推理破案型</span>
+        </div>
+    </header>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-link">公共首页</a>
+        <a href="player-shenmingxuan.html" class="nav-link">沈明轩</a>
+        <a href="player-shenmingyue.html" class="nav-link">沈明月</a>
+        <a href="player-zhaotiancheng.html" class="nav-link">赵天成</a>
+        <a href="player-linyuwei.html" class="nav-link">林雨薇</a>
+        <a href="player-chenzhiyuan.html" class="nav-link">陈志远</a>
+        <a href="player-suxiaoman.html" class="nav-link">苏小曼</a>
+        <a href="player-zhouhai.html" class="nav-link">周海</a>
+        <a href="player-fangxiaoqing.html" class="nav-link">方晓晴</a>
+        <a href="tools.html" class="nav-link">证据搜索</a>
+        <a href="dm.html" class="nav-link">DM入口</a>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="container">
+        <!-- 游戏规则说明 -->
+        <section class="section">
+            <h2 class="section-title">游戏规则说明</h2>
+            <div class="rules-grid">
+                <div class="rule-card phase1">
+                    <h3>第一阶段：蓝色剧本</h3>
+                    <p>阅读蓝色边框的剧本内容，了解角色基本信息和初始记忆。此阶段可搜索客厅、餐厅、厨房。</p>
+                </div>
+                <div class="rule-card phase2">
+                    <h3>第二阶段：黄色剧本</h3>
+                    <p>阅读黄色边框的剧本内容，解锁新的记忆和线索。此阶段可搜索书房、主卧、次卧A、次卧B、管家房。</p>
+                </div>
+                <div class="rule-card phase3">
+                    <h3>第三阶段：红色剧本</h3>
+                    <p>阅读红色边框的剧本内容，揭示最终真相。此阶段可搜索客房A、客房B、客房C、储藏室、露台。</p>
+                </div>
+                <div class="rule-card">
+                    <h3>搜证规则</h3>
+                    <p>点击"证据搜索"进入搜证页面，根据当前阶段选择可搜索的地点。每个地点有多个线索，点击即可查看。</p>
+                </div>
+                <div class="rule-card">
+                    <h3>投票规则</h3>
+                    <p>第三阶段结束后进行投票，指认真凶。需要说明推理过程，得票最多者被投出。</p>
+                </div>
+                <div class="rule-card">
+                    <h3>线索记录</h3>
+                    <p>搜证时点击"记录线索"可将线索保存到角色页面。所有玩家共享已发放的线索。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 角色公开信息表 -->
+        <section class="section">
+            <h2 class="section-title">角色公开信息</h2>
+            <div class="roles-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>角色</th>
+                            <th>性别/年龄</th>
+                            <th>身份</th>
+                            <th>房间位置</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="role-name">沈明轩</td>
+                            <td>男，35岁</td>
+                            <td>伯渊集团副总裁</td>
+                            <td>二层次卧A</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">沈明月</td>
+                            <td>女，28岁</td>
+                            <td>心理学博士</td>
+                            <td>二层次卧B</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">赵天成</td>
+                            <td>男，55岁</td>
+                            <td>私人律师</td>
+                            <td>三层客房A</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">林雨薇</td>
+                            <td>女，40岁</td>
+                            <td>第二任妻子</td>
+                            <td>二层主卧</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">陈志远</td>
+                            <td>男，50岁</td>
+                            <td>别墅管家</td>
+                            <td>一层管家房</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">苏小曼</td>
+                            <td>女，32岁</td>
+                            <td>全职太太</td>
+                            <td>二层次卧A</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">周海</td>
+                            <td>男，45岁</td>
+                            <td>私人医生</td>
+                            <td>三层客房B</td>
+                        </tr>
+                        <tr>
+                            <td class="role-name">方晓晴</td>
+                            <td>女，26岁</td>
+                            <td>私人秘书</td>
+                            <td>三层客房C</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 三层别墅平面图 -->
+        <section class="section">
+            <h2 class="section-title">三层别墅平面图</h2>
+            <div class="floor-plan">
+                <!-- 三层 -->
+                <div class="floor floor-3">
+                    <div class="floor-title">
+                        <span>◆</span>
+                        <span>三层（客房层）</span>
+                    </div>
+                    <div class="floor-rooms">
+                        <div class="room">
+                            <div class="room-name">客房A</div>
+                            <div class="room-occupant">赵天成</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">客房B</div>
+                            <div class="room-occupant">周海</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">客房C</div>
+                            <div class="room-occupant">方晓晴</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">储藏室</div>
+                            <div class="room-occupant">-</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">露台</div>
+                            <div class="room-occupant">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 二层 -->
+                <div class="floor floor-2">
+                    <div class="floor-title">
+                        <span>◆</span>
+                        <span>二层（主卧层）</span>
+                    </div>
+                    <div class="floor-rooms">
+                        <div class="room">
+                            <div class="room-name">主卧</div>
+                            <div class="room-occupant">林雨薇</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">次卧A</div>
+                            <div class="room-occupant">沈明轩 / 苏小曼</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">次卧B</div>
+                            <div class="room-occupant">沈明月</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">书房</div>
+                            <div class="room-occupant">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 一层 -->
+                <div class="floor floor-1">
+                    <div class="floor-title">
+                        <span>◆</span>
+                        <span>一层（公共区域）</span>
+                    </div>
+                    <div class="floor-rooms">
+                        <div class="room">
+                            <div class="room-name">客厅</div>
+                            <div class="room-occupant">-</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">餐厅</div>
+                            <div class="room-occupant">-</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">厨房</div>
+                            <div class="room-occupant">-</div>
+                        </div>
+                        <div class="room">
+                            <div class="room-name">管家房</div>
+                            <div class="room-occupant">陈志远</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 当前游戏状态 -->
+        <section class="section">
+            <h2 class="section-title">当前游戏状态</h2>
+            <div id="gameStatus" style="text-align: center; padding: 20px;">
+                <p style="font-size: 1.2rem; margin-bottom: 10px;">当前阶段：<span id="currentPhaseDisplay" style="color: #c0392b; font-weight: bold;">未开始</span></p>
+                <p style="color: #888;">请等待DM开始游戏</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>听风阁 - 暴风雨夜的最后一餐 | 剧本杀在线系统</p>
+        <p style="margin-top: 5px; font-size: 0.75rem;">本系统使用 localStorage 本地存储数据，请勿清除浏览器缓存</p>
+    </footer>
+
+    <script>
+        // ==================== 游戏状态管理 ====================
+        // 从 localStorage 读取当前阶段
+        function updatePhaseDisplay() {
+            const currentPhase = localStorage.getItem('currentPhase') || '0';
+            const phaseDisplay = document.getElementById('currentPhaseDisplay');
+            
+            const phaseNames = {
+                '0': '未开始',
+                '1': '第一阶段（蓝色）',
+                '2': '第二阶段（黄色）',
+                '3': '第三阶段（红色）'
+            };
+            
+            const phaseColors = {
+                '0': '#888',
+                '1': '#2980b9',
+                '2': '#d4ac0d',
+                '3': '#c0392b'
+            };
+            
+            phaseDisplay.textContent = phaseNames[currentPhase] || '未开始';
+            phaseDisplay.style.color = phaseColors[currentPhase] || '#888';
+        }
+
+        // 页面加载时更新显示
+        updatePhaseDisplay();
+
+        // 监听 localStorage 变化（同页面）
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'currentPhase') {
+                updatePhaseDisplay();
+            }
+        });
+
+        // 定时检查阶段变化（兼容部分浏览器）
+        setInterval(updatePhaseDisplay, 3000);
+    </script>
+</body>
+</html>

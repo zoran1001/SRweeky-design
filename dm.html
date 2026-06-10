@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DM控制台 - 听风阁</title>
+    <style>
+        /* ==================== 基础样式 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background-color: #0f0f12;
+            color: #e8e6e1;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ==================== 头部 ==================== */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 2px solid #c0392b;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #c0392b;
+            letter-spacing: 4px;
+        }
+
+        .header p {
+            color: #888;
+            margin-top: 10px;
+        }
+
+        /* ==================== 主容器 ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* ==================== 控制面板 ==================== */
+        .control-panel {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #c0392b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: #c0392b;
+            border-radius: 2px;
+        }
+
+        /* ==================== 阶段控制 ==================== */
+        .phase-control {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .phase-btn {
+            padding: 12px 30px;
+            border: 2px solid #333;
+            background: #16213e;
+            color: #e8e6e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .phase-btn:hover {
+            border-color: #c0392b;
+            background: rgba(192, 57, 43, 0.1);
+        }
+
+        .phase-btn.active {
+            background: #c0392b;
+            border-color: #c0392b;
+            color: #fff;
+        }
+
+        .phase-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==================== 当前阶段显示 ==================== */
+        .current-phase {
+            background: rgba(192, 57, 43, 0.1);
+            border: 1px solid #c0392b;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .current-phase span {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        /* ==================== 角色管理 ==================== */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .character-card {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover {
+            border-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .character-card h3 {
+            color: #c0392b;
+            margin-bottom: 10px;
+        }
+
+        .character-card p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .character-card .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        .status.online {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .status.offline {
+            background: rgba(149, 165, 166, 0.2);
+            color: #95a5a6;
+        }
+
+        /* ==================== 线索管理 ==================== */
+        .clue-section {
+            margin-bottom: 20px;
+        }
+
+        .clue-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .clue-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            background: #16213e;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e8e6e1;
+        }
+
+        .clue-input:focus {
+            outline: none;
+            border-color: #c0392b;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #a93226;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #5d6d7e;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #4a5a6a;
+        }
+
+        /* ==================== 线索列表 ==================== */
+        .clue-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+
+        .clue-item {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #c0392b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clue-item span {
+            color: #ccc;
+        }
+
+        .clue-item button {
+            background: transparent;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .clue-item button:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        /* ==================== 密码管理区域 ==================== */
+        .password-management {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+
+        .password-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .password-card {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .password-card:hover {
+            border-color: #d4ac0d;
+        }
+
+        .password-card h4 {
+            color: #d4ac0d;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .password-display {
+            background: #0f0f12;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #e8e6e1;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .password-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .password-actions .btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .password-actions .btn-primary {
+            background: #d4ac0d;
+            color: #fff;
+        }
+
+        .password-actions .btn-primary:hover {
+            background: #b7950b;
+        }
+
+        .password-actions .btn-secondary {
+            background: #5d6d7e;
+            color: #fff;
+        }
+
+        .password-actions .btn-secondary:hover {
+            background: #4a5a6a;
+        }
+
+        .password-actions .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .password-actions .btn-danger:hover {
+            background: #a93226;
+        }
+
+        .global-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .global-actions .btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+        }
+
+        /* ==================== 模态框 ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: #1a1a2e;
+            border: 2px solid #d4ac0d;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-box h3 {
+            color: #d4ac0d;
+            margin-bottom: 20px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: #16213e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #e8e6e1;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: #d4ac0d;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-buttons .btn {
+            min-width: 100px;
+        }
+
+        /* ==================== 返回链接 ==================== */
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #16213e;
+            border: 1px solid #c0392b;
+            border-radius: 8px;
+            color: #c0392b;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 768px) {
+            .phase-control {
+                flex-direction: column;
+            }
+
+            .clue-form {
+                flex-direction: column;
+            }
+
+            .character-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .password-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <h1>DM控制台</h1>
+        <p>听风阁剧本杀 - 主持人控制面板</p>
+    </header>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <!-- 阶段控制 -->
+        <div class="control-panel">
+            <h2 class="panel-title">阶段控制</h2>
+            <div class="phase-control">
+                <button class="phase-btn" id="phase0" onclick="setPhase(0)">准备阶段</button>
+                <button class="phase-btn" id="phase1" onclick="setPhase(1)">第一阶段</button>
+                <button class="phase-btn" id="phase2" onclick="setPhase(2)">第二阶段</button>
+                <button class="phase-btn" id="phase3" onclick="setPhase(3)">第三阶段</button>
+            </div>
+            <div class="current-phase">
+                当前阶段：<span id="currentPhaseDisplay">准备阶段</span>
+            </div>
+        </div>
+
+        <!-- 角色密码管理 -->
+        <div class="password-management">
+            <h2 class="panel-title">角色密码管理</h2>
+            <div class="password-grid" id="passwordGrid">
+                <!-- 密码卡片由JavaScript动态生成 -->
+            </div>
+            <div class="global-actions">
+                <button class="btn btn-secondary" onclick="resetAllPasswords()">全部重置为默认</button>
+                <button class="btn btn-primary" onclick="randomizeAllPasswords()">全部随机生成</button>
+            </div>
+        </div>
+
+        <!-- 角色状态 -->
+        <div class="control-panel">
+            <h2 class="panel-title">角色状态</h2>
+            <div class="character-grid" id="characterGrid">
+                <!-- 角色卡片由JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 线索管理 -->
+        <div class="control-panel">
+            <h2 class="panel-title">线索管理</h2>
+            <div class="clue-section">
+                <div class="clue-form">
+                    <input type="text" class="clue-input" id="clueId" placeholder="线索编号（如：A-01）">
+                    <input type="text" class="clue-input" id="clueContent" placeholder="线索内容">
+                    <button class="btn btn-primary" onclick="addClue()">添加线索</button>
+                </div>
+                <div class="clue-list" id="clueList">
+                    <!-- 线索列表由JavaScript动态生成 -->
+                </div>
+            </div>
+            <button class="btn btn-danger" onclick="clearAllClues()">清空所有线索</button>
+        </div>
+
+        <!-- 返回链接 -->
+        <a href="index.html" class="back-link">← 返回首页</a>
+    </div>
+
+    <!-- 修改密码模态框 -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">修改密码</h3>
+            <input type="text" class="modal-input" id="newPasswordInput" placeholder="输入新密码">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="confirmPasswordChange()">确认</button>
+                <button class="btn btn-secondary" onclick="closePasswordModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 角色配置 ====================
+        const characters = [
+            { name: '沈明轩', key: 'shenmingxuan', defaultPassword: 'mingxuan888', role: '伯渊集团副总裁' },
+            { name: '沈明月', key: 'shenmingyue', defaultPassword: 'mingyue888', role: '心理学博士' },
+            { name: '赵天成', key: 'zhaotiancheng', defaultPassword: 'tiancheng888', role: '私人律师' },
+            { name: '林雨薇', key: 'linyuwei', defaultPassword: 'yuwei888', role: '第二任妻子' },
+            { name: '陈志远', key: 'chenzhiyuan', defaultPassword: 'zhiyuan888', role: '别墅管家' },
+            { name: '苏小曼', key: 'suxiaoman', defaultPassword: 'xiaoman888', role: '沈明轩妻子' },
+            { name: '周海', key: 'zhouhai', defaultPassword: 'zhouhai888', role: '私人医生' },
+            { name: '方晓晴', key: 'fangxiaoqing', defaultPassword: 'xiaoqing888', role: '财经记者' }
+        ];
+
+        // ==================== 获取当前密码 ====================
+        function getCurrentPassword(key, defaultPassword) {
+            return localStorage.getItem('rolePassword_' + key) || defaultPassword;
+        }
+
+        // ==================== 阶段管理 ====================
+        function setPhase(phase) {
+            localStorage.setItem('currentPhase', phase);
+            updatePhaseDisplay();
+        }
+
+        function updatePhaseDisplay() {
+            const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
+            const phaseNames = ['准备阶段', '第一阶段', '第二阶段', '第三阶段'];
+            
+            document.getElementById('currentPhaseDisplay').textContent = phaseNames[currentPhase];
+            
+            // 更新按钮状态
+            for (let i = 0; i <= 3; i++) {
+                const btn = document.getElementById('phase' + i);
+                if (i === currentPhase) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            }
+        }
+
+        // ==================== 密码管理 ====================
+        let editingRoleKey = null;
+
+        function renderPasswordGrid() {
+            const grid = document.getElementById('passwordGrid');
+            grid.innerHTML = characters.map(char => {
+                const currentPassword = getCurrentPassword(char.key, char.defaultPassword);
+                const isCustom = localStorage.getItem('rolePassword_' + char.key) !== null;
+                return `
+                    <div class="password-card">
+                        <h4>${char.name}</h4>
+                        <div class="password-display" id="password-${char.key}">${currentPassword}</div>
+                        <div class="password-actions">
+                            <button class="btn btn-primary" onclick="openPasswordModal('${char.key}', '${char.name}')">修改密码</button>
+                            <button class="btn btn-secondary" onclick="randomizePassword('${char.key}')">随机生成</button>
+                            <button class="btn btn-danger" onclick="resetPassword('${char.key}')">重置默认</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPasswordModal(key, name) {
+            editingRoleKey = key;
+            document.getElementById('modalTitle').textContent = `修改 ${name} 的密码`;
+            document.getElementById('newPasswordInput').value = '';
+            document.getElementById('passwordModal').classList.add('show');
+        }
+
+        function closePasswordModal() {
+            editingRoleKey = null;
+            document.getElementById('passwordModal').classList.remove('show');
+        }
+
+        function confirmPasswordChange() {
+            const newPassword = document.getElementById('newPasswordInput').value.trim();
+            if (!newPassword) {
+                alert('密码不能为空');
+                return;
+            }
+            if (editingRoleKey) {
+                localStorage.setItem('rolePassword_' + editingRoleKey, newPassword);
+                renderPasswordGrid();
+                closePasswordModal();
+            }
+        }
+
+        function resetPassword(key) {
+            if (confirm('确定要重置该角色的密码为默认值吗？')) {
+                localStorage.removeItem('rolePassword_' + key);
+                renderPasswordGrid();
+            }
+        }
+
+        function randomizePassword(key) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let password = '';
+            for (let i = 0; i < 8; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            localStorage.setItem('rolePassword_' + key, password);
+            renderPasswordGrid();
+        }
+
+        function resetAllPasswords() {
+            if (confirm('确定要重置所有角色的密码为默认值吗？')) {
+                characters.forEach(char => {
+                    localStorage.removeItem('rolePassword_' + char.key);
+                });
+                renderPasswordGrid();
+            }
+        }
+
+        function randomizeAllPasswords() {
+            if (confirm('确定要为所有角色随机生成新密码吗？')) {
+                characters.forEach(char => {
+                    randomizePassword(char.key);
+                });
+            }
+        }
+
+        // ==================== 角色状态 ====================
+        function updateCharacterStatus() {
+            const grid = document.getElementById('characterGrid');
+            grid.innerHTML = characters.map(char => {
+                const isOnline = localStorage.getItem('playerAuth_' + char.key) === 'true';
+                return `
+                    <div class="character-card">
+                        <h3>${char.name}</h3>
+                        <p>${char.role}</p>
+                        <span class="status ${isOnline ? 'online' : 'offline'}">
+                            ${isOnline ? '在线' : '离线'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 线索管理 ====================
+        function addClue() {
+            const id = document.getElementById('clueId').value.trim();
+            const content = document.getElementById('clueContent').value.trim();
+            
+            if (!id || !content) {
+                alert('请填写线索编号和内容');
+                return;
+            }
+            
+            const clues = JSON.parse(localStorage.getItem('dmClues') || '[]');
+            clues.push({ id, content });
+            localStorage.setItem('dmClues', JSON.stringify(clues));
+            
+            document.getElementById('clueId').value = '';
+            document.getElementById('clueContent').value = '';
+            loadClues();
+        }
+
+        function removeClue(index) {
+            const clues = JSON.parse(localStorage.getItem('dmClues') || '[]');
+            clues.splice(index, 1);
+            localStorage.setItem('dmClues', JSON.stringify(clues));
+            loadClues();
+        }
+
+        function clearAllClues() {
+            if (confirm('确定要清空所有线索吗？')) {
+                localStorage.removeItem('dmClues');
+                loadClues();
+            }
+        }
+
+        function loadClues() {
+            const clues = JSON.parse(localStorage.getItem('dmClues') || '[]');
+            const list = document.getElementById('clueList');
+            
+            if (clues.length === 0) {
+                list.innerHTML = '<p style="color: #555; text-align: center;">暂无线索</p>';
+                return;
+            }
+            
+            list.innerHTML = clues.map((clue, index) => `
+                <div class="clue-item">
+                    <span><strong>${clue.id}</strong>：${clue.content}</span>
+                    <button onclick="removeClue(${index})">删除</button>
+                </div>
+            `).join('');
+        }
+
+        // ==================== 初始化 ====================
+        updatePhaseDisplay();
+        renderPasswordGrid();
+        updateCharacterStatus();
+        loadClues();
+
+        // 定时更新角色状态
+        setInterval(updateCharacterStatus, 3000);
+
+        // 监听阶段变化
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'currentPhase') {
+                updatePhaseDisplay();
+            }
+        });
+
+        // 模态框回车确认
+        document.getElementById('newPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                confirmPasswordChange();
+            }
+        });
+
+        // 点击模态框背景关闭
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+    </script>
+</body>
+</html>
