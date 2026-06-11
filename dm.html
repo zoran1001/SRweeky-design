@@ -454,6 +454,279 @@
             color: #fff;
         }
 
+        /* ==================== 折叠卡片 ==================== */
+        .collapsible-card {
+            background: #16213e;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible-header:hover {
+            background: rgba(192, 57, 43, 0.1);
+        }
+
+        .collapsible-header h3 {
+            color: #c0392b;
+            font-size: 1.1rem;
+        }
+
+        .collapsible-icon {
+            font-size: 1.2rem;
+            color: #888;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible-card.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .collapsible-card.open .collapsible-content {
+            max-height: 3000px;
+        }
+
+        .collapsible-inner {
+            padding: 0 20px 20px;
+        }
+
+        /* 阶段边框颜色 */
+        .phase-border-1 {
+            border-left: 4px solid #3498db;
+        }
+
+        .phase-border-2 {
+            border-left: 4px solid #e67e22;
+        }
+
+        .phase-border-3 {
+            border-left: 4px solid #c0392b;
+        }
+
+        .phase-label-1 {
+            color: #3498db;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .phase-label-2 {
+            color: #e67e22;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .phase-label-3 {
+            color: #c0392b;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .script-content {
+            background: #0f0f12;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .script-content p {
+            margin-bottom: 10px;
+        }
+
+        /* ==================== 线索库 ==================== */
+        .clue-round {
+            margin-bottom: 25px;
+        }
+
+        .clue-round-title {
+            color: #d4ac0d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .clue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 12px;
+        }
+
+        .clue-card {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #c0392b;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .clue-card.distributed {
+            border-left-color: #27ae60;
+            opacity: 0.8;
+        }
+
+        .clue-card.distributed .clue-id {
+            color: #27ae60;
+        }
+
+        .clue-info {
+            flex: 1;
+        }
+
+        .clue-id {
+            color: #c0392b;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .clue-text {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .clue-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+
+        .clue-status.pending {
+            background: rgba(192, 57, 43, 0.2);
+            color: #e74c3c;
+        }
+
+        .clue-status.sent {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .clue-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .clue-btn-distribute {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .clue-btn-distribute:hover {
+            background: #a93226;
+        }
+
+        .clue-btn-distributed {
+            background: #27ae60;
+            color: #fff;
+            cursor: default;
+        }
+
+        /* ==================== 真相区域 ==================== */
+        .truth-section {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #c0392b;
+        }
+
+        .truth-section h3 {
+            color: #c0392b;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .truth-section p {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .truth-highlight {
+            background: rgba(192, 57, 43, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        /* ==================== 时间线 ==================== */
+        .timeline-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .timeline-table th,
+        .timeline-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .timeline-table th {
+            background: rgba(192, 57, 43, 0.2);
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .timeline-table td:first-child {
+            color: #d4ac0d;
+            font-weight: bold;
+            white-space: nowrap;
+            width: 120px;
+        }
+
+        .timeline-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* ==================== 平面图 ==================== */
+        .floor-plan-container {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .floor-plan-svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .floor-label {
+            color: #d4ac0d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
         /* ==================== 响应式设计 ==================== */
         @media (max-width: 768px) {
             .phase-control {
@@ -470,6 +743,14 @@
 
             .password-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .clue-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-table td:first-child {
+                width: auto;
             }
         }
     </style>
@@ -497,6 +778,294 @@
             </div>
         </div>
 
+        <!-- 故事背景 -->
+        <div class="control-panel">
+            <h2 class="panel-title">故事背景</h2>
+            <div style="background: #16213e; border-radius: 10px; padding: 20px; border-left: 4px solid #c0392b;">
+                <p><strong style="color: #c0392b;">2026年6月20日，暴雨倾盆。</strong></p>
+                <p>青屏山深处的"听风阁"别墅被山洪隔绝，八个人被困在这座与世隔绝的山间豪宅中。别墅的主人——伯渊集团创始人兼董事长<strong>沈伯渊</strong>，在当夜离奇死亡。</p>
+                <p>八个人，各怀鬼胎。有人为财，有人为情，有人为复仇，有人为正义。当暴风雨封锁了所有退路，真相也在这座封闭的牢笼中逐渐浮出水面。</p>
+                <p><strong style="color: #d4ac0d;">二十年前，2006年6月20日</strong>，青屏山一处工地发生坍塌事故，三名工人死亡，其中包括一个六岁的小女孩。那起事故被金钱掩埋，却埋下了今日悲剧的种子。</p>
+                <p style="color: #888; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                    <strong>案发时间：</strong>2026年6月20日晚 22:00-22:30<br>
+                    <strong>案发地点：</strong>听风阁一层书房<br>
+                    <strong>死者：</strong>沈伯渊（男，65岁，伯渊集团董事长）<br>
+                    <strong>死因：</strong>颈动脉被钢笔刺破，大出血
+                </p>
+            </div>
+        </div>
+
+        <!-- 完整剧本 -->
+        <div class="control-panel">
+            <h2 class="panel-title">完整剧本</h2>
+            <div id="scriptContainer">
+                <!-- 沈明轩 -->
+                <div class="collapsible-card" data-character="shenmingxuan">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>沈明轩 - 伯渊集团副总裁</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是沈伯渊的独子，伯渊集团副总裁。在外人眼中，你是标准的富二代，西装革履，风度翩翩。但只有你自己知道，你欠下了巨额高利贷，债主每天都在催命。</p>
+                                <p>三个月前，你挪用了公司5000万资金去填补赌债的窟窿，本以为能翻本，结果血本无归。父亲已经有所察觉，最近一直在查账。</p>
+                                <p>今晚的寿宴上，父亲把你叫到书房，严厉地质问你资金的事。你跪下来求他，他却说已经修改了遗嘱，要把大部分股份留给林雨薇。你愤怒地摔门而出。</p>
+                                <p><strong>你的任务：</strong>隐藏你挪用资金的事实，想办法让遗嘱对你有利。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>父亲死后，你第一时间想到的是遗嘱。如果遗嘱真的把股份留给林雨薇，你就一无所有了，还要面对牢狱之灾。</p>
+                                <p>你发现林雨薇的珠宝盒里有一条刻着"M&Y"的项链——那是你母亲的名字缩写。原来林雨薇一直在收集关于你母亲的东西，她在打什么主意？</p>
+                                <p>更可怕的是，你在父亲书房发现了遗嘱草稿，上面有林雨薇的指甲划痕。她是不是想篡改遗嘱？</p>
+                                <p><strong>你的任务：</strong>找到真正的遗嘱，证明林雨薇有杀人动机。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>真相逐渐浮出水面。原来林雨薇确实在觊觎遗产，但她不是凶手。真正的凶手是陈志远——那个看似忠厚的管家。</p>
+                                <p>二十年前的事故，死去的那个小女孩叫陈小雪，是陈志远的女儿。他改名换姓，潜伏在沈家整整三年，就是为了今天。</p>
+                                <p>你虽然松了一口气，但挪用资金的事还是瞒不住了。不过至少，你不用再担心林雨薇夺走全部遗产。</p>
+                                <p><strong>你的结局：</strong>因挪用资金被警方调查，但保住了一部分继承权。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 沈明月 -->
+                <div class="collapsible-card" data-character="shenmingyue">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>沈明月 - 心理学博士</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是沈伯渊的养女，从小在沈家长大。你一直以为自己是被遗弃的孤儿，是沈伯渊给了你一切。</p>
+                                <p>但最近，你在整理旧物时发现了一封信，信上写着"明月是你的女儿"。你开始怀疑自己的身世。</p>
+                                <p>今晚，你偷偷在父亲书房外安装了录音笔。你听到父亲和不同人的争吵，你越来越觉得，这个家里藏着太多秘密。</p>
+                                <p><strong>你的任务：</strong>查清自己的真实身世，同时找出杀害父亲的凶手。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>录音笔录下了惊人的内容。你听到父亲和赵天成的对话——赵天成说"明月是我的女儿"。</p>
+                                <p>原来，你的亲生母亲是赵天成的初恋女友秀婷。二十年前的事故中，秀婷死了，你成了孤儿，被沈伯渊收养。</p>
+                                <p>但沈伯渊为什么要收养你？是出于愧疚，还是另有所图？你越来越觉得，二十年前的事故没那么简单。</p>
+                                <p><strong>你的任务：</strong>找到更多关于2006年事故的证据，弄清沈伯渊和你母亲的关系。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>DNA检测报告证实了——赵天成确实是你的亲生父亲。而沈伯渊，正是二十年前事故的罪魁祸首。</p>
+                                <p>他为了掩盖工地坍塌的真相，花钱收买了所有人。你的母亲秀婷、陈小雪、还有另外两名工人，都成了他商业帝国的垫脚石。</p>
+                                <p>陈志远为女儿报仇杀了沈伯渊，而你，终于知道了全部的真相。你恨沈伯渊，但也感激他把你养大。</p>
+                                <p><strong>你的结局：</strong>与赵天成相认，继承了沈伯渊留给你的一部分遗产，但内心永远无法平静。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 赵天成 -->
+                <div class="collapsible-card" data-character="zhaotiancheng">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>赵天成 - 私人律师</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是沈伯渊的私人律师，跟了他十五年。你知道他所有的秘密——包括那些见不得光的交易。</p>
+                                <p>最近，你发现伯渊集团的财务有大问题。大量资金去向不明，似乎有人在暗中转移资产。你开始暗中调查。</p>
+                                <p>今晚寿宴前，你偷偷在书房安装了窃听器。你想知道沈伯渊到底在谋划什么。</p>
+                                <p><strong>你的任务：</strong>查清财务异常的原因，保护自己不被卷入漩涡。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>窃听器录下了惊人的对话。你听到沈伯渊和林雨薇的争吵，林雨薇威胁要公开某些事情。</p>
+                                <p>更让你震惊的是，你发现了二十年前的秘密。秀婷——你的初恋女友，她的死不是意外，而是沈伯渊一手造成的。</p>
+                                <p>沈明月，那个你看着长大的女孩，竟然是秀婷的女儿，也就是你的亲生女儿。沈伯渊收养她，是为了赎罪，还是为了控制你？</p>
+                                <p><strong>你的任务：</strong>保护沈明月，找到沈伯渊犯罪的证据。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>真相大白。沈伯渊为了掩盖工地坍塌事故，害死了秀婷和其他工人。他收养沈明月，既是为了赎罪，也是为了把你绑在身边。</p>
+                                <p>陈志远为女儿报仇，杀了沈伯渊。你虽然恨沈伯渊，但也不希望以这种方式结束。</p>
+                                <p>你和沈明月相认了。她是你和秀婷的女儿，是你在这个世界上唯一的血脉。</p>
+                                <p><strong>你的结局：</strong>辞去了律师工作，用掌握的证据帮助受害者家属讨回了公道。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 林雨薇 -->
+                <div class="collapsible-card" data-character="linyuwei">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>林雨薇 - 第二任妻子</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是沈伯渊的第二任妻子，比他小三十岁。所有人都说你是为了钱，但只有你知道，你曾经真的爱过他。</p>
+                                <p>直到你发现，他一直在调查你。他怀疑你和沈明轩有染——虽然这是事实，但你没想到他会知道。</p>
+                                <p>更可怕的是，你发现他在修改遗嘱，要把大部分财产留给那个养女沈明月。你陪了他五年，难道要一无所有？</p>
+                                <p><strong>你的任务：</strong>阻止遗嘱生效，确保自己能分到遗产。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>沈伯渊死后，你第一时间去找遗嘱，但保险柜已经被打开了。有人在你们之前动了手脚。</p>
+                                <p>你的安眠药少了几片。你记得昨晚确实给沈伯渊的茶里下了药——但那只是让他睡个好觉，方便你去找遗嘱而已。</p>
+                                <p>现在所有人都在怀疑你。沈明轩说看到你和父亲争吵，苏小曼说你最近行为诡异。你必须证明自己的清白。</p>
+                                <p><strong>你的任务：</strong>证明你虽然下了安眠药，但没有杀人。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>真相揭晓，凶手是陈志远。你松了一口气，但你的麻烦还没结束。</p>
+                                <p>你和沈明轩的私情被曝光了。原来你们早就勾搭在一起，还计划等沈伯渊死后瓜分遗产。</p>
+                                <p>虽然你没有杀人，但你的贪婪和背叛让所有人唾弃。沈明轩为了自保，把所有责任都推给了你。</p>
+                                <p><strong>你的结局：</strong>因诈骗罪和共谋罪被判刑，一无所有。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 陈志远 -->
+                <div class="collapsible-card" data-character="chenzhiyuan">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>陈志远 - 别墅管家</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是听风阁的管家，在沈家工作了三年。所有人都觉得你忠厚老实、沉默寡言。</p>
+                                <p>但没人知道，你的真名叫陈建国。二十年前，你的女儿陈小雪在青屏山工地坍塌事故中丧生，年仅六岁。</p>
+                                <p>那场事故被定性为意外，你知道不是。是沈伯渊偷工减料导致了坍塌，然后他花钱摆平了一切。</p>
+                                <p>你改名换姓，潜伏在沈家三年，就是为了等待一个机会。今晚，暴风雨封锁了山路，机会终于来了。</p>
+                                <p><strong>你的任务：</strong>隐藏你的真实身份，伺机为女儿报仇。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>昨晚21:30，你给沈伯渊送茶点。他在书房里，看起来很累。你知道他每天晚上都要喝你泡的茶。</p>
+                                <p>你在茶里加了安眠药——不是毒药，只是让他昏睡。然后，你用那支他常用的钢笔，刺破了他的颈动脉。</p>
+                                <p>钢笔上留下了你的指纹，但你早有准备。你戴了手套处理现场，把茶杯打碎在地毯上，制造了意外的假象。</p>
+                                <p><strong>你的任务：</strong>继续隐藏身份，引导调查方向指向其他人。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>真相还是被人发现了。沈明月的录音笔、方晓晴破解的U盘文件、还有你围裙上残留的血迹，都成了证据。</p>
+                                <p>但你并不后悔。二十年了，小雪在地下等了二十年。你终于为她讨回了公道。</p>
+                                <p>在最后的对峙中，你拿出了妻子张秀兰的死亡证明。她在女儿死后抑郁而终，沈伯渊欠你们一家三条命。</p>
+                                <p><strong>你的结局：</strong>被警方逮捕，但在法庭上，你的故事感动了所有人。最终判决考虑了情有可原的因素。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 苏小曼 -->
+                <div class="collapsible-card" data-character="suxiaoman">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>苏小曼 - 沈明轩妻子</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是沈明轩的妻子，也是《财经周刊》的记者。你嫁给沈明轩，最初是因为爱情，但现在，你更想查清伯渊集团的黑幕。</p>
+                                <p>三个月前，你收到匿名举报，说伯渊集团在二十年前涉嫌重大安全事故瞒报。你开始暗中调查。</p>
+                                <p>今晚，你以儿媳的身份参加寿宴，实际上是想接近沈伯渊，拿到更多证据。</p>
+                                <p><strong>你的任务：</strong>查清伯渊集团的丑闻，同时保护好自己的身份。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>沈伯渊的死打乱了我的计划。但你发现，他的死可能和你要调查的事故有关。</p>
+                                <p>你在书房找到了一些文件碎片，上面提到了"2006.06.20"和"赔偿清单"。这证实了你的猜测——二十年前的事故确实被掩盖了。</p>
+                                <p>更让你震惊的是，你发现沈明轩和林雨薇有私情。他们不仅在偷情，还在谋划瓜分遗产。</p>
+                                <p><strong>你的任务：</strong>查清事故真相，决定是否公开沈明轩的丑闻。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>真相大白。沈伯渊的死是陈志远为女儿报仇，而二十年前的事故确实是伯渊集团一手造成的。</p>
+                                <p>你完成了调查报道，揭露了伯渊集团的黑暗历史。报道引起了轰动，受害者家属终于得到了应有的赔偿。</p>
+                                <p>至于沈明轩，你选择了离婚。他的贪婪和背叛让你彻底死心。</p>
+                                <p><strong>你的结局：</strong>报道获得了新闻大奖，你成为了知名调查记者。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 周海 -->
+                <div class="collapsible-card" data-character="zhouhai">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>周海 - 私人医生</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是沈伯渊的私人医生，跟了他八年。你知道他所有的健康状况——包括那些他不想让别人知道的秘密。</p>
+                                <p>沈伯渊最近体重下降得厉害，你怀疑他可能得了重病，但他拒绝做进一步检查。他似乎在隐瞒什么。</p>
+                                <p>更奇怪的是，他最近开始频繁地提到"小雨"这个名字，有时候半夜会做噩梦，喊着"对不起"。</p>
+                                <p><strong>你的任务：</strong>查清沈伯渊的健康状况，同时注意别墅里其他人的异常行为。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>沈伯渊死后，你检查了他的尸体。颈动脉被刺破，大出血死亡。但伤口的形状很奇怪——不像刀伤，更像是尖锐的细长物体。</p>
+                                <p>你注意到书房里少了一支钢笔。沈伯渊最喜欢的那支万宝龙钢笔不见了。难道凶器就是那支钢笔？</p>
+                                <p>你还发现，沈伯渊体内有高浓度的安眠药成分。有人在他死前给他下了药。会是谁？</p>
+                                <p><strong>你的任务：</strong>确定真正的死因和凶器，找出下药的人。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>真相揭晓。陈志远用钢笔刺破了沈伯渊的颈动脉，而林雨薇下的安眠药让沈伯渊失去了反抗能力。</p>
+                                <p>你虽然同情陈志远的遭遇，但作为医生，你无法认同他的做法。你本可以救沈伯渊，如果及时发现的话。</p>
+                                <p>沈伯渊的病历显示，他其实已经得了晚期癌症，只剩下不到半年的寿命。他知道自己时日无多，才急着修改遗嘱。</p>
+                                <p><strong>你的结局：</strong>继续行医，但这件事让你明白了生命的脆弱和珍贵。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 方晓晴 -->
+                <div class="collapsible-card" data-character="fangxiaoqing">
+                    <div class="collapsible-header" onclick="toggleScript(this)">
+                        <h3>方晓晴 - 财经记者</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="script-content phase-border-1">
+                                <div class="phase-label-1">【第一阶段】</div>
+                                <p>你是财经日报的记者，受邀来采访沈伯渊的六十五岁寿宴。但你的真正目的，是调查伯渊集团的财务丑闻。</p>
+                                <p>你收到线报，伯渊集团近期有大量异常资金流动，疑似洗钱。你想从沈伯渊口中套出些话。</p>
+                                <p>你注意到别墅里的气氛很诡异。每个人看起来都心事重重，似乎都在隐瞒什么秘密。</p>
+                                <p><strong>你的任务：</strong>查清伯渊集团的财务问题，拿到独家新闻。</p>
+                            </div>
+                            <div class="script-content phase-border-2">
+                                <div class="phase-label-2">【第二阶段】</div>
+                                <p>沈伯渊的死让事件升级。这不再是财经新闻，而是刑事案件。但你的直觉告诉你，两件事情有关联。</p>
+                                <p>你在书房发现了一个U盘，里面有一个加密文件夹，名字是"2006.06.20"。你花了几个小时破解了密码。</p>
+                                <p>文件夹里的内容让你震惊——那是二十年前工地坍塌事故的完整记录，包括赔偿清单、保密协议，还有死者名单。</p>
+                                <p><strong>你的任务：</strong>把U盘里的证据交给警方，同时保护好自己。</p>
+                            </div>
+                            <div class="script-content phase-border-3">
+                                <div class="phase-label-3">【第三阶段】</div>
+                                <p>U盘里的证据成为了破案的关键。你不仅报道了伯渊集团的财务丑闻，还揭露了二十年前的事故真相。</p>
+                                <p>陈志远的故事让你深受触动。你写了一篇深度报道，讲述了受害者家属二十年的等待和复仇。</p>
+                                <p>这篇报道获得了普利策新闻奖提名，成为了你职业生涯的巅峰之作。</p>
+                                <p><strong>你的结局：</strong>成为了首席调查记者，继续为正义发声。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 角色密码管理 -->
         <div class="password-management">
             <h2 class="panel-title">角色密码管理</h2>
@@ -517,9 +1086,580 @@
             </div>
         </div>
 
+        <!-- 预设线索库 -->
+        <div class="control-panel">
+            <h2 class="panel-title">预设线索库</h2>
+
+            <!-- 第一轮线索 A01-A17 -->
+            <div class="clue-round">
+                <div class="clue-round-title">第一轮线索（A01-A17）</div>
+                <div class="clue-grid" id="clueGridA">
+                    <div class="clue-card" data-clue="A01">
+                        <div class="clue-info">
+                            <div class="clue-id">A01</div>
+                            <div class="clue-text">沈伯渊书房的遗嘱草稿，显示股份分配，有林雨薇的指甲划痕</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A01')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A02">
+                        <div class="clue-info">
+                            <div class="clue-id">A02</div>
+                            <div class="clue-text">沈明轩笔记本电脑里的5000万资金转出记录</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A02')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A03">
+                        <div class="clue-info">
+                            <div class="clue-id">A03</div>
+                            <div class="clue-text">沈明月行李箱底层的旧信，提到"明月是你的女儿"</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A03')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A04">
+                        <div class="clue-info">
+                            <div class="clue-id">A04</div>
+                            <div class="clue-text">赵天成公文包里的伯渊集团财务异常调查报告</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A04')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A05">
+                        <div class="clue-info">
+                            <div class="clue-id">A05</div>
+                            <div class="clue-text">林雨薇备用手机里的暧昧短信</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A05')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A06">
+                        <div class="clue-info">
+                            <div class="clue-id">A06</div>
+                            <div class="clue-text">陈志远房间铁盒里的照片（小雨，6岁）和剪报碎片</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A06')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A07">
+                        <div class="clue-info">
+                            <div class="clue-id">A07</div>
+                            <div class="clue-text">苏小曼钱包里的《财经周刊》记者证</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A07')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A08">
+                        <div class="clue-info">
+                            <div class="clue-id">A08</div>
+                            <div class="clue-text">周海医药箱里的两瓶药粉和用药记录</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A08')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A09">
+                        <div class="clue-info">
+                            <div class="clue-id">A09</div>
+                            <div class="clue-text">方晓晴U盘里的加密文件夹"2006.06.20"</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A09')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A10">
+                        <div class="clue-info">
+                            <div class="clue-id">A10</div>
+                            <div class="clue-text">沈伯渊日记最后一页提到"小雨走了，第二十个年头"</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A10')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A11">
+                        <div class="clue-info">
+                            <div class="clue-id">A11</div>
+                            <div class="clue-text">走廊监控显示21:25沈明轩进入书房，21:58离开</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A11')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A12">
+                        <div class="clue-info">
+                            <div class="clue-id">A12</div>
+                            <div class="clue-text">书房茶杯残留高浓度安眠药，有林雨薇指纹</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A12')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A13">
+                        <div class="clue-info">
+                            <div class="clue-id">A13</div>
+                            <div class="clue-text">沈明轩手机里的高利贷催债短信</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A13')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A14">
+                        <div class="clue-info">
+                            <div class="clue-id">A14</div>
+                            <div class="clue-text">林雨薇珠宝盒里的钻石项链（M&Y刻字）</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A14')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A15">
+                        <div class="clue-info">
+                            <div class="clue-id">A15</div>
+                            <div class="clue-text">别墅三层平面图</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A15')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A16">
+                        <div class="clue-info">
+                            <div class="clue-id">A16</div>
+                            <div class="clue-text">天气预报显示暴风雨封路</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A16')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="A17">
+                        <div class="clue-info">
+                            <div class="clue-id">A17</div>
+                            <div class="clue-text">沈伯渊病历显示不明原因体重下降</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('A17')">发放</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二轮线索 B01-B12 -->
+            <div class="clue-round">
+                <div class="clue-round-title">第二轮线索（B01-B12）</div>
+                <div class="clue-grid" id="clueGridB">
+                    <div class="clue-card" data-clue="B01">
+                        <div class="clue-info">
+                            <div class="clue-id">B01</div>
+                            <div class="clue-text">沈明轩西装袖口的墨水痕迹</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B01')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B02">
+                        <div class="clue-info">
+                            <div class="clue-id">B02</div>
+                            <div class="clue-text">沈明月录音笔录下的争吵声和呻吟声</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B02')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B03">
+                        <div class="clue-info">
+                            <div class="clue-id">B03</div>
+                            <div class="clue-text">赵天成窃听器录音</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B03')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B04">
+                        <div class="clue-info">
+                            <div class="clue-id">B04</div>
+                            <div class="clue-text">林雨薇安眠药瓶少了两片</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B04')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B05">
+                        <div class="clue-info">
+                            <div class="clue-id">B05</div>
+                            <div class="clue-text">陈志远围裙上的AB型血迹</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B05')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B06">
+                        <div class="clue-info">
+                            <div class="clue-id">B06</div>
+                            <div class="clue-text">苏小曼笔记本的调查记录</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B06')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B07">
+                        <div class="clue-info">
+                            <div class="clue-id">B07</div>
+                            <div class="clue-text">周海的安眠药处方</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B07')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B08">
+                        <div class="clue-info">
+                            <div class="clue-id">B08</div>
+                            <div class="clue-text">方晓晴破解的U盘文件（2006年事故）</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B08')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B09">
+                        <div class="clue-info">
+                            <div class="clue-id">B09</div>
+                            <div class="clue-text">书房地毯上的喷射状血迹</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B09')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B10">
+                        <div class="clue-info">
+                            <div class="clue-id">B10</div>
+                            <div class="clue-text">钢笔笔尖的微量血迹</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B10')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B11">
+                        <div class="clue-info">
+                            <div class="clue-id">B11</div>
+                            <div class="clue-text">走廊地毯的茶水渍和茶杯碎片</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B11')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="B12">
+                        <div class="clue-info">
+                            <div class="clue-id">B12</div>
+                            <div class="clue-text">别墅门窗都从内部反锁</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('B12')">发放</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三轮线索 C01-C12 -->
+            <div class="clue-round">
+                <div class="clue-round-title">第三轮线索（C01-C12）</div>
+                <div class="clue-grid" id="clueGridC">
+                    <div class="clue-card" data-clue="C01">
+                        <div class="clue-info">
+                            <div class="clue-id">C01</div>
+                            <div class="clue-text">陈志远身份伪造，真实身份陈建国</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C01')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C02">
+                        <div class="clue-info">
+                            <div class="clue-id">C02</div>
+                            <div class="clue-text">2006年6月21日报纸剪报</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C02')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C03">
+                        <div class="clue-info">
+                            <div class="clue-id">C03</div>
+                            <div class="clue-text">保险柜中的赔偿清单和保密协议</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C03')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C04">
+                        <div class="clue-info">
+                            <div class="clue-id">C04</div>
+                            <div class="clue-text">张秀兰（陈建国妻子）的死亡证明</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C04')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C05">
+                        <div class="clue-info">
+                            <div class="clue-id">C05</div>
+                            <div class="clue-text">沈明月DNA检测报告（与赵天成亲子关系99.97%）</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C05')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C06">
+                        <div class="clue-info">
+                            <div class="clue-id">C06</div>
+                            <div class="clue-text">赵天成相册里的旧照片（与秀婷和明月）</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C06')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C07">
+                        <div class="clue-info">
+                            <div class="clue-id">C07</div>
+                            <div class="clue-text">苏小曼的完整调查报告</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C07')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C08">
+                        <div class="clue-info">
+                            <div class="clue-id">C08</div>
+                            <div class="clue-text">周海家人的资助协议</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C08')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C09">
+                        <div class="clue-info">
+                            <div class="clue-id">C09</div>
+                            <div class="clue-text">沈明轩和林雨薇的密谋信件</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C09')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C10">
+                        <div class="clue-info">
+                            <div class="clue-id">C10</div>
+                            <div class="clue-text">钢笔上的陈志远指纹</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C10')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C11">
+                        <div class="clue-info">
+                            <div class="clue-id">C11</div>
+                            <div class="clue-text">沈伯渊真正死因报告（颈动脉刺破）</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C11')">发放</button>
+                    </div>
+                    <div class="clue-card" data-clue="C12">
+                        <div class="clue-info">
+                            <div class="clue-id">C12</div>
+                            <div class="clue-text">陈志远茶杯里的安眠药成分</div>
+                            <span class="clue-status pending">未发放</span>
+                        </div>
+                        <button class="clue-btn clue-btn-distribute" onclick="distributeClue('C12')">发放</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;">
+                <button class="btn btn-secondary" onclick="resetAllClues()">重置所有线索状态</button>
+            </div>
+        </div>
+
+        <!-- 真相解析 -->
+        <div class="control-panel">
+            <h2 class="panel-title">真相解析</h2>
+
+            <div class="truth-section">
+                <h3>完整真相</h3>
+                <p><span class="truth-highlight">凶手：陈志远（真实身份：陈建国）</span></p>
+                <p><span class="truth-highlight">作案时间：2026年6月20日晚 22:00-22:30</span></p>
+                <p><span class="truth-highlight">作案手法：用钢笔刺破沈伯渊颈动脉，致其大出血死亡</span></p>
+                <p><span class="truth-highlight">动机：为二十年前在工地坍塌事故中丧生的女儿陈小雪报仇</span></p>
+            </div>
+
+            <div class="truth-section">
+                <h3>作案过程还原</h3>
+                <p><strong>第一步（21:30）：</strong>陈志远以送茶点为由进入书房。沈伯渊已经习惯了每晚喝他泡的茶，毫无防备。</p>
+                <p><strong>第二步（21:35）：</strong>陈志远在茶中放入安眠药（从周海医药箱中偷取）。沈伯渊喝下后逐渐昏睡。</p>
+                <p><strong>第三步（22:00）：</strong>确认沈伯渊昏迷后，陈志远戴上手套，拿起沈伯渊常用的万宝龙钢笔。</p>
+                <p><strong>第四步（22:05）：</strong>陈志远用钢笔狠狠刺入沈伯渊的颈动脉。鲜血喷涌而出，染红了地毯。</p>
+                <p><strong>第五步（22:10）：</strong>陈志远打碎茶杯，将碎片撒在地毯的血迹上，制造意外摔倒的假象。</p>
+                <p><strong>第六步（22:15）：</strong>陈志远清理了自己的指纹，但匆忙中遗漏了钢笔上的微量指纹。</p>
+                <p><strong>第七步（22:20）：</strong>陈志远离开书房，回到自己房间，换下沾有血迹的围裙。</p>
+            </div>
+
+            <div class="truth-section">
+                <h3>四大反转详解</h3>
+                <p><strong style="color: #3498db;">反转一：陈志远的真实身份</strong></p>
+                <p>表面上忠厚老实的管家，实际上是二十年前事故受害者的父亲。他改名换姓潜伏三年，只为复仇。</p>
+                <p style="margin-top: 15px;"><strong style="color: #e67e22;">反转二：沈明月的身世之谜</strong></p>
+                <p>沈明月不是孤儿，而是赵天成和秀婷的亲生女儿。沈伯渊收养她，既是为了赎罪，也是为了控制赵天成。</p>
+                <p style="margin-top: 15px;"><strong style="color: #c0392b;">反转三：林雨薇的双重背叛</strong></p>
+                <p>林雨薇不仅出轨沈明轩，还和沈明轩密谋篡改遗嘱。她下的安眠药间接帮助了陈志远作案。</p>
+                <p style="margin-top: 15px;"><strong style="color: #9b59b6;">反转四：沈伯渊的临终忏悔</strong></p>
+                <p>沈伯渊其实已经得了晚期癌症，他修改遗嘱是想在死前赎罪。但陈志远没有给他这个机会。</p>
+            </div>
+
+            <div class="truth-section">
+                <h3>陈志远玩家特别指引</h3>
+                <p>作为凶手，你需要特别注意以下几点：</p>
+                <p>1. <strong>隐藏身份：</strong>千万不要主动提起"陈建国"这个名字或"小雪"的事情。</p>
+                <p>2. <strong>制造不在场证明：</strong>强调21:30送完茶点后你就回房间了，之后一直在整理东西。</p>
+                <p>3. <strong>转移注意力：</strong>当有人怀疑你时，把嫌疑引向林雨薇或沈明轩——他们都有明显的动机。</p>
+                <p>4. <strong>解释血迹：</strong>如果围裙上的血迹被发现，可以说是不小心切菜时沾上的（沈伯渊是AB型血，但你可以声称不知道）。</p>
+                <p>5. <strong>最后的抉择：</strong>如果证据确凿无法抵赖，你可以选择坦白。这是一个关于复仇与正义的故事，坦白的结局同样感人。</p>
+            </div>
+
+            <div class="truth-section">
+                <h3>常见疑问解答</h3>
+                <p><strong>Q：为什么陈志远要等二十年才报仇？</strong></p>
+                <p>A：事故发生后，陈建国（陈志远）一直在收集证据。他需要足够的证据证明沈伯渊的罪行，同时也需要接近沈伯渊的机会。三年前，他听说沈家招聘管家，才改名换姓潜入。</p>
+                <p style="margin-top: 10px;"><strong>Q：林雨薇下的安眠药和陈志远有关吗？</strong></p>
+                <p>A：没有直接关系。林雨薇下药是为了让沈伯渊昏睡，方便她去找遗嘱。但这间接帮助了陈志远——沈伯渊在药物作用下失去了反抗能力。</p>
+                <p style="margin-top: 10px;"><strong>Q：沈伯渊真的想修改遗嘱赎罪吗？</strong></p>
+                <p>A：是的。沈伯渊得知自己得了癌症后，开始反思一生。他修改遗嘱，想把部分财产留给受害者家属，但这触动了太多人的利益。</p>
+                <p style="margin-top: 10px;"><strong>Q：如果陈志远没有杀人，沈伯渊会怎么死？</strong></p>
+                <p>A：沈伯渊最多还有半年寿命。但他的死会触发一系列遗产争夺，林雨薇、沈明轩等人都会卷入其中。</p>
+            </div>
+        </div>
+
+        <!-- 时间线还原 -->
+        <div class="control-panel">
+            <h2 class="panel-title">时间线还原</h2>
+            <table class="timeline-table">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>事件</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>18:00</td>
+                        <td>所有人到达听风阁，寿宴开始</td>
+                    </tr>
+                    <tr>
+                        <td>20:00</td>
+                        <td>寿宴结束，各自活动</td>
+                    </tr>
+                    <tr>
+                        <td>20:30</td>
+                        <td>沈明轩与沈伯渊在书房争吵</td>
+                    </tr>
+                    <tr>
+                        <td>20:45</td>
+                        <td>沈明轩离开书房，面色愤怒</td>
+                    </tr>
+                    <tr>
+                        <td>21:00</td>
+                        <td>林雨薇进入书房与沈伯渊谈话</td>
+                    </tr>
+                    <tr>
+                        <td>21:15</td>
+                        <td>林雨薇离开书房</td>
+                    </tr>
+                    <tr>
+                        <td>21:25</td>
+                        <td>走廊监控显示沈明轩再次进入书房（实际为沈明轩想求父亲回心转意）</td>
+                    </tr>
+                    <tr>
+                        <td>21:30</td>
+                        <td>陈志远给沈伯渊送茶点（茶中已下安眠药）</td>
+                    </tr>
+                    <tr>
+                        <td>21:45</td>
+                        <td>周海去书房查看沈伯渊状况（沈已昏睡，周海以为他在休息）</td>
+                    </tr>
+                    <tr>
+                        <td>21:58</td>
+                        <td>沈明轩离开书房（未发现异常）</td>
+                    </tr>
+                    <tr>
+                        <td>22:00</td>
+                        <td>沈伯渊让所有人不要打扰（实为药物作用下的昏睡状态）</td>
+                    </tr>
+                    <tr style="background: rgba(192, 57, 43, 0.1);">
+                        <td>22:00-22:30</td>
+                        <td><strong style="color: #c0392b;">陈志远作案时间</strong></td>
+                    </tr>
+                    <tr>
+                        <td>22:30</td>
+                        <td>暴风雨最大，雷声轰鸣（掩盖了可能的声响）</td>
+                    </tr>
+                    <tr>
+                        <td>23:00</td>
+                        <td>沈明月发现父亲死亡</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 别墅平面图 -->
+        <div class="control-panel">
+            <h2 class="panel-title">别墅平面图</h2>
+
+            <!-- 三层 -->
+            <div class="floor-plan-container" style="margin-bottom: 20px;">
+                <div class="floor-label">三层 - 客房与储藏室</div>
+                <svg class="floor-plan-svg" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 外墙 -->
+                    <rect x="10" y="10" width="580" height="180" fill="none" stroke="#c0392b" stroke-width="2"/>
+                    <!-- 房间分隔 -->
+                    <line x1="150" y1="10" x2="150" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="300" y1="10" x2="300" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="450" y1="10" x2="450" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="10" y1="100" x2="590" y2="100" stroke="#333" stroke-width="1"/>
+                    <!-- 房间标签 -->
+                    <text x="80" y="55" fill="#888" font-size="12" text-anchor="middle">客房A</text>
+                    <text x="80" y="145" fill="#888" font-size="12" text-anchor="middle">客房B</text>
+                    <text x="225" y="55" fill="#888" font-size="12" text-anchor="middle">客房C</text>
+                    <text x="225" y="145" fill="#888" font-size="12" text-anchor="middle">客房D</text>
+                    <text x="375" y="55" fill="#888" font-size="12" text-anchor="middle">储藏室</text>
+                    <text x="375" y="145" fill="#888" font-size="12" text-anchor="middle">杂物间</text>
+                    <text x="520" y="100" fill="#888" font-size="12" text-anchor="middle">楼梯间</text>
+                    <!-- 楼梯 -->
+                    <rect x="480" y="70" width="80" height="60" fill="none" stroke="#d4ac0d" stroke-width="1" stroke-dasharray="4"/>
+                    <text x="520" y="105" fill="#d4ac0d" font-size="10" text-anchor="middle">楼梯</text>
+                </svg>
+            </div>
+
+            <!-- 二层 -->
+            <div class="floor-plan-container" style="margin-bottom: 20px;">
+                <div class="floor-label">二层 - 卧室区</div>
+                <svg class="floor-plan-svg" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 外墙 -->
+                    <rect x="10" y="10" width="580" height="180" fill="none" stroke="#c0392b" stroke-width="2"/>
+                    <!-- 房间分隔 -->
+                    <line x1="150" y1="10" x2="150" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="300" y1="10" x2="300" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="450" y1="10" x2="450" y2="190" stroke="#333" stroke-width="1"/>
+                    <line x1="10" y1="100" x2="590" y2="100" stroke="#333" stroke-width="1"/>
+                    <!-- 房间标签 -->
+                    <text x="80" y="55" fill="#888" font-size="12" text-anchor="middle">主卧</text>
+                    <text x="80" y="145" fill="#888" font-size="12" text-anchor="middle">沈明轩卧室</text>
+                    <text x="225" y="55" fill="#888" font-size="12" text-anchor="middle">沈明月卧室</text>
+                    <text x="225" y="145" fill="#888" font-size="12" text-anchor="middle">客房</text>
+                    <text x="375" y="55" fill="#888" font-size="12" text-anchor="middle">林雨薇卧室</text>
+                    <text x="375" y="145" fill="#888" font-size="12" text-anchor="middle">浴室</text>
+                    <text x="520" y="100" fill="#888" font-size="12" text-anchor="middle">楼梯间</text>
+                    <!-- 楼梯 -->
+                    <rect x="480" y="70" width="80" height="60" fill="none" stroke="#d4ac0d" stroke-width="1" stroke-dasharray="4"/>
+                    <text x="520" y="105" fill="#d4ac0d" font-size="10" text-anchor="middle">楼梯</text>
+                </svg>
+            </div>
+
+            <!-- 一层 -->
+            <div class="floor-plan-container">
+                <div class="floor-label">一层 - 公共区域（案发楼层）</div>
+                <svg class="floor-plan-svg" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 外墙 -->
+                    <rect x="10" y="10" width="580" height="230" fill="none" stroke="#c0392b" stroke-width="2"/>
+                    <!-- 房间分隔 -->
+                    <line x1="200" y1="10" x2="200" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="400" y1="10" x2="400" y2="240" stroke="#333" stroke-width="1"/>
+                    <line x1="10" y1="120" x2="590" y2="120" stroke="#333" stroke-width="1"/>
+                    <!-- 书房（案发地点）突出显示 -->
+                    <rect x="10" y="10" width="190" height="110" fill="rgba(192, 57, 43, 0.1)" stroke="#c0392b" stroke-width="2"/>
+                    <!-- 房间标签 -->
+                    <text x="105" y="65" fill="#c0392b" font-size="14" text-anchor="middle" font-weight="bold">书房</text>
+                    <text x="105" y="85" fill="#c0392b" font-size="10" text-anchor="middle">（案发地点）</text>
+                    <text x="300" y="65" fill="#888" font-size="12" text-anchor="middle">客厅</text>
+                    <text x="495" y="65" fill="#888" font-size="12" text-anchor="middle">餐厅</text>
+                    <text x="105" y="180" fill="#888" font-size="12" text-anchor="middle">厨房</text>
+                    <text x="300" y="180" fill="#888" font-size="12" text-anchor="middle">管家房</text>
+                    <text x="495" y="180" fill="#888" font-size="12" text-anchor="middle">门厅/楼梯</text>
+                    <!-- 楼梯 -->
+                    <rect x="455" y="150" width="80" height="60" fill="none" stroke="#d4ac0d" stroke-width="1" stroke-dasharray="4"/>
+                    <text x="495" y="185" fill="#d4ac0d" font-size="10" text-anchor="middle">楼梯</text>
+                    <!-- 入口 -->
+                    <rect x="550" y="200" width="40" height="5" fill="#d4ac0d"/>
+                    <text x="570" y="225" fill="#d4ac0d" font-size="10" text-anchor="middle">正门</text>
+                </svg>
+            </div>
+        </div>
+
         <!-- 线索管理 -->
         <div class="control-panel">
-            <h2 class="panel-title">线索管理</h2>
+            <h2 class="panel-title">线索管理（自定义）</h2>
             <div class="clue-section">
                 <div class="clue-form">
                     <input type="text" class="clue-input" id="clueId" placeholder="线索编号（如：A-01）">
@@ -738,11 +1878,131 @@
             `).join('');
         }
 
+        // ==================== 折叠功能 ====================
+        function toggleScript(header) {
+            const card = header.parentElement;
+            card.classList.toggle('open');
+        }
+
+        // ==================== 预设线索管理 ====================
+        function distributeClue(clueId) {
+            // 存储到localStorage
+            const distributedClues = JSON.parse(localStorage.getItem('distributedClues') || '[]');
+            if (!distributedClues.includes(clueId)) {
+                distributedClues.push(clueId);
+                localStorage.setItem('distributedClues', JSON.stringify(distributedClues));
+            }
+
+            // 同时添加到玩家可见的线索列表
+            const clueText = getClueText(clueId);
+            const playerClues = JSON.parse(localStorage.getItem('playerClues') || '[]');
+            const exists = playerClues.some(c => c.id === clueId);
+            if (!exists) {
+                playerClues.push({ id: clueId, content: clueText });
+                localStorage.setItem('playerClues', JSON.stringify(playerClues));
+            }
+
+            updateClueDisplay(clueId);
+        }
+
+        function getClueText(clueId) {
+            const clueTexts = {
+                'A01': '沈伯渊书房的遗嘱草稿，显示股份分配，有林雨薇的指甲划痕',
+                'A02': '沈明轩笔记本电脑里的5000万资金转出记录',
+                'A03': '沈明月行李箱底层的旧信，提到"明月是你的女儿"',
+                'A04': '赵天成公文包里的伯渊集团财务异常调查报告',
+                'A05': '林雨薇备用手机里的暧昧短信',
+                'A06': '陈志远房间铁盒里的照片（小雨，6岁）和剪报碎片',
+                'A07': '苏小曼钱包里的《财经周刊》记者证',
+                'A08': '周海医药箱里的两瓶药粉和用药记录',
+                'A09': '方晓晴U盘里的加密文件夹"2006.06.20"',
+                'A10': '沈伯渊日记最后一页提到"小雨走了，第二十个年头"',
+                'A11': '走廊监控显示21:25沈明轩进入书房，21:58离开',
+                'A12': '书房茶杯残留高浓度安眠药，有林雨薇指纹',
+                'A13': '沈明轩手机里的高利贷催债短信',
+                'A14': '林雨薇珠宝盒里的钻石项链（M&Y刻字）',
+                'A15': '别墅三层平面图',
+                'A16': '天气预报显示暴风雨封路',
+                'A17': '沈伯渊病历显示不明原因体重下降',
+                'B01': '沈明轩西装袖口的墨水痕迹',
+                'B02': '沈明月录音笔录下的争吵声和呻吟声',
+                'B03': '赵天成窃听器录音',
+                'B04': '林雨薇安眠药瓶少了两片',
+                'B05': '陈志远围裙上的AB型血迹',
+                'B06': '苏小曼笔记本的调查记录',
+                'B07': '周海的安眠药处方',
+                'B08': '方晓晴破解的U盘文件（2006年事故）',
+                'B09': '书房地毯上的喷射状血迹',
+                'B10': '钢笔笔尖的微量血迹',
+                'B11': '走廊地毯的茶水渍和茶杯碎片',
+                'B12': '别墅门窗都从内部反锁',
+                'C01': '陈志远身份伪造，真实身份陈建国',
+                'C02': '2006年6月21日报纸剪报',
+                'C03': '保险柜中的赔偿清单和保密协议',
+                'C04': '张秀兰（陈建国妻子）的死亡证明',
+                'C05': '沈明月DNA检测报告（与赵天成亲子关系99.97%）',
+                'C06': '赵天成相册里的旧照片（与秀婷和明月）',
+                'C07': '苏小曼的完整调查报告',
+                'C08': '周海家人的资助协议',
+                'C09': '沈明轩和林雨薇的密谋信件',
+                'C10': '钢笔上的陈志远指纹',
+                'C11': '沈伯渊真正死因报告（颈动脉刺破）',
+                'C12': '陈志远茶杯里的安眠药成分'
+            };
+            return clueTexts[clueId] || '未知线索';
+        }
+
+        function updateClueDisplay(clueId) {
+            const card = document.querySelector(`[data-clue="${clueId}"]`);
+            if (!card) return;
+
+            const btn = card.querySelector('.clue-btn');
+            const status = card.querySelector('.clue-status');
+
+            card.classList.add('distributed');
+            btn.textContent = '已发放';
+            btn.classList.remove('clue-btn-distribute');
+            btn.classList.add('clue-btn-distributed');
+            btn.disabled = true;
+            status.textContent = '已发放';
+            status.classList.remove('pending');
+            status.classList.add('sent');
+        }
+
+        function loadDistributedClues() {
+            const distributedClues = JSON.parse(localStorage.getItem('distributedClues') || '[]');
+            distributedClues.forEach(clueId => {
+                updateClueDisplay(clueId);
+            });
+        }
+
+        function resetAllClues() {
+            if (!confirm('确定要重置所有预设线索的发放状态吗？')) return;
+
+            localStorage.removeItem('distributedClues');
+            localStorage.removeItem('playerClues');
+
+            // 重置所有线索卡片显示
+            document.querySelectorAll('.clue-card').forEach(card => {
+                card.classList.remove('distributed');
+                const btn = card.querySelector('.clue-btn');
+                btn.textContent = '发放';
+                btn.classList.remove('clue-btn-distributed');
+                btn.classList.add('clue-btn-distribute');
+                btn.disabled = false;
+                const status = card.querySelector('.clue-status');
+                status.textContent = '未发放';
+                status.classList.remove('sent');
+                status.classList.add('pending');
+            });
+        }
+
         // ==================== 初始化 ====================
         updatePhaseDisplay();
         renderPasswordGrid();
         updateCharacterStatus();
         loadClues();
+        loadDistributedClues();
 
         // 定时更新角色状态
         setInterval(updateCharacterStatus, 3000);
