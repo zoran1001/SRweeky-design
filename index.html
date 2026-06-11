@@ -164,11 +164,23 @@
         }
 
         .rule-card.phase2 {
-            border-left-color: #d4ac0d;
+            border-left-color: #27ae60;
         }
 
         .rule-card.phase3 {
+            border-left-color: #d4ac0d;
+        }
+
+        .rule-card.phase4 {
+            border-left-color: #27ae60;
+        }
+
+        .rule-card.phase5 {
             border-left-color: #c0392b;
+        }
+
+        .rule-card.phase6 {
+            border-left-color: #27ae60;
         }
 
         .rule-card h3 {
@@ -181,11 +193,23 @@
         }
 
         .rule-card.phase2 h3 {
-            color: #d4ac0d;
+            color: #27ae60;
         }
 
         .rule-card.phase3 h3 {
+            color: #d4ac0d;
+        }
+
+        .rule-card.phase4 h3 {
+            color: #27ae60;
+        }
+
+        .rule-card.phase5 h3 {
             color: #c0392b;
+        }
+
+        .rule-card.phase6 h3 {
+            color: #27ae60;
         }
 
         .rule-card p {
@@ -452,22 +476,45 @@
         <!-- 游戏规则说明 -->
         <section class="section">
             <h2 class="section-title">游戏规则说明</h2>
+            <div style="background: #16213e; border-radius: 10px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                <p style="font-size: 1.1rem; color: #ccc; line-height: 2;">
+                    <span style="color: #2980b9; font-weight: bold;">第一阶段（蓝色剧本）</span> → 
+                    <span style="color: #27ae60; font-weight: bold;">第一轮搜证（3个地点）</span> → 
+                    <span style="color: #d4ac0d; font-weight: bold;">第二阶段（黄色剧本）</span> → 
+                    <span style="color: #27ae60; font-weight: bold;">第二轮搜证（5个地点）</span> → 
+                    <span style="color: #c0392b; font-weight: bold;">第三阶段（红色剧本）</span> → 
+                    <span style="color: #27ae60; font-weight: bold;">第三轮搜证（6个地点）</span> → 
+                    <span style="color: #e74c3c; font-weight: bold;">投票指凶</span>
+                </p>
+            </div>
             <div class="rules-grid">
                 <div class="rule-card phase1">
                     <h3>第一阶段：蓝色剧本</h3>
-                    <p>阅读蓝色边框的剧本内容，了解角色基本信息和初始记忆。此阶段可搜索客厅、餐厅、厨房。</p>
+                    <p>阅读蓝色边框的剧本内容，了解角色基本信息和初始记忆。</p>
                 </div>
                 <div class="rule-card phase2">
-                    <h3>第二阶段：黄色剧本</h3>
-                    <p>阅读黄色边框的剧本内容，解锁新的记忆和线索。此阶段可搜索书房、主卧、次卧A、次卧B、管家房。</p>
+                    <h3>第一轮搜证</h3>
+                    <p>搜索客厅、餐厅、厨房，每个地点可发现1条线索。</p>
                 </div>
                 <div class="rule-card phase3">
+                    <h3>第二阶段：黄色剧本</h3>
+                    <p>阅读黄色边框的剧本内容，解锁新的记忆和线索。</p>
+                </div>
+                <div class="rule-card phase4">
+                    <h3>第二轮搜证</h3>
+                    <p>搜索书房、主卧、次卧A、次卧B、管家房，每个地点可发现1条线索。</p>
+                </div>
+                <div class="rule-card phase5">
                     <h3>第三阶段：红色剧本</h3>
-                    <p>阅读红色边框的剧本内容，揭示最终真相。此阶段可搜索客房A、客房B、客房C、储藏室、露台。</p>
+                    <p>阅读红色边框的剧本内容，揭示最终真相。</p>
+                </div>
+                <div class="rule-card phase6">
+                    <h3>第三轮搜证</h3>
+                    <p>搜索客房A、客房B、客房C、储藏室、露台、书房（再次），每个地点可发现1条线索。</p>
                 </div>
                 <div class="rule-card">
                     <h3>搜证规则</h3>
-                    <p>点击"证据搜索"进入搜证页面，根据当前阶段选择可搜索的地点。每个地点有多个线索，点击即可查看。</p>
+                    <p>点击"证据搜索"进入搜证页面，根据当前阶段选择可搜索的地点。点击地点卡片随机弹出1条线索。</p>
                 </div>
                 <div class="rule-card">
                     <h3>投票规则</h3>
@@ -657,21 +704,27 @@
         function updatePhaseDisplay() {
             const currentPhase = localStorage.getItem('currentPhase') || '0';
             const phaseDisplay = document.getElementById('currentPhaseDisplay');
-            
+
             const phaseNames = {
                 '0': '未开始',
-                '1': '第一阶段（蓝色）',
-                '2': '第二阶段（黄色）',
-                '3': '第三阶段（红色）'
+                '1': '第一阶段（蓝色剧本）',
+                '2': '第一轮搜证',
+                '3': '第二阶段（黄色剧本）',
+                '4': '第二轮搜证',
+                '5': '第三阶段（红色剧本）',
+                '6': '第三轮搜证'
             };
-            
+
             const phaseColors = {
                 '0': '#888',
                 '1': '#2980b9',
-                '2': '#d4ac0d',
-                '3': '#c0392b'
+                '2': '#27ae60',
+                '3': '#d4ac0d',
+                '4': '#27ae60',
+                '5': '#c0392b',
+                '6': '#27ae60'
             };
-            
+
             phaseDisplay.textContent = phaseNames[currentPhase] || '未开始';
             phaseDisplay.style.color = phaseColors[currentPhase] || '#888';
         }

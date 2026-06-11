@@ -770,11 +770,26 @@
             <div class="phase-control">
                 <button class="phase-btn" id="phase0" onclick="setPhase(0)">准备阶段</button>
                 <button class="phase-btn" id="phase1" onclick="setPhase(1)">第一阶段</button>
-                <button class="phase-btn" id="phase2" onclick="setPhase(2)">第二阶段</button>
-                <button class="phase-btn" id="phase3" onclick="setPhase(3)">第三阶段</button>
+                <button class="phase-btn" id="phase2" onclick="setPhase(2)">第一轮搜证</button>
+                <button class="phase-btn" id="phase3" onclick="setPhase(3)">第二阶段</button>
+                <button class="phase-btn" id="phase4" onclick="setPhase(4)">第二轮搜证</button>
+                <button class="phase-btn" id="phase5" onclick="setPhase(5)">第三阶段</button>
+                <button class="phase-btn" id="phase6" onclick="setPhase(6)">第三轮搜证</button>
             </div>
             <div class="current-phase">
                 当前阶段：<span id="currentPhaseDisplay">准备阶段</span>
+            </div>
+            <div style="margin-top: 15px; padding: 15px; background: #16213e; border-radius: 8px; color: #888; font-size: 0.9rem;">
+                <p style="margin-bottom: 8px;"><strong style="color: #2980b9;">阶段流程：</strong></p>
+                <p>第一阶段（蓝色剧本）→ 第一轮搜证（3个地点）→ 第二阶段（黄色剧本）→ 第二轮搜证（5个地点）→ 第三阶段（红色剧本）→ 第三轮搜证（6个地点）→ 投票指凶</p>
+            </div>
+        </div>
+
+        <!-- 搜证控制 -->
+        <div class="control-panel">
+            <h2 class="panel-title">搜证控制</h2>
+            <div id="searchControlPanel">
+                <p style="color: #888; text-align: center; padding: 20px;">当前不是搜证阶段</p>
             </div>
         </div>
 
@@ -1711,23 +1726,92 @@
         function setPhase(phase) {
             localStorage.setItem('currentPhase', phase);
             updatePhaseDisplay();
+            updateSearchControl();
         }
 
         function updatePhaseDisplay() {
             const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
-            const phaseNames = ['准备阶段', '第一阶段', '第二阶段', '第三阶段'];
-            
+            const phaseNames = ['准备阶段', '第一阶段（蓝色剧本）', '第一轮搜证', '第二阶段（黄色剧本）', '第二轮搜证', '第三阶段（红色剧本）', '第三轮搜证'];
+
             document.getElementById('currentPhaseDisplay').textContent = phaseNames[currentPhase];
-            
+
             // 更新按钮状态
-            for (let i = 0; i <= 3; i++) {
+            for (let i = 0; i <= 6; i++) {
                 const btn = document.getElementById('phase' + i);
-                if (i === currentPhase) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
+                if (btn) {
+                    if (i === currentPhase) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
                 }
             }
+        }
+
+        // ==================== 搜证控制面板 ====================
+        function updateSearchControl() {
+            const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
+            const panel = document.getElementById('searchControlPanel');
+
+            const searchPhases = {
+                2: { round: 1, name: '第一轮搜证', locations: ['客厅', '餐厅', '厨房'] },
+                4: { round: 2, name: '第二轮搜证', locations: ['书房', '主卧', '次卧A', '次卧B', '管家房'] },
+                6: { round: 3, name: '第三轮搜证', locations: ['客房A', '客房B', '客房C', '储藏室', '露台', '书房（再次搜索）'] }
+            };
+
+            const searchInfo = searchPhases[currentPhase];
+            if (!searchInfo) {
+                panel.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">当前不是搜证阶段</p>';
+                return;
+            }
+
+            const searchedKey = 'searchedLocations_round' + searchInfo.round;
+            const searchedLocations = JSON.parse(localStorage.getItem(searchedKey) || '[]');
+            const distributedKey = 'distributedClues_round' + searchInfo.round;
+            const distributedClues = JSON.parse(localStorage.getItem(distributedKey) || '[]');
+
+            let html = `
+                <div style="margin-bottom: 15px;">
+                    <span style="color: #27ae60; font-weight: bold;">${searchInfo.name}</span>
+                    <span style="color: #888; margin-left: 10px;">已搜索 ${searchedLocations.length}/${searchInfo.locations.length} 个地点</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;">
+            `;
+
+            searchInfo.locations.forEach(loc => {
+                const isSearched = searchedLocations.includes(loc);
+                const clue = distributedClues.find(c => c.location === loc);
+                html += `
+                    <div style="background: ${isSearched ? 'rgba(39, 174, 96, 0.1)' : '#16213e'}; border: 1px solid ${isSearched ? '#27ae60' : '#333'}; border-radius: 8px; padding: 12px;">
+                        <div style="font-weight: bold; color: ${isSearched ? '#27ae60' : '#ccc'}; margin-bottom: 5px;">
+                            ${loc} ${isSearched ? '✓' : ''}
+                        </div>
+                        ${clue ? `<div style="font-size: 0.85rem; color: #888;">线索：${clue.id}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            if (distributedClues.length > 0) {
+                html += `
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                        <div style="color: #d4ac0d; font-weight: bold; margin-bottom: 10px;">已发放线索：</div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                `;
+                distributedClues.forEach(clue => {
+                    html += `
+                        <div style="background: #16213e; border-left: 3px solid #c0392b; padding: 10px; border-radius: 4px;">
+                            <span style="color: #c0392b; font-weight: bold;">${clue.id}</span>
+                            <span style="color: #27ae60; margin: 0 8px;">@${clue.location}</span>
+                            <span style="color: #888;">${clue.content}</span>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+
+            panel.innerHTML = html;
         }
 
         // ==================== 密码管理 ====================
@@ -1999,18 +2083,26 @@
 
         // ==================== 初始化 ====================
         updatePhaseDisplay();
+        updateSearchControl();
         renderPasswordGrid();
         updateCharacterStatus();
         loadClues();
         loadDistributedClues();
 
-        // 定时更新角色状态
-        setInterval(updateCharacterStatus, 3000);
+        // 定时更新角色状态和搜证控制
+        setInterval(function() {
+            updateCharacterStatus();
+            updateSearchControl();
+        }, 3000);
 
         // 监听阶段变化
         window.addEventListener('storage', function(e) {
             if (e.key === 'currentPhase') {
                 updatePhaseDisplay();
+                updateSearchControl();
+            }
+            if (e.key.startsWith('searchedLocations_') || e.key.startsWith('distributedClues_')) {
+                updateSearchControl();
             }
         });
 

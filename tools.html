@@ -80,8 +80,20 @@
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 30px;
-            border: 2px solid #c0392b;
+            border: 2px solid #333;
             text-align: center;
+        }
+
+        .phase-display.main-phase {
+            border-color: #c0392b;
+        }
+
+        .phase-display.search-phase {
+            border-color: #27ae60;
+        }
+
+        .phase-display.waiting {
+            border-color: #888;
         }
 
         .phase-display h2 {
@@ -105,21 +117,59 @@
         }
 
         .phase-badge.phase2 {
+            background: rgba(39, 174, 96, 0.2);
+            border: 2px solid #27ae60;
+            color: #27ae60;
+        }
+
+        .phase-badge.phase3 {
             background: rgba(212, 172, 13, 0.2);
             border: 2px solid #d4ac0d;
             color: #d4ac0d;
         }
 
-        .phase-badge.phase3 {
+        .phase-badge.phase4 {
+            background: rgba(39, 174, 96, 0.2);
+            border: 2px solid #27ae60;
+            color: #27ae60;
+        }
+
+        .phase-badge.phase5 {
             background: rgba(192, 57, 43, 0.2);
             border: 2px solid #c0392b;
             color: #c0392b;
+        }
+
+        .phase-badge.phase6 {
+            background: rgba(39, 174, 96, 0.2);
+            border: 2px solid #27ae60;
+            color: #27ae60;
         }
 
         .phase-badge.waiting {
             background: rgba(136, 136, 136, 0.2);
             border: 2px solid #888;
             color: #888;
+        }
+
+        .phase-type-label {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .phase-type-label.main {
+            background: rgba(192, 57, 43, 0.2);
+            color: #c0392b;
+            border: 1px solid #c0392b;
+        }
+
+        .phase-type-label.search {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border: 1px solid #27ae60;
         }
 
         /* ==================== 地点列表 ==================== */
@@ -133,6 +183,11 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #c0392b;
+        }
+
+        .locations-section.search-active .section-title {
+            color: #27ae60;
+            border-bottom-color: #27ae60;
         }
 
         .locations-grid {
@@ -150,17 +205,24 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            overflow: hidden;
         }
 
         .location-card:hover {
             transform: translateY(-5px);
-            border-color: #c0392b;
-            box-shadow: 0 5px 20px rgba(192, 57, 43, 0.3);
+            border-color: #27ae60;
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.3);
         }
 
         .location-card.searched {
             border-color: #27ae60;
-            opacity: 0.7;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .location-card.searched:hover {
+            transform: none;
+            box-shadow: none;
         }
 
         .location-card.searched::after {
@@ -191,7 +253,7 @@
             color: #888;
         }
 
-        /* ==================== 线索弹窗 ==================== */
+        /* ==================== 搜索动画弹窗 ==================== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -199,7 +261,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -214,12 +276,22 @@
             background: #1a1a2e;
             border-radius: 15px;
             padding: 30px;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 2px solid #c0392b;
+            border: 2px solid #27ae60;
             position: relative;
+            animation: modalPop 0.4s ease;
+        }
+
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .modal-close {
@@ -238,77 +310,78 @@
 
         .modal-title {
             font-size: 1.3rem;
-            color: #c0392b;
+            color: #27ae60;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #333;
         }
 
-        .clue-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        /* 搜索动画 */
+        .search-animation {
+            text-align: center;
+            padding: 40px 20px;
         }
 
-        .clue-item {
-            background: #16213e;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 4px solid #c0392b;
-            transition: all 0.3s ease;
+        .search-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #333;
+            border-top-color: #27ae60;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
 
-        .clue-item:hover {
-            transform: translateX(5px);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .clue-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .search-text {
+            color: #27ae60;
+            font-size: 1.1rem;
+        }
+
+        /* 线索结果 */
+        .clue-result {
+            display: none;
+        }
+
+        .clue-result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .clue-result-id {
+            font-size: 1.2rem;
+            color: #c0392b;
+            font-weight: bold;
             margin-bottom: 10px;
         }
 
-        .clue-id {
-            font-size: 0.9rem;
-            color: #c0392b;
-            font-weight: bold;
-        }
-
-        .clue-status {
-            font-size: 0.8rem;
-            padding: 3px 10px;
-            border-radius: 10px;
-        }
-
-        .clue-status.unlocked {
-            background: rgba(39, 174, 96, 0.2);
-            color: #27ae60;
-        }
-
-        .clue-status.locked {
-            background: rgba(136, 136, 136, 0.2);
-            color: #888;
-        }
-
-        .clue-text {
+        .clue-result-content {
             color: #ccc;
-            margin-bottom: 15px;
-            line-height: 1.6;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1rem;
         }
 
-        .clue-actions {
+        .clue-result-actions {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
-            padding: 8px 20px;
+            padding: 10px 25px;
             border-radius: 6px;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
 
@@ -321,6 +394,15 @@
             background: #a93226;
         }
 
+        .btn-success {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
         .btn-secondary {
             background: #16213e;
             color: #888;
@@ -329,15 +411,6 @@
 
         .btn-secondary:hover {
             background: #333;
-        }
-
-        .btn-success {
-            background: #27ae60;
-            color: #fff;
-        }
-
-        .btn-success:hover {
-            background: #229954;
         }
 
         /* ==================== 我的线索记录 ==================== */
@@ -354,6 +427,18 @@
             margin-bottom: 20px;
         }
 
+        .clue-round-group {
+            margin-bottom: 20px;
+        }
+
+        .clue-round-title {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+        }
+
         .my-clues-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -366,21 +451,36 @@
             padding: 15px;
             border-left: 4px solid #c0392b;
             transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
         .my-clue-card:hover {
             transform: translateX(5px);
         }
 
+        .my-clue-card.collapsed .my-clue-content {
+            display: none;
+        }
+
         .my-clue-id {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #c0392b;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .my-clue-location {
+            font-size: 0.8rem;
+            color: #27ae60;
             margin-bottom: 5px;
         }
 
         .my-clue-content {
             font-size: 0.95rem;
             color: #ccc;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #333;
         }
 
         .no-clues {
@@ -396,7 +496,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #c0392b;
+            background: #27ae60;
             color: #fff;
             padding: 15px 30px;
             border-radius: 8px;
@@ -409,6 +509,19 @@
         .toast.show {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
+        }
+
+        /* ==================== 等待提示 ==================== */
+        .waiting-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .waiting-message h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #c0392b;
         }
 
         /* ==================== 响应式设计 ==================== */
@@ -446,14 +559,15 @@
     <!-- 主内容 -->
     <div class="container">
         <!-- 阶段显示区 -->
-        <div class="phase-display">
+        <div class="phase-display waiting" id="phaseDisplay">
             <h2>当前游戏阶段</h2>
+            <div class="phase-type-label" id="phaseTypeLabel">等待中</div>
             <div class="phase-badge waiting" id="phaseBadge">等待开始</div>
             <p style="color: #888; margin-top: 10px;" id="phaseDesc">请等待DM开始游戏</p>
         </div>
 
         <!-- 可搜索地点 -->
-        <div class="locations-section">
+        <div class="locations-section" id="locationsSection">
             <h2 class="section-title">可搜索地点</h2>
             <div class="locations-grid" id="locationsGrid">
                 <!-- 地点卡片将由JavaScript动态生成 -->
@@ -463,7 +577,7 @@
         <!-- 我的线索记录 -->
         <div class="my-clues-section">
             <h2>我的线索记录</h2>
-            <div id="myClues" class="my-clues-grid">
+            <div id="myClues">
                 <div class="no-clues">暂无记录的线索，点击地点进行搜索</div>
             </div>
         </div>
@@ -473,9 +587,22 @@
     <div class="modal-overlay" id="clueModal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal()">&times;</span>
-            <h3 class="modal-title" id="modalTitle">地点名称</h3>
-            <div class="clue-list" id="clueList">
-                <!-- 线索列表将由JavaScript动态生成 -->
+            <h3 class="modal-title" id="modalTitle">正在搜索...</h3>
+
+            <!-- 搜索动画 -->
+            <div class="search-animation" id="searchAnimation">
+                <div class="search-spinner"></div>
+                <p class="search-text">正在仔细搜索该地点...</p>
+            </div>
+
+            <!-- 线索结果 -->
+            <div class="clue-result" id="clueResult">
+                <div class="clue-result-id" id="resultClueId">线索编号</div>
+                <div class="clue-result-content" id="resultClueContent">线索内容</div>
+                <div class="clue-result-actions">
+                    <button class="btn btn-success" onclick="recordClue()">记录线索</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+                </div>
             </div>
         </div>
     </div>
@@ -484,101 +611,114 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ==================== 线索数据 ====================
-        const cluesData = {
-            phase1: {
-                '客厅': [
-                    { id: 'A11', content: '走廊监控显示21:25沈明轩进入书房，21:58离开' },
-                    { id: 'A15', content: '别墅三层平面图' },
-                    { id: 'A16', content: '天气预报显示暴风雨封路' }
-                ],
-                '餐厅': [
-                    { id: 'A10', content: '沈伯渊日记最后一页提到"小雨走了，第二十个年头"' },
-                    { id: 'A12', content: '书房茶杯残留高浓度安眠药，有林雨薇指纹' },
-                    { id: 'A17', content: '沈伯渊病历显示不明原因体重下降' }
-                ],
-                '厨房': [
-                    { id: 'A06', content: '陈志远房间铁盒里的照片（小雨，6岁）和剪报碎片' },
-                    { id: 'A07', content: '苏小曼钱包里的《财经周刊》记者证' },
-                    { id: 'A08', content: '周海医药箱里的两瓶药粉和用药记录' }
-                ]
-            },
-            phase2: {
-                '书房': [
-                    { id: 'A01', content: '沈伯渊书房的遗嘱草稿，显示股份分配，有林雨薇的指甲划痕' },
-                    { id: 'A02', content: '沈明轩笔记本电脑里的5000万资金转出记录' },
-                    { id: 'B09', content: '书房地毯上的喷射状血迹' },
-                    { id: 'B10', content: '钢笔笔尖的微量血迹' }
-                ],
-                '主卧': [
-                    { id: 'A05', content: '林雨薇备用手机里的暧昧短信' },
-                    { id: 'B04', content: '林雨薇安眠药瓶少了两片' },
-                    { id: 'A14', content: '林雨薇珠宝盒里的钻石项链（M&Y刻字）' }
-                ],
-                '次卧A': [
-                    { id: 'A13', content: '沈明轩手机里的高利贷催债短信' },
-                    { id: 'B01', content: '沈明轩西装袖口的墨水痕迹' }
-                ],
-                '次卧B': [
-                    { id: 'A03', content: '沈明月行李箱底层的旧信，提到"明月是你的女儿"' },
-                    { id: 'B02', content: '沈明月录音笔录下的争吵声和呻吟声' }
-                ],
-                '管家房': [
-                    { id: 'B05', content: '陈志远围裙上的AB型血迹' },
-                    { id: 'B06', content: '苏小曼笔记本的调查记录' }
-                ]
-            },
-            phase3: {
-                '客房A': [
-                    { id: 'C05', content: '沈明月DNA检测报告（与赵天成亲子关系99.97%）' },
-                    { id: 'C06', content: '赵天成相册里的旧照片（与秀婷和明月）' }
-                ],
-                '客房B': [
-                    { id: 'C07', content: '苏小曼的完整调查报告' },
-                    { id: 'C08', content: '周海家人的资助协议' }
-                ],
-                '客房C': [
-                    { id: 'C09', content: '沈明轩和林雨薇的密谋信件' },
-                    { id: 'B03', content: '赵天成窃听器录音' }
-                ],
-                '储藏室': [
-                    { id: 'C01', content: '陈志远身份伪造，真实身份陈建国' },
-                    { id: 'C02', content: '2006年6月21日报纸剪报' },
-                    { id: 'C03', content: '保险柜中的赔偿清单和保密协议' },
-                    { id: 'C04', content: '张秀兰（陈建国妻子）的死亡证明' }
-                ],
-                '露台': [
-                    { id: 'B11', content: '走廊地毯的茶水渍和茶杯碎片' },
-                    { id: 'B12', content: '别墅门窗都从内部反锁' },
-                    { id: 'C10', content: '钢笔上的陈志远指纹' },
-                    { id: 'C11', content: '沈伯渊真正死因报告（颈动脉刺破）' },
-                    { id: 'C12', content: '陈志远茶杯里的安眠药成分' }
-                ]
-            }
+        // ==================== 线索数据配置 ====================
+        // 第一轮搜证（阶段2）：3个地点，每个地点从指定线索中随机1条
+        const round1Clues = {
+            '客厅': [
+                { id: 'A01', content: '沈伯渊书房的遗嘱草稿，显示股份分配，有林雨薇的指甲划痕' },
+                { id: 'A10', content: '沈伯渊日记最后一页提到"小雨走了，第二十个年头"' },
+                { id: 'A16', content: '天气预报显示暴风雨封路' }
+            ],
+            '餐厅': [
+                { id: 'A02', content: '沈明轩笔记本电脑里的5000万资金转出记录' },
+                { id: 'A13', content: '沈明轩手机里的高利贷催债短信' }
+            ],
+            '厨房': [
+                { id: 'A06', content: '陈志远房间铁盒里的照片（小雨，6岁）和剪报碎片' },
+                { id: 'A08', content: '周海医药箱里的两瓶药粉和用药记录' }
+            ]
+        };
+
+        // 第二轮搜证（阶段4）：5个地点，每个地点从指定线索中随机1条
+        const round2Clues = {
+            '书房': [
+                { id: 'B09', content: '书房地毯上的喷射状血迹' },
+                { id: 'B10', content: '钢笔笔尖的微量血迹' },
+                { id: 'B11', content: '走廊地毯的茶水渍和茶杯碎片' },
+                { id: 'B12', content: '别墅门窗都从内部反锁' }
+            ],
+            '主卧': [
+                { id: 'A05', content: '林雨薇备用手机里的暧昧短信' },
+                { id: 'A14', content: '林雨薇珠宝盒里的钻石项链（M&Y刻字）' },
+                { id: 'B04', content: '林雨薇安眠药瓶少了两片' }
+            ],
+            '次卧A': [
+                { id: 'A02', content: '沈明轩笔记本电脑里的5000万资金转出记录' },
+                { id: 'B01', content: '沈明轩西装袖口的墨水痕迹' },
+                { id: 'C09', content: '沈明轩和林雨薇的密谋信件' }
+            ],
+            '次卧B': [
+                { id: 'A03', content: '沈明月行李箱底层的旧信，提到"明月是你的女儿"' },
+                { id: 'B02', content: '沈明月录音笔录下的争吵声和呻吟声' }
+            ],
+            '管家房': [
+                { id: 'A06', content: '陈志远房间铁盒里的照片（小雨，6岁）和剪报碎片' },
+                { id: 'B05', content: '陈志远围裙上的AB型血迹' },
+                { id: 'C10', content: '钢笔上的陈志远指纹' }
+            ]
+        };
+
+        // 第三轮搜证（阶段6）：6个地点，每个地点从指定线索中随机1条
+        const round3Clues = {
+            '客房A': [
+                { id: 'A04', content: '赵天成公文包里的伯渊集团财务异常调查报告' },
+                { id: 'C02', content: '2006年6月21日报纸剪报' },
+                { id: 'C03', content: '保险柜中的赔偿清单和保密协议' }
+            ],
+            '客房B': [
+                { id: 'A08', content: '周海医药箱里的两瓶药粉和用药记录' },
+                { id: 'B07', content: '周海的安眠药处方' },
+                { id: 'C08', content: '周海家人的资助协议' }
+            ],
+            '客房C': [
+                { id: 'A09', content: '方晓晴U盘里的加密文件夹"2006.06.20"' },
+                { id: 'B08', content: '方晓晴破解的U盘文件（2006年事故）' }
+            ],
+            '储藏室': [
+                { id: 'C01', content: '陈志远身份伪造，真实身份陈建国' },
+                { id: 'C04', content: '张秀兰（陈建国妻子）的死亡证明' }
+            ],
+            '露台': [
+                { id: 'A16', content: '天气预报显示暴风雨封路' },
+                { id: 'B12', content: '别墅门窗都从内部反锁' }
+            ],
+            '书房（再次搜索）': [
+                { id: 'C10', content: '钢笔上的陈志远指纹' },
+                { id: 'C11', content: '沈伯渊真正死因报告（颈动脉刺破）' },
+                { id: 'C12', content: '陈志远茶杯里的安眠药成分' }
+            ]
         };
 
         // ==================== 地点图标映射 ====================
         const locationIcons = {
-            '客厅': '🛋️',
-            '餐厅': '🍽️',
-            '厨房': '🍳',
-            '书房': '📚',
-            '主卧': '🛏️',
-            '次卧A': '🛏️',
-            '次卧B': '🛏️',
-            '管家房': '🚪',
-            '客房A': '🛏️',
-            '客房B': '🛏️',
-            '客房C': '🛏️',
-            '储藏室': '📦',
-            '露台': '🌙'
+            '客厅': '\uD83D\uDECB\uFE0F',
+            '餐厅': '\uD83C\uDF7D\uFE0F',
+            '厨房': '\uD83C\uDF73',
+            '书房': '\uD83D\uDCDA',
+            '主卧': '\uD83D\uDECF\uFE0F',
+            '次卧A': '\uD83D\uDECF\uFE0F',
+            '次卧B': '\uD83D\uDECF\uFE0F',
+            '管家房': '\uD83D\uDEAA',
+            '客房A': '\uD83D\uDECF\uFE0F',
+            '客房B': '\uD83D\uDECF\uFE0F',
+            '客房C': '\uD83D\uDECF\uFE0F',
+            '储藏室': '\uD83D\uDCE6',
+            '露台': '\uD83C\uDF19',
+            '书房（再次搜索）': '\uD83D\uDCDA'
         };
 
         // ==================== 当前玩家角色 ====================
-        // 从URL参数或localStorage获取当前角色
         function getCurrentRole() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('role') || localStorage.getItem('currentRole') || 'shenmingxuan';
+        }
+
+        // ==================== 获取当前搜证轮次的数据 ====================
+        function getCurrentRoundData(phase) {
+            if (phase === 2) return { round: 1, clues: round1Clues, locations: Object.keys(round1Clues) };
+            if (phase === 4) return { round: 2, clues: round2Clues, locations: Object.keys(round2Clues) };
+            if (phase === 6) return { round: 3, clues: round3Clues, locations: Object.keys(round3Clues) };
+            return null;
         }
 
         // ==================== 更新阶段显示 ====================
@@ -586,18 +726,36 @@
             const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
             const badge = document.getElementById('phaseBadge');
             const desc = document.getElementById('phaseDesc');
+            const typeLabel = document.getElementById('phaseTypeLabel');
+            const phaseDisplay = document.getElementById('phaseDisplay');
+            const locationsSection = document.getElementById('locationsSection');
 
             const phaseInfo = {
-                0: { text: '等待开始', class: 'waiting', desc: '请等待DM开始游戏' },
-                1: { text: '第一阶段', class: 'phase1', desc: '可搜索：客厅、餐厅、厨房' },
-                2: { text: '第二阶段', class: 'phase2', desc: '可搜索：书房、主卧、次卧A、次卧B、管家房' },
-                3: { text: '第三阶段', class: 'phase3', desc: '可搜索：客房A、客房B、客房C、储藏室、露台' }
+                0: { text: '等待开始', class: 'waiting', desc: '请等待DM开始游戏', type: '等待中', typeClass: '', isSearch: false },
+                1: { text: '第一阶段', class: 'phase1', desc: '请阅读蓝色剧本（角色页面）', type: '主阶段', typeClass: 'main', isSearch: false },
+                2: { text: '第一轮搜证', class: 'phase2', desc: '可搜索3个地点：客厅、餐厅、厨房', type: '搜证阶段', typeClass: 'search', isSearch: true },
+                3: { text: '第二阶段', class: 'phase3', desc: '请阅读黄色剧本（角色页面）', type: '主阶段', typeClass: 'main', isSearch: false },
+                4: { text: '第二轮搜证', class: 'phase4', desc: '可搜索5个地点：书房、主卧、次卧A、次卧B、管家房', type: '搜证阶段', typeClass: 'search', isSearch: true },
+                5: { text: '第三阶段', class: 'phase5', desc: '请阅读红色剧本（角色页面）', type: '主阶段', typeClass: 'main', isSearch: false },
+                6: { text: '第三轮搜证', class: 'phase6', desc: '可搜索6个地点：客房A、客房B、客房C、储藏室、露台、书房（再次）', type: '搜证阶段', typeClass: 'search', isSearch: true }
             };
 
             const info = phaseInfo[currentPhase] || phaseInfo[0];
             badge.textContent = info.text;
             badge.className = 'phase-badge ' + info.class;
             desc.textContent = info.desc;
+            typeLabel.textContent = info.type;
+            typeLabel.className = 'phase-type-label ' + info.typeClass;
+
+            // 更新阶段显示框的边框颜色
+            phaseDisplay.className = 'phase-display ' + (info.typeClass === 'search' ? 'search-phase' : info.typeClass === 'main' ? 'main-phase' : 'waiting');
+
+            // 更新地点区域的主题色
+            if (info.isSearch) {
+                locationsSection.classList.add('search-active');
+            } else {
+                locationsSection.classList.remove('search-active');
+            }
 
             // 更新可搜索地点
             updateLocations(currentPhase);
@@ -606,103 +764,128 @@
         // ==================== 更新地点列表 ====================
         function updateLocations(phase) {
             const grid = document.getElementById('locationsGrid');
-            const searchedLocations = JSON.parse(localStorage.getItem('searchedLocations') || '[]');
+            const roundData = getCurrentRoundData(phase);
 
-            let locations = [];
-            if (phase === 1) {
-                locations = ['客厅', '餐厅', '厨房'];
-            } else if (phase === 2) {
-                locations = ['书房', '主卧', '次卧A', '次卧B', '管家房'];
-            } else if (phase === 3) {
-                locations = ['客房A', '客房B', '客房C', '储藏室', '露台'];
-            }
-
-            if (locations.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">游戏尚未开始，请等待DM开启第一阶段</div>';
+            // 如果不是搜证阶段，显示等待信息
+            if (!roundData) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">当前不是搜证阶段，请等待DM开启搜证</div>';
                 return;
             }
 
-            grid.innerHTML = locations.map(loc => {
+            // 获取已搜索的地点（按轮次存储）
+            const searchedKey = 'searchedLocations_round' + roundData.round;
+            const searchedLocations = JSON.parse(localStorage.getItem(searchedKey) || '[]');
+
+            grid.innerHTML = roundData.locations.map(loc => {
                 const isSearched = searchedLocations.includes(loc);
                 return `
-                    <div class="location-card ${isSearched ? 'searched' : ''}" onclick="openLocation('${loc}')">
-                        <div class="location-icon">${locationIcons[loc] || '📍'}</div>
+                    <div class="location-card ${isSearched ? 'searched' : ''}" ${!isSearched ? `onclick="searchLocation('${loc}')"` : ''}>
+                        <div class="location-icon">${locationIcons[loc] || '\uD83D\uDCCD'}</div>
                         <div class="location-name">${loc}</div>
-                        <div class="location-desc">点击搜索线索</div>
+                        <div class="location-desc">${isSearched ? '已搜索完毕' : '点击搜索线索'}</div>
                     </div>
                 `;
             }).join('');
         }
 
-        // ==================== 打开地点线索弹窗 ====================
-        function openLocation(locationName) {
+        // ==================== 当前弹窗相关的线索数据 ====================
+        let currentModalClue = null;
+        let currentModalLocation = '';
+
+        // ==================== 搜索地点 ====================
+        function searchLocation(locationName) {
             const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
-            const phaseKey = 'phase' + currentPhase;
-            const clues = cluesData[phaseKey]?.[locationName] || [];
-            const unlockedClues = JSON.parse(localStorage.getItem('unlockedClues') || '[]');
+            const roundData = getCurrentRoundData(currentPhase);
+            if (!roundData) return;
 
-            document.getElementById('modalTitle').textContent = locationName + ' - 线索';
-            const clueList = document.getElementById('clueList');
-
-            if (clues.length === 0) {
-                clueList.innerHTML = '<div class="no-clues">该地点暂无线索</div>';
-            } else {
-                clueList.innerHTML = clues.map(clue => {
-                    const isUnlocked = unlockedClues.includes(clue.id);
-                    return `
-                        <div class="clue-item">
-                            <div class="clue-item-header">
-                                <span class="clue-id">${clue.id}</span>
-                                <span class="clue-status ${isUnlocked ? 'unlocked' : 'locked'}">
-                                    ${isUnlocked ? '已发放' : '未发放'}
-                                </span>
-                            </div>
-                            <div class="clue-text">${clue.content}</div>
-                            <div class="clue-actions">
-                                ${isUnlocked ? `
-                                    <button class="btn btn-success" onclick="recordClue('${clue.id}', '${clue.content.replace(/'/g, "\\'")}')">
-                                        记录线索
-                                    </button>
-                                ` : `
-                                    <button class="btn btn-secondary" disabled>等待DM发放</button>
-                                `}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+            // 检查是否已经搜索过
+            const searchedKey = 'searchedLocations_round' + roundData.round;
+            const searchedLocations = JSON.parse(localStorage.getItem(searchedKey) || '[]');
+            if (searchedLocations.includes(locationName)) {
+                showToast('该地点已经搜索过了');
+                return;
             }
 
-            document.getElementById('clueModal').classList.add('active');
+            // 打开弹窗
+            const modal = document.getElementById('clueModal');
+            const animation = document.getElementById('searchAnimation');
+            const result = document.getElementById('clueResult');
+            const modalTitle = document.getElementById('modalTitle');
 
-            // 标记为已搜索
-            const searchedLocations = JSON.parse(localStorage.getItem('searchedLocations') || '[]');
-            if (!searchedLocations.includes(locationName)) {
-                searchedLocations.push(locationName);
-                localStorage.setItem('searchedLocations', JSON.stringify(searchedLocations));
+            modalTitle.textContent = locationName + ' - 搜索中';
+            animation.style.display = 'block';
+            result.classList.remove('show');
+            modal.classList.add('active');
+
+            currentModalLocation = locationName;
+
+            // 模拟搜索延迟（1.5秒）
+            setTimeout(() => {
+                // 从该地点的线索池中随机选择一条
+                const clues = roundData.clues[locationName];
+                const randomClue = clues[Math.floor(Math.random() * clues.length)];
+                currentModalClue = randomClue;
+
+                // 显示结果
+                animation.style.display = 'none';
+                document.getElementById('resultClueId').textContent = randomClue.id;
+                document.getElementById('resultClueContent').textContent = randomClue.content;
+                result.classList.add('show');
+                modalTitle.textContent = locationName + ' - 发现线索！';
+
+                // 标记为已搜索
+                if (!searchedLocations.includes(locationName)) {
+                    searchedLocations.push(locationName);
+                    localStorage.setItem(searchedKey, JSON.stringify(searchedLocations));
+                }
+
+                // 记录该地点发放的线索（按轮次）
+                const distributedKey = 'distributedClues_round' + roundData.round;
+                const distributedClues = JSON.parse(localStorage.getItem(distributedKey) || '[]');
+                if (!distributedClues.some(c => c.id === randomClue.id)) {
+                    distributedClues.push({ id: randomClue.id, content: randomClue.content, location: locationName });
+                    localStorage.setItem(distributedKey, JSON.stringify(distributedClues));
+                }
+
+                // 更新地点显示
                 updateLocations(currentPhase);
-            }
+            }, 1500);
         }
 
         // ==================== 关闭弹窗 ====================
         function closeModal() {
             document.getElementById('clueModal').classList.remove('active');
+            currentModalClue = null;
+            currentModalLocation = '';
         }
 
         // ==================== 记录线索 ====================
-        function recordClue(clueId, clueContent) {
+        function recordClue() {
+            if (!currentModalClue) return;
+
             const currentRole = getCurrentRole();
             const myClues = JSON.parse(localStorage.getItem('playerClues_' + currentRole) || '[]');
 
             // 检查是否已记录
-            if (myClues.some(c => c.id === clueId)) {
+            if (myClues.some(c => c.id === currentModalClue.id)) {
                 showToast('该线索已记录');
+                closeModal();
                 return;
             }
 
-            myClues.push({ id: clueId, content: clueContent });
+            // 记录线索，包含轮次信息
+            const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
+            const roundNum = currentPhase === 2 ? 1 : currentPhase === 4 ? 2 : 3;
+            myClues.push({
+                id: currentModalClue.id,
+                content: currentModalClue.content,
+                location: currentModalLocation,
+                round: roundNum
+            });
             localStorage.setItem('playerClues_' + currentRole, JSON.stringify(myClues));
 
-            showToast('线索已记录');
+            showToast('线索已记录！');
+            closeModal();
             loadMyClues();
         }
 
@@ -717,12 +900,37 @@
                 return;
             }
 
-            container.innerHTML = myClues.map(clue => `
-                <div class="my-clue-card">
-                    <div class="my-clue-id">${clue.id}</div>
-                    <div class="my-clue-content">${clue.content}</div>
-                </div>
-            `).join('');
+            // 按轮次分组
+            const grouped = { 1: [], 2: [], 3: [] };
+            myClues.forEach(clue => {
+                const round = clue.round || 1;
+                if (!grouped[round]) grouped[round] = [];
+                grouped[round].push(clue);
+            });
+
+            let html = '';
+            const roundNames = { 1: '第一轮搜证', 2: '第二轮搜证', 3: '第三轮搜证' };
+
+            for (let r = 1; r <= 3; r++) {
+                if (grouped[r] && grouped[r].length > 0) {
+                    html += `
+                        <div class="clue-round-group">
+                            <div class="clue-round-title">${roundNames[r]} (${grouped[r].length}条)</div>
+                            <div class="my-clues-grid">
+                                ${grouped[r].map(clue => `
+                                    <div class="my-clue-card collapsed" onclick="this.classList.toggle('collapsed')">
+                                        <div class="my-clue-id">${clue.id}</div>
+                                        <div class="my-clue-location">发现地点：${clue.location || '未知'}</div>
+                                        <div class="my-clue-content">${clue.content}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            container.innerHTML = html;
         }
 
         // ==================== 显示提示 ====================
@@ -750,6 +958,9 @@
         window.addEventListener('storage', function(e) {
             if (e.key === 'currentPhase') {
                 updatePhaseDisplay();
+            }
+            if (e.key.startsWith('playerClues_')) {
+                loadMyClues();
             }
         });
 

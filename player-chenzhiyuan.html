@@ -148,12 +148,22 @@
         }
 
         .dot.phase1 { background: #2980b9; }
-        .dot.phase2 { background: #d4ac0d; }
-        .dot.phase3 { background: #c0392b; }
+        .dot.phase2 { background: #27ae60; }
+        .dot.phase3 { background: #d4ac0d; }
+        .dot.phase4 { background: #27ae60; }
+        .dot.phase5 { background: #c0392b; }
+        .dot.phase6 { background: #27ae60; }
         .dot.inactive { background: #333; opacity: 0.5; }
         .dot.active {
             box-shadow: 0 0 20px currentColor;
-            transform: scale(1.1);
+            transform: scale(1.15);
+        }
+        .dot.completed {
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+        .dot.completed::after {
+            content: "\u2713";
+            font-size: 1.2rem;
         }
 
         .dot-label {
@@ -495,17 +505,35 @@
             </div>
             <div class="phase-dot">
                 <div class="dot phase2" id="dot2">2</div>
-                <span class="dot-label">第二阶段</span>
+                <span class="dot-label">第一轮搜证</span>
             </div>
             <div class="phase-dot">
                 <div class="dot phase3" id="dot3">3</div>
+                <span class="dot-label">第二阶段</span>
+            </div>
+            <div class="phase-dot">
+                <div class="dot phase4" id="dot4">4</div>
+                <span class="dot-label">第二轮搜证</span>
+            </div>
+            <div class="phase-dot">
+                <div class="dot phase5" id="dot5">5</div>
                 <span class="dot-label">第三阶段</span>
             </div>
+            <div class="phase-dot">
+                <div class="dot phase6" id="dot6">6</div>
+                <span class="dot-label">第三轮搜证</span>
+            </div>
+        </div>
+
+        <!-- 搜证阶段提示 -->
+        <div class="search-hint" id="searchHint" style="display: none;">
+            <strong>🔍 当前是搜证阶段</strong><br>
+            <span id="searchHintText">请前往"证据搜索"页面搜索线索</span>
         </div>
 
         <div class="script-section phase1" id="phase1">
             <div class="script-header">
-                <h2>第一阶段剧本</h2>
+                <h2>第一阶段剧本（蓝色）</h2>
                 <span class="lock-icon" id="lock1">🔓</span>
             </div>
             <div class="script-content">
@@ -523,10 +551,10 @@
             </div>
         </div>
 
-        <div class="script-section phase2 locked" id="phase2">
+        <div class="script-section phase2 locked" id="phase3">
             <div class="script-header">
-                <h2>第二阶段剧本</h2>
-                <span class="lock-icon" id="lock2">🔒</span>
+                <h2>第二阶段剧本（黄色）</h2>
+                <span class="lock-icon" id="lock5">🔒</span>
             </div>
             <div class="script-content">
                 <p>更多的记忆涌上心头...</p>
@@ -554,7 +582,7 @@
         <div class="script-section phase3 locked" id="phase3">
             <div class="script-header">
                 <h2>第三阶段剧本（凶手）</h2>
-                <span class="lock-icon" id="lock3">🔒</span>
+                <span class="lock-icon" id="lock5">🔒</span>
             </div>
             <div class="script-content">
                 <p>真相如同一把利刃，剖开了所有的伪装...</p>
@@ -634,22 +662,59 @@
         // ==================== 阶段管理 ====================
         function updatePhase() {
             const currentPhase = parseInt(localStorage.getItem('currentPhase') || '0');
-            
-            for (let i = 1; i <= 3; i++) {
+            const searchPhases = [2, 4, 6];
+
+            // 更新阶段指示器（6个阶段）
+            for (let i = 1; i <= 6; i++) {
                 const dot = document.getElementById('dot' + i);
-                const section = document.getElementById('phase' + i);
-                const lock = document.getElementById('lock' + i);
-                
-                if (i <= currentPhase) {
-                    dot.classList.remove('inactive');
+                if (!dot) continue;
+
+                dot.classList.remove('active', 'inactive', 'completed');
+
+                if (i < currentPhase) {
+                    dot.classList.add('completed');
+                    dot.textContent = '';
+                } else if (i === currentPhase) {
                     dot.classList.add('active');
-                    section.classList.remove('locked');
-                    lock.textContent = '🔓';
+                    dot.textContent = i;
                 } else {
                     dot.classList.add('inactive');
-                    dot.classList.remove('active');
-                    section.classList.add('locked');
-                    lock.textContent = '🔒';
+                    dot.textContent = i;
+                }
+            }
+
+            // 更新剧本区域显示
+            const scriptSections = [
+                { phaseId: 1, sectionId: 'phase1', lockId: 'lock1' },
+                { phaseId: 3, sectionId: 'phase3', lockId: 'lock3' },
+                { phaseId: 5, sectionId: 'phase5', lockId: 'lock5' }
+            ];
+
+            scriptSections.forEach(item => {
+                const section = document.getElementById(item.sectionId);
+                const lock = document.getElementById(item.lockId);
+                if (section && lock) {
+                    if (currentPhase >= item.phaseId) {
+                        section.classList.remove('locked');
+                        lock.textContent = '🔓';
+                    } else {
+                        section.classList.add('locked');
+                        lock.textContent = '🔒';
+                    }
+                }
+            });
+
+            // 搜证阶段提示
+            const searchHint = document.getElementById('searchHint');
+            const searchHintText = document.getElementById('searchHintText');
+            if (searchHint && searchHintText) {
+                if (searchPhases.includes(currentPhase)) {
+                    searchHint.style.display = 'block';
+                    const roundNum = currentPhase === 2 ? 1 : currentPhase === 4 ? 2 : 3;
+                    const locationCount = roundNum === 1 ? 3 : roundNum === 2 ? 5 : 6;
+                    searchHintText.textContent = '第' + roundNum + '轮搜证进行中，请前往"证据搜索"页面搜索' + locationCount + '个地点';
+                } else {
+                    searchHint.style.display = 'none';
                 }
             }
         }
