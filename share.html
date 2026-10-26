@@ -1,0 +1,3465 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>AFTERSHOCK Design Team Weekly Report 2026-10-26</title>
+
+<style>
+:root {
+  --canvas:#f2f4f7;
+  --surface:#fff;
+  --surface-soft:#f7f8fa;
+  --text:#18212f;
+  --muted:#6c7888;
+  --line:#e1e5eb;
+  --red:#cf263c;
+  --red-dark:#a91f32;
+  --red-soft:#fff0f2;
+  --green:#157b52;
+  --green-soft:#e8f6ef;
+  --amber:#8b5c0a;
+  --amber-soft:#fff4dd;
+  --shadow:0 4px 16px rgba(20,32,48,.035);
+}
+
+* { box-sizing:border-box; }
+
+html {
+  scroll-behavior:smooth;
+  scroll-padding-top:24px;
+}
+
+body {
+  margin:0;
+  background:var(--canvas);
+  color:var(--text);
+  font:14px/1.65 Inter,"Segoe UI","Microsoft YaHei",sans-serif;
+}
+
+a {
+  color:inherit;
+  text-decoration:none;
+}
+
+button {
+  cursor:pointer;
+  border:0;
+  border-radius:8px;
+  padding:10px 14px;
+  background:var(--red);
+  color:white;
+  font-weight:650;
+}
+
+button:hover { background:var(--red-dark); }
+
+.hero {
+  background:#111720;
+  color:#f6f8fb;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero:before {
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:7px;
+  height:100%;
+  background:var(--red);
+}
+
+.hero-inner {
+  max-width:1500px;
+  margin:auto;
+  padding:34px 38px 0;
+}
+
+.topline {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+  border-bottom:1px solid #2b3440;
+  padding-bottom:18px;
+}
+
+.brand {
+  font-size:13px;
+  font-weight:850;
+  letter-spacing:1.8px;
+}
+
+.brand-accent { color:#ff596d; }
+
+.brand-sub {
+  color:#8c9aac;
+  font-weight:500;
+  letter-spacing:1px;
+  margin-left:10px;
+}
+
+.eyebrow {
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:2px;
+  color:#ff6678;
+  text-transform:uppercase;
+}
+
+.report-status {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 11px;
+  border:1px solid #3d4653;
+  border-radius:7px;
+  font-size:11px;
+  font-weight:750;
+}
+
+.status-dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#f1b953;
+}
+
+.report-status.complete .status-dot { background:#4ed39b; }
+
+.hero-main {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:30px;
+  padding:30px 0 26px;
+}
+
+.hero-copy { max-width:850px; }
+
+.hero h1 {
+  font-size:clamp(30px,3.7vw,48px);
+  line-height:1.18;
+  letter-spacing:-1.3px;
+  margin:12px 0 10px;
+}
+
+.hero-description {
+  font-size:14px;
+  color:#b5bfcd;
+  max-width:760px;
+}
+
+.period-card {
+  min-width:220px;
+  border-left:2px solid var(--red);
+  padding:6px 0 6px 16px;
+}
+
+.period-card span {
+  display:block;
+  font-size:10px;
+  color:#8e9bac;
+  letter-spacing:1.3px;
+  font-weight:750;
+}
+
+.period-card strong {
+  display:block;
+  font-size:17px;
+  margin:6px 0;
+}
+
+.period-card small {
+  font-size:11px;
+  color:#8e9bac;
+}
+
+.hero-stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  background:#303946;
+  border-top:1px solid #303946;
+}
+
+.hero-stat {
+  padding:19px 22px;
+  background:#171f2a;
+  min-width:0;
+}
+
+.hero-stat span {
+  display:block;
+  color:#a2afbf;
+  font-size:11px;
+}
+
+.hero-stat strong {
+  display:block;
+  font-size:31px;
+  line-height:1.3;
+  margin:5px 0;
+  color:#fff;
+}
+
+.hero-stat small {
+  font-size:10px;
+  color:#7f8c9d;
+}
+
+.hero-stat.primary-stat strong { color:#ff6376; }
+.hero-stat.warning-stat strong { color:#ffd080; }
+
+.layout {
+  max-width:1500px;
+  margin:auto;
+  padding:28px;
+  display:grid;
+  grid-template-columns:230px minmax(0,1fr);
+  gap:24px;
+  align-items:start;
+}
+
+.toc {
+  position:sticky;
+  top:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.toc-heading {
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:1.2px;
+  color:#758195;
+  margin-bottom:13px;
+}
+
+.toc a {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 8px;
+  border-radius:7px;
+  font-size:12px;
+  color:#536175;
+  margin:2px 0;
+}
+
+.toc a:hover,
+.toc a.active {
+  background:var(--red-soft);
+  color:var(--red);
+  font-weight:750;
+}
+
+.nav-dot {
+  width:8px;
+  height:8px;
+  border-radius:3px;
+  flex-shrink:0;
+}
+
+.toc-divider {
+  height:1px;
+  background:var(--line);
+  margin:10px 0;
+}
+
+.content { min-width:0; }
+
+.overview-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:15px;
+  flex-wrap:wrap;
+  margin:0 0 15px;
+}
+
+.overview-heading h2 {
+  font-size:21px;
+  margin:0;
+}
+
+.overview-heading p {
+  font-size:12px;
+  color:var(--muted);
+  margin:4px 0 0;
+}
+
+.overview-tag {
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:#748094;
+}
+
+.data-alert {
+  display:flex;
+  gap:13px;
+  align-items:flex-start;
+  background:#fff8e8;
+  border:1px solid #f0ddb0;
+  border-left:4px solid #e3a52e;
+  border-radius:9px;
+  padding:14px 16px;
+  margin-bottom:17px;
+}
+
+.data-alert.complete {
+  background:#eef9f3;
+  border-color:#c8e9d8;
+  border-left-color:#299b69;
+}
+
+.alert-icon {
+  width:25px;
+  height:25px;
+  flex-shrink:0;
+  border-radius:7px;
+  background:#f8e8c3;
+  color:#88580b;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+}
+
+.data-alert.complete .alert-icon {
+  background:#d7f0e2;
+  color:#157b52;
+}
+
+.alert-content strong {
+  display:block;
+  font-size:12px;
+  margin-bottom:3px;
+}
+
+.alert-content p {
+  font-size:11px;
+  color:#775e31;
+  margin:0;
+}
+
+.data-alert.complete .alert-content p { color:#386b53; }
+
+.overview-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.overview-card {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:15px 16px;
+  box-shadow:var(--shadow);
+  min-width:0;
+}
+
+.overview-card .metric-label {
+  font-size:11px;
+  color:var(--muted);
+  display:block;
+}
+
+.overview-card strong {
+  display:block;
+  font-size:27px;
+  margin:7px 0 5px;
+}
+
+.overview-card small {
+  font-size:10px;
+  color:#929baa;
+}
+
+.mini-progress {
+  height:4px;
+  background:#e9edf2;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:9px;
+}
+
+.mini-progress span {
+  display:block;
+  height:100%;
+  background:#268c60;
+  border-radius:20px;
+}
+
+.summary-panel,
+.person-section,
+.team-notes {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+}
+
+.summary-panel {
+  padding:18px 19px;
+  margin-bottom:27px;
+}
+
+.panel-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:13px;
+}
+
+.panel-heading h3 { font-size:14px; margin:0; }
+
+.panel-heading p {
+  font-size:11px;
+  color:var(--muted);
+  margin:4px 0 0;
+}
+
+.summary-table-wrap { overflow-x:auto; }
+
+.summary-table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:650px;
+}
+
+.summary-table th,
+.summary-table td {
+  text-align:left;
+  padding:12px 10px;
+  border-bottom:1px solid #edf0f4;
+  vertical-align:middle;
+}
+
+.summary-table th {
+  font-size:10px;
+  font-weight:800;
+  color:#7d8999;
+  background:#f8f9fb;
+}
+
+.summary-table tbody tr:last-child td { border-bottom:0; }
+.summary-table tbody tr:hover td { background:#fafbfd; }
+
+.member-link {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:175px;
+}
+
+.table-avatar {
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:850;
+  flex-shrink:0;
+}
+
+.member-link strong { display:block; font-size:12px; }
+
+.member-link small {
+  display:block;
+  max-width:240px;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:2px;
+}
+
+.person-section {
+  margin:24px 0;
+  overflow:hidden;
+  scroll-margin-top:20px;
+}
+
+.person-heading {
+  padding:23px 24px 18px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.person-heading-main {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
+.person-avatar {
+  width:55px;
+  height:55px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:17px;
+  flex-shrink:0;
+}
+
+.person-heading-info { min-width:0; }
+
+.person-heading-info .eyebrow {
+  font-size:9px;
+  letter-spacing:1.5px;
+}
+
+.person-heading h2 {
+  font-size:23px;
+  margin:4px 0 3px;
+}
+
+.person-role {
+  font-size:12px;
+  color:#455267;
+  font-weight:700;
+  margin:0;
+}
+
+.person-desc {
+  font-size:11px;
+  color:var(--muted);
+  margin:5px 0 0;
+}
+
+.person-kpi-completion {
+  min-width:115px;
+  border-left:1px solid var(--line);
+  padding-left:18px;
+}
+
+.person-kpi-completion>strong {
+  font-size:24px;
+  display:block;
+}
+
+.person-kpi-completion>strong span {
+  font-size:14px;
+  color:#929baa;
+}
+
+.person-kpi-completion>small {
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.member-stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  background:var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.member-stats>div {
+  background:#fafbfc;
+  padding:13px 17px;
+  min-width:0;
+}
+
+.member-stats span {
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.member-stats strong {
+  display:block;
+  font-size:21px;
+  margin:4px 0;
+}
+
+.member-stats small {
+  font-size:10px;
+  color:#929baa;
+}
+
+.report-section { padding:23px 24px 5px; }
+.report-section+.report-section { border-top:1px solid #edf0f4; }
+
+.report-section-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.report-section-title {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.section-number {
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  background:var(--red-soft);
+  color:var(--red);
+  font-size:11px;
+  font-weight:900;
+  flex-shrink:0;
+}
+
+.report-section-head h3 {
+  font-size:15px;
+  margin:0;
+}
+
+.report-section-head p {
+  font-size:11px;
+  color:var(--muted);
+  margin:3px 0 0;
+}
+
+.section-count {
+  font-size:10px;
+  font-weight:750;
+  color:#69778a;
+  background:#f1f3f6;
+  border-radius:6px;
+  padding:5px 8px;
+  white-space:nowrap;
+}
+
+.r-kpi-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+
+.r-kpi {
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  background:#fff;
+  min-width:0;
+}
+
+.r-kpi-top,
+.r-item-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.r-kpi-title {
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  min-width:0;
+}
+
+.r-kpi-index {
+  width:24px;
+  height:24px;
+  border-radius:6px;
+  background:#f1f3f6;
+  color:#68758a;
+  font-size:9px;
+  font-weight:900;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+
+.r-kpi h4 {
+  font-size:12px;
+  line-height:1.5;
+  margin:2px 0 0;
+  overflow-wrap:anywhere;
+}
+
+.r-badge {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  font-weight:850;
+  border-radius:5px;
+  padding:5px 7px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.r-badge.good { color:var(--green); background:var(--green-soft); }
+.r-badge.warn { color:var(--amber); background:var(--amber-soft); }
+.r-badge.bad { color:#b92237; background:#ffebee; }
+.r-badge.neutral { color:#68758a; background:#eef1f5; }
+
+.r-kpi-data {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) 65px;
+  gap:7px;
+  margin-top:13px;
+}
+
+.r-kpi-data>div {
+  border-radius:7px;
+  background:#f6f7f9;
+  padding:10px;
+  min-width:0;
+}
+
+.r-kpi-data span {
+  display:block;
+  font-size:9px;
+  color:#7b8797;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.r-kpi-data strong {
+  display:block;
+  font-size:17px;
+  line-height:1.3;
+  overflow-wrap:anywhere;
+}
+
+.r-kpi-target strong { color:#34445b; }
+
+.r-kpi-actual {
+  background:#f0f8f3!important;
+  border:1px solid #d8eddf;
+}
+
+.r-kpi-actual strong { color:#237c51; }
+.r-kpi-actual strong.unfilled { color:#9099a6; font-size:12px; }
+
+.r-kpi-weight strong { font-size:18px; }
+
+.r-kpi-weight strong small {
+  font-size:10px;
+  color:var(--muted);
+  margin-left:1px;
+}
+
+.r-comment {
+  margin-top:10px;
+  padding:10px 11px;
+  background:#fafbfc;
+  border-left:2px solid #d8dee7;
+  border-radius:0 6px 6px 0;
+}
+
+.r-comment span {
+  display:block;
+  font-size:9px;
+  font-weight:850;
+  color:#758195;
+  margin-bottom:4px;
+}
+
+.r-comment p {
+  font-size:11px;
+  line-height:1.65;
+  color:#4f5d70;
+  margin:0;
+  overflow-wrap:anywhere;
+}
+
+.r-item {
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  background:#fff;
+  margin-bottom:10px;
+  min-width:0;
+}
+
+.r-item-head {
+  padding-bottom:11px;
+  border-bottom:1px solid #edf0f4;
+}
+
+.r-item h4 {
+  font-size:12px;
+  line-height:1.5;
+  margin:0;
+  overflow-wrap:anywhere;
+}
+
+.r-subtitle {
+  font-size:10px;
+  color:var(--muted);
+  margin:5px 0 0;
+}
+
+.r-fields {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-top:11px;
+}
+
+.r-field {
+  padding:10px;
+  background:#f7f8fa;
+  border-radius:7px;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.r-field>span {
+  display:block;
+  font-size:9px;
+  font-weight:750;
+  color:#7d8999;
+  margin-bottom:5px;
+}
+
+.r-field>div {
+  font-size:11px;
+  line-height:1.65;
+  color:#354255;
+  overflow-wrap:anywhere;
+}
+
+.empty-state {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:25px 15px;
+  border:1px dashed #d7dde5;
+  border-radius:9px;
+  background:#fafbfc;
+  text-align:center;
+}
+
+.empty-state strong {
+  font-size:12px;
+  color:#47566a;
+}
+
+.empty-state span {
+  font-size:10px;
+  color:#8b96a5;
+  max-width:450px;
+}
+
+.completed-note {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  background:#edf8f2;
+  border-radius:7px;
+  color:#327453;
+  font-size:11px;
+  margin:8px 0 12px;
+}
+
+.completed-icon {
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#d5efdf;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:900;
+}
+
+.team-notes {
+  padding:20px;
+  margin:24px 0;
+}
+
+.team-notes h2 {
+  font-size:16px;
+  margin:0 0 10px;
+}
+
+.team-notes-content {
+  font-size:12px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+
+.footer {
+  max-width:1500px;
+  margin:auto;
+  padding:0 28px 30px;
+  color:#7c889a;
+  font-size:10px;
+}
+
+@media(max-width:1150px) {
+  .layout { grid-template-columns:200px minmax(0,1fr); gap:15px; padding:20px 15px; }
+  .overview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .r-kpi-grid { grid-template-columns:1fr; }
+  .hero-inner { padding-left:25px; padding-right:25px; }
+}
+
+@media(max-width:850px) {
+  .layout { grid-template-columns:1fr; }
+  .toc { position:static; }
+  .toc-links { display:flex; flex-wrap:wrap; gap:3px; }
+  .toc a { padding:7px; }
+  .hero-main { align-items:flex-start; flex-direction:column; gap:20px; }
+  .period-card { min-width:0; width:100%; }
+  .person-heading { align-items:flex-start; }
+}
+
+@media(max-width:600px) {
+  .hero-inner { padding:20px 15px 0; }
+  .hero h1 { font-size:30px; }
+  .hero-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero-stat { padding:14px; }
+  .hero-stat strong { font-size:25px; }
+  .layout { padding:12px 9px 25px; }
+  .overview-grid { gap:7px; }
+  .overview-card { padding:12px; }
+  .overview-card strong { font-size:23px; }
+  .person-section { margin:15px 0; }
+  .person-heading { padding:16px 13px 14px; gap:12px; }
+  .person-heading-main { gap:10px; }
+  .person-avatar { width:43px; height:43px; font-size:14px; }
+  .person-heading h2 { font-size:20px; }
+  .person-kpi-completion { min-width:75px; padding-left:10px; }
+  .person-kpi-completion>strong { font-size:20px; }
+  .person-kpi-completion>small { font-size:9px; }
+  .member-stats>div { padding:10px; }
+  .member-stats strong { font-size:19px; }
+  .report-section { padding:17px 12px 3px; }
+  .r-kpi-data { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 53px; }
+  .r-kpi-data>div { padding:8px; }
+  .r-kpi-data strong { font-size:15px; }
+  .r-fields { grid-template-columns:1fr; }
+  .summary-panel { padding:12px; }
+  .footer { padding:0 12px 20px; }
+}
+
+@media print {
+  @page { size:A4; margin:11mm; }
+  body { background:#fff; color:#18212f; font-size:10pt; }
+  .hero { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .toc { display:none!important; }
+  .layout { display:block; max-width:none; padding:8px 0; }
+  .hero-inner { padding:20px 22px 0; }
+  .hero-stats,.hero-stat,.person-section,.person-heading,.member-stats,
+  .r-kpi,.r-item,.data-alert,.overview-card,.summary-panel {
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .person-section { box-shadow:none; margin:13px 0; break-before:page; overflow:visible; }
+  .r-kpi,.r-item,.overview-card,.summary-panel { break-inside:avoid; }
+  .footer { padding:8px 0; }
+  a { color:inherit; text-decoration:none; }
+  .r-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .overview-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}
+</style>
+</head>
+
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="topline">
+      <div class="brand">
+        AFTER<span class="brand-accent">SHOCK</span>
+        <span class="brand-sub">DESIGN DEPARTMENT</span>
+      </div>
+
+      <div class="report-status ">
+        <span class="status-dot"></span>
+        DATA PENDING
+      </div>
+    </div>
+
+    <div class="hero-main">
+      <div class="hero-copy">
+        <div class="eyebrow">WEEKLY PERFORMANCE REPORT</div>
+        <h1>设计团队周报</h1>
+        <p class="hero-description">
+          个人 KPI 表现、未完成任务及进度、卡点与现存问题、下周工作计划。
+        </p>
+      </div>
+
+      <div class="period-card">
+        <span>REPORTING PERIOD</span>
+        <strong>2026-10-26</strong>
+        <small>至 2026-11-01 · 共 7 位成员</small>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span>团队成员</span>
+        <strong>7</strong>
+        <small>当前报告覆盖人员</small>
+      </div>
+
+      <div class="hero-stat primary-stat">
+        <span>KPI 实际值已填写</span>
+        <strong>0<small style="font-size:17px;color:#8c9aac"> / 27</small></strong>
+        <small>以已录入的实际数值为准</small>
+      </div>
+
+      <div class="hero-stat">
+        <span>已录入任务</span>
+        <strong>0</strong>
+        <small>已完成及未完成任务记录</small>
+      </div>
+
+      <div class="hero-stat warning-stat">
+        <span>未解决卡点</span>
+        <strong>0</strong>
+        <small>待处理及处理中</small>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc">
+    <div class="toc-heading">REPORT NAVIGATION</div>
+    <div class="toc-links">
+      <a href="#overview">
+        <span class="nav-dot" style="background:#cf263c"></span>
+        团队执行总览
+      </a>
+    </div>
+
+    <div class="toc-divider"></div>
+    <div class="toc-heading">TEAM MEMBERS</div>
+    <div class="toc-links">
+    <a href="#member-zoran">
+      <span class="nav-dot" style="background:#f17b59"></span>
+      Zoran
+    </a>
+  
+    <a href="#member-wenmin">
+      <span class="nav-dot" style="background:#487eff"></span>
+      Wenmin
+    </a>
+  
+    <a href="#member-joke">
+      <span class="nav-dot" style="background:#26dcd3"></span>
+      Joke
+    </a>
+  
+    <a href="#member-jason">
+      <span class="nav-dot" style="background:#8fbdec"></span>
+      Jason
+    </a>
+  
+    <a href="#member-henry">
+      <span class="nav-dot" style="background:#e7bd64"></span>
+      Henry
+    </a>
+  
+    <a href="#member-angel">
+      <span class="nav-dot" style="background:#48aafa"></span>
+      Angel
+    </a>
+  
+    <a href="#member-samuel">
+      <span class="nav-dot" style="background:#20c8a0"></span>
+      Samuel
+    </a>
+  </div>
+
+    <div class="toc-divider"></div>
+    <div class="toc-links">
+      <a href="#team-notes">
+        <span class="nav-dot" style="background:#7f8b9a"></span>
+        团队整体备注
+      </a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <section id="overview">
+      <div class="overview-heading">
+        <div>
+          <h2>团队执行总览</h2>
+          <p>先查看整体数据完整度，再查看每位成员的具体工作和问题。</p>
+        </div>
+        <span class="overview-tag">WEEKLY SUMMARY</span>
+      </div>
+
+      <div class="data-alert ">
+        <div class="alert-icon">!</div>
+        <div class="alert-content">
+          <strong>本周报告仍有信息待补充</strong>
+          <p>
+            当前已配置 27 项 KPI，已填写实际值 0 项；另有 0 项未完成任务记录、0 项卡点记录及 0 项下周计划记录。空白不代表相关工作或问题不存在，请结合实际情况补充。
+          </p>
+        </div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-card">
+          <span class="metric-label">KPI 实际值填写率</span>
+          <strong>0%</strong>
+          <small>0 / 27 项已填写</small>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <span class="metric-label">未完成任务记录</span>
+          <strong>0</strong>
+          <small>当前导出数据中的未完成事项</small>
+        </div>
+
+        <div class="overview-card">
+          <span class="metric-label">已完成任务记录</span>
+          <strong>0</strong>
+          <small>已明确标记为完成</small>
+        </div>
+
+        <div class="overview-card">
+          <span class="metric-label">下周工作计划</span>
+          <strong>0</strong>
+          <small>全团队已录入的计划</small>
+        </div>
+      </div>
+
+      <div class="summary-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>成员工作状态一览</h3>
+            <p>快速定位 KPI 未填写、任务待推进及尚未解决的卡点。</p>
+          </div>
+          <span class="overview-tag">TEAM STATUS</span>
+        </div>
+
+        <div class="summary-table-wrap">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>成员 / 岗位</th>
+                <th>KPI 实际值</th>
+                <th>未完成任务</th>
+                <th>已完成任务</th>
+                <th>未解决卡点</th>
+                <th>下周计划</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td>
+          <a class="member-link" href="#member-zoran">
+            <span class="table-avatar"
+              style="background:#f17b5920;color:#f17b59">
+              ZO
+            </span>
+
+            <span>
+              <strong>Zoran</strong>
+              <small>Design Team Lead / 设计组长</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/5</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <a class="member-link" href="#member-wenmin">
+            <span class="table-avatar"
+              style="background:#487eff20;color:#487eff">
+              WE
+            </span>
+
+            <span>
+              <strong>Wenmin</strong>
+              <small>Marketing Graphic Designer / 营销平面设计</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/4</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <a class="member-link" href="#member-joke">
+            <span class="table-avatar"
+              style="background:#26dcd320;color:#26dcd3">
+              JO
+            </span>
+
+            <span>
+              <strong>Joke</strong>
+              <small>Creative / Concept Designer / 创意设计</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/3</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <a class="member-link" href="#member-jason">
+            <span class="table-avatar"
+              style="background:#8fbdec20;color:#8fbdec">
+              JA
+            </span>
+
+            <span>
+              <strong>Jason</strong>
+              <small>Campaign / Brand Visual Designer / 品牌视觉设计</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/3</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <a class="member-link" href="#member-henry">
+            <span class="table-avatar"
+              style="background:#e7bd6420;color:#e7bd64">
+              HE
+            </span>
+
+            <span>
+              <strong>Henry</strong>
+              <small>Product Visual Designer / 产品视觉设计</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/4</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <a class="member-link" href="#member-angel">
+            <span class="table-avatar"
+              style="background:#48aafa20;color:#48aafa">
+              AN
+            </span>
+
+            <span>
+              <strong>Angel</strong>
+              <small>Graphic Designer / 美工</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/4</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    
+      <tr>
+        <td>
+          <a class="member-link" href="#member-samuel">
+            <span class="table-avatar"
+              style="background:#20c8a020;color:#20c8a0">
+              SA
+            </span>
+
+            <span>
+              <strong>Samuel</strong>
+              <small>Web / UI Designer / 网站设计</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>0/4</strong>
+          <div class="mini-progress">
+            <span style="width:0%"></span>
+          </div>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    
+      <section class="person-section" id="member-zoran">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#f17b5920;color:#f17b59">
+              ZO
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 01
+              </div>
+
+              <h2>Zoran</h2>
+              <p class="person-role">Design Team Lead / 设计组长</p>
+              <p class="person-desc">团队任务管理、重点项目推进、跨部门协调与交付管理</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/5</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              5 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>团队准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保设计团队按计划完成任务，减少延期对营销活动和产品项目的影响。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>重点项目里程碑达成率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 90%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保 Christmas Campaign、Chassis Design 和 IP 系列等重点项目持续推进，并按计划取得阶段性成果。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>任务规划完整率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>20<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保任务分配清晰、负责人明确、交付要求完整，减少因规划不足导致的遗漏和重复沟通。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">04</span>
+          <h4>资源与跨部门阻碍处理率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 90%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>15<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>及时识别和协调资源冲突、需求不明确及跨部门依赖，降低问题对项目进度的影响。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">05</span>
+          <h4>周报与项目状态准确率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 100%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>10<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保项目进度、交付状态、风险和 KPI 数据真实准确，为管理层决策提供可靠依据。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+      <section class="person-section" id="member-wenmin">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#487eff20;color:#487eff">
+              WE
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 02
+              </div>
+
+              <h2>Wenmin</h2>
+              <p class="person-role">Marketing Graphic Designer / 营销平面设计</p>
+              <p class="person-desc">静态促销素材、Banner、KV、营销内容</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/4</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              4 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>设计任务准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保营销素材按照确认的排期完成，支持促销活动及营销项目按时上线。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>首轮设计审核通过率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 85%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>提升对设计 Brief、品牌规范和视觉方向的理解，减少因设计方向偏差导致的重复修改。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>营销信息准确率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 100%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保广告中的价格、促销条件、产品信息及文案准确，避免信息错误影响营销活动。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">04</span>
+          <h4>设计返工率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≤ 10%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>20<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>减少因遗漏已确认需求、执行错误或未遵循设计规范导致的重复制作，提高设计效率。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+      <section class="person-section" id="member-joke">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#26dcd320;color:#26dcd3">
+              JO
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 03
+              </div>
+
+              <h2>Joke</h2>
+              <p class="person-role">Creative / Concept Designer / 创意设计</p>
+              <p class="person-desc">创意概念、机箱设计、IP 系列视觉及原创设计</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/3</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              3 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>设计任务准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保原创设计、机箱设计和 IP 系列项目按照确认的排期推进，满足项目交付节点。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>创意方向首轮审核通过率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 80%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>35<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>提升对创意 Brief、品牌定位和产品视觉方向的理解，减少因方向理解偏差导致的重复探索。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>设计返工率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≤ 10%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>35<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>减少因遗漏已确认需求、执行错误或未遵循设计规范导致的重复制作，提高设计效率。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+      <section class="person-section" id="member-jason">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#8fbdec20;color:#8fbdec">
+              JA
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 04
+              </div>
+
+              <h2>Jason</h2>
+              <p class="person-role">Campaign / Brand Visual Designer / 品牌视觉设计</p>
+              <p class="person-desc">Campaign 主视觉、Banner、页面视觉、社媒及活动素材</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/3</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              3 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>设计任务准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保 Campaign 主视觉、Banner 和页面素材按照确认的排期完成，支持营销活动按时上线。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>首轮设计审核通过率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 85%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>35<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>提高对 Campaign Brief、品牌视觉方向及营销重点的理解，减少因未正确执行已确认方向而产生的重复修改。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>设计返工率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≤ 10%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>35<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>减少因遗漏已确认需求、执行错误或未遵循设计规范导致的重复制作，提高设计交付效率。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+      <section class="person-section" id="member-henry">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#e7bd6420;color:#e7bd64">
+              HE
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 05
+              </div>
+
+              <h2>Henry</h2>
+              <p class="person-role">Product Visual Designer / 产品视觉设计</p>
+              <p class="person-desc">产品场景图精修、京东商品主图设计与优化</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/4</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              4 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>设计任务准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保产品场景图精修和京东主图按照确认的排期完成，满足产品上架及营销活动需求。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>首轮设计审核通过率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 85%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>提升对产品视觉要求、场景构图、光影效果及主图规范的理解，减少因执行偏差导致的重复修改。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>产品视觉准确率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 100%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>20<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保产品外观、结构、颜色及关键细节得到准确呈现，避免精修过程中改变产品实际特征。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">04</span>
+          <h4>设计返工率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≤ 10%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>减少因精修瑕疵、产品细节错误、构图执行偏差或未遵循已确认规范导致的重复制作。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+      <section class="person-section" id="member-angel">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#48aafa20;color:#48aafa">
+              AN
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 06
+              </div>
+
+              <h2>Angel</h2>
+              <p class="person-role">Graphic Designer / 美工</p>
+              <p class="person-desc">日常修图、产品图片处理与素材制作</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/4</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              4 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>每日修图交付数量</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>待确认</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保完成规定的日常修图工作量，满足产品上架、营销素材及其他设计需求。具体目标数量待根据简单、中等和复杂修图的实际工作量确认。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>设计任务准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保修图和图片处理任务按照确认的排期交付，减少对后续上架和营销工作的影响。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>首轮审核通过率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 90%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>20<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保图片在清晰度、抠图边缘、色彩、瑕疵处理及文件规范方面达到要求，减少重复修改。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">04</span>
+          <h4>设计返工率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≤ 10%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>减少因修图遗漏、抠图不干净、产品细节错误或未遵循已确认规范造成的重复制作。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+      <section class="person-section" id="member-samuel">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:#20c8a020;color:#20c8a0">
+              SA
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER 07
+              </div>
+
+              <h2>Samuel</h2>
+              <p class="person-role">Web / UI Designer / 网站设计</p>
+              <p class="person-desc">SLP、网页 UI、EDM、页面 Banner 与设计交接</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              0<span>/4</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>0</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>0</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>0</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>0</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              4 项 · 权重合计 100%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">01</span>
+          <h4>设计任务准时交付率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>30<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保网站页面、SLP、EDM 及 Banner 按照确认的排期交付，支持网站更新和营销活动上线。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">02</span>
+          <h4>首轮设计审核通过率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 85%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>提升对页面需求、品牌规范及视觉方向的理解，减少因未正确执行已确认要求而导致的重复修改。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">03</span>
+          <h4>设计交付完整率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≥ 95%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>20<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>确保页面设计包含约定的桌面端与移动端布局、必要的页面状态、设计文件及开发所需说明。</p>
+            </div>
+          
+    </article>
+  
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">04</span>
+          <h4>设计返工率</h4>
+        </div>
+        <span class="r-badge neutral">未填写</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>≤ 10%</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="unfilled">
+            未填写
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>25<small>%</small></strong>
+        </div>
+      </div>
+
+      
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>减少因遗漏需求、布局执行错误、响应式设计缺失或未遵循已确认规范导致的重复制作。</p>
+            </div>
+          
+    </article>
+  
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项未完成
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            
+
+          
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项记录
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              0 项计划
+            </span>
+          </div>
+
+          
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            
+        </section>
+
+      </section>
+    
+
+    <section class="team-notes" id="team-notes">
+      <div class="eyebrow">TEAM-WIDE NOTES</div>
+      <h2>团队整体备注、风险与资源需求</h2>
+      <div class="team-notes-content">未填写</div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <p>AFTERSHOCK PC · Design Department · 2026-10-26 至 2026-11-01</p>
+  <p>本报告根据管理工具中已录入的信息生成。未填写的数据不会被推测或自动补齐。</p>
+</footer>
+
+<script>
+document.querySelectorAll(".toc a").forEach(link => {
+  link.addEventListener("click", () => {
+    document.querySelectorAll(".toc a").forEach(item => {
+      item.classList.remove("active");
+    });
+    link.classList.add("active");
+  });
+});
+</script>
+</body>
+</html>
