@@ -454,7 +454,7 @@ function renderKPI(p){
  }).join("");
 
  return `<div class="sectionhead">
-  <div><h3>01 · 个人定制 KPI</h3><p>每个人的 KPI 独立设置，只填写目标值、实际值、权重和考核目的。</p></div>
+  <div><h3>01 · KPI</h3><p>每个人的 KPI 独立设置，只填写目标值、实际值、权重和考核目的。</p></div>
   ${addButton("kpi","新增个人 KPI")}
  </div>
  <div class="note">当前指标权重合计：${weight}% · 已填写实际值：${filled}/${p.kpis.length} 项。实际值未统计时请留空，不要填入估算数字。</div>
@@ -717,7 +717,7 @@ function buildFullDocument(){
  const sections=members.map((m,i)=>{
   const p=personData(m.id),unfinished=p.tasks.filter(t=>t.status!=="done").length;
   return `<div class="person-page"><div class="person-header"><div class="person-index">TEAM MEMBER ${String(i+1).padStart(2,"0")}</div><h2>${esc(m.name)}</h2><p>${esc(m.role)}</p><p>${esc(m.desc||"")}</p></div>
-   ${docSection("01 · 个人定制 KPI","目标值、实际值、权重及考核目的。",docKpis(p))}
+   ${docSection("01 · KPI","目标值、实际值、权重及考核目的。",docKpis(p))}
    ${docSection("02 · 本周未完成任务及目前进度",`本周未完成任务 ${unfinished} 项。`,docTasks(p))}
    ${docSection("03 · 卡点与现存问题","问题状态、影响、责任人及解决措施。",docBlockers(p))}
    ${docSection("04 · 下周工作计划","计划内容、负责人、截止日期及验收标准。",docPlans(p))}
@@ -998,7 +998,7 @@ function buildVisualHTMLReport() {
             <div class="report-section-title">
               <span class="section-number">01</span>
               <div>
-                <h3>个人定制 KPI</h3>
+                <h3>KPI</h3>
                 <p>考核目标、实际表现及考核目的</p>
               </div>
             </div>
