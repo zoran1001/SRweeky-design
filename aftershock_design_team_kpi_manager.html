@@ -168,6 +168,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
     <button id="addMember">＋ 添加成员</button>
     <button id="exportDoc" class="primary">导出完整周报文档（Word）</button>
     <button id="exportHtml">导出可视化网页报告（HTML）</button>
+    <button id="shareLink">生成分享链接（只读预览）</button>
     <div class="muted" id="saveStatus">本地自动保存</div>
   </div>
 </aside>
@@ -2290,6 +2291,68 @@ function exportVisualHTMLReport(){
  save();downloadBlob(new Blob(["\ufeff",buildVisualHTMLReport()],{type:"text/html;charset=utf-8"}),`AFTERSHOCK_Design_Team_Visual_Report_${state.activeWeek}.html`);
  notify("可视化网页报告已导出，可直接用浏览器打开");
 }
+async function deflateBytes(bytes){
+ const cs=new CompressionStream("deflate-raw");
+ return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(cs)).arrayBuffer());
+}
+async function inflateBytes(bytes){
+ const ds=new DecompressionStream("deflate-raw");
+ return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer());
+}
+async function encodeSharePayload(){
+ let json=JSON.stringify(state),bytes=new TextEncoder().encode(json),flag="j";
+ if(window.CompressionStream){
+  try{bytes=await deflateBytes(bytes);flag="z"}catch(e){bytes=new TextEncoder().encode(json);flag="j"}
+ }
+ let bin="";for(const b of bytes)bin+=String.fromCharCode(b);
+ return flag+btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function decodeSharePayload(payload){
+ const flag=payload[0],bin=atob(payload.slice(1).replace(/-/g,"+").replace(/_/g,"/"));
+ let bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+ if(flag==="z"){
+  if(!window.DecompressionStream)throw new Error("当前浏览器不支持解压分享数据，请让分享者改用文件导出");
+  try{bytes=await inflateBytes(bytes)}catch(e){throw new Error("分享数据已损坏或被截断（链接可能在复制时丢失了字符），请让分享者重新生成")}
+ }
+ return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function copyText(text){
+ try{await navigator.clipboard.writeText(text);return true}catch(e){}
+ try{
+  const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();return ok;
+ }catch(e){return false}
+}
+async function shareReport(){
+ if(location.protocol==="file:"){notify("本地文件方式无法生成分享链接，请用线上地址（如 GitHub Pages）生成");return}
+ try{
+  save();
+  const url=new URL(location.href);url.search="";url.hash="";
+  url.searchParams.set("share",await encodeSharePayload());
+  const ok=await copyText(url.href);
+  notify(ok?"分享链接已复制，审核人员打开即可只读预览":"复制失败，链接已放到地址栏，请手动复制");
+  if(!ok)history.replaceState(null,"",url.href);
+ }catch(e){notify("生成分享链接失败："+e.message)}
+}
+async function showSharedReport(payload){
+ try{
+  const data=await decodeSharePayload(payload);
+  if(!data||!Array.isArray(data.members)||!data.weeks)throw new Error("链接数据无效");
+  state=data;
+  if(!state.activeWeek||!state.weeks[state.activeWeek])state.activeWeek=Object.keys(state.weeks)[0];
+  ensureState();
+  document.open();
+  document.write(buildVisualHTMLReport());
+  document.close();
+ }catch(e){
+  document.documentElement.style.visibility="visible";
+  document.body.innerHTML=`<div style="max-width:520px;margin:80px auto;padding:24px;border:1px solid #283340;border-radius:12px;background:#121921;color:#e9eff7;font:14px/1.7 'Microsoft YaHei',sans-serif">
+   <h3 style="margin:0 0 8px">分享链接无法打开</h3>
+   <p style="color:#8f9fb2;margin:0">${esc(e.message)}</p>
+   <p style="color:#65778c;margin:12px 0 0;font-size:12px">链接可能在传递过程中被截断，请让分享者重新生成或改用文件导出。</p>
+  </div>`;
+ }
+}
 document.addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");
  if(b){
@@ -2359,10 +2422,17 @@ $("teamView").onclick=()=>{state.selectedId="team";save();render()};
 $("addMember").onclick=addMember;
 $("exportDoc").onclick=exportFullWordDocument;
 $("exportHtml").onclick=exportVisualHTMLReport;
+$("shareLink").onclick=shareReport;
 $("printPage").onclick=()=>window.print();
 
-render();
-save();
+const shareParam=new URLSearchParams(location.search).get("share");
+if(shareParam){
+ document.documentElement.style.visibility="hidden";
+ showSharedReport(shareParam);
+}else{
+ render();
+ save();
+}
 })();
 </script>
 </body>
