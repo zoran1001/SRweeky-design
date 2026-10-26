@@ -169,6 +169,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
     <button id="exportDoc" class="primary">导出完整周报文档（Word）</button>
     <button id="exportHtml">导出可视化网页报告（HTML）</button>
     <button id="shareLink">生成分享链接（只读预览）</button>
+    <button id="publishShare">发布到固定地址（短链接）</button>
     <div class="muted" id="saveStatus">本地自动保存</div>
   </div>
 </aside>
@@ -2334,6 +2335,47 @@ async function shareReport(){
   if(!ok)history.replaceState(null,"",url.href);
  }catch(e){notify("生成分享链接失败："+e.message)}
 }
+const GH_TOKEN_KEY="aftershock_github_token";
+function fixedShareURL(){
+ const u=new URL(location.href);u.search="";u.hash="";
+ u.pathname=u.pathname.replace(/[^/]*$/,"share.html");
+ return u.href;
+}
+function utf8ToBase64(s){
+ const b=new TextEncoder().encode(s);let bin="";
+ for(let i=0;i<b.length;i+=0x8000)bin+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));
+ return btoa(bin);
+}
+async function publishFixedReport(){
+ if(location.protocol==="file:"){notify("本地文件方式无法发布，请用线上地址（如 GitHub Pages）打开后再发布");return}
+ let token=localStorage.getItem(GH_TOKEN_KEY)||"";
+ if(!token){
+  token=(prompt("首次发布需要 GitHub 访问令牌（只保存在本浏览器）。\n\n生成方法：GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token\nRepository access：只选 SRweeky-design\nPermissions → Contents：Read and write\n\n把令牌粘贴到这里：")||"").trim();
+  if(!token)return;
+  localStorage.setItem(GH_TOKEN_KEY,token);
+ }
+ save();
+ notify("正在发布到固定地址…");
+ try{
+  const api="https://api.github.com/repos/zoran1001/SRweeky-design/contents/share.html";
+  const headers={Authorization:"Bearer "+token,Accept:"application/vnd.github+json"};
+  let sha="";
+  const head=await fetch(api,{headers});
+  if(head.ok){sha=(await head.json()).sha}
+  else if(head.status!==404)throw new Error("读取仓库失败（"+head.status+"）");
+  const payload={message:"发布最新周报预览 "+state.activeWeek,content:utf8ToBase64(buildVisualHTMLReport())};
+  if(sha)payload.sha=sha;
+  const res=await fetch(api,{method:"PUT",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  if(!res.ok){
+   const err=await res.json().catch(()=>({}));
+   if(res.status===401||res.status===403)localStorage.removeItem(GH_TOKEN_KEY);
+   throw new Error(err.message||("发布失败（"+res.status+"）"));
+  }
+  const url=fixedShareURL();
+  await copyText(url);
+  notify("已发布，固定链接已复制："+url);
+ }catch(e){notify("发布失败："+e.message)}
+}
 async function showSharedReport(payload){
  try{
   const data=await decodeSharePayload(payload);
@@ -2423,6 +2465,7 @@ $("addMember").onclick=addMember;
 $("exportDoc").onclick=exportFullWordDocument;
 $("exportHtml").onclick=exportVisualHTMLReport;
 $("shareLink").onclick=shareReport;
+$("publishShare").onclick=publishFixedReport;
 $("printPage").onclick=()=>window.print();
 
 const shareParam=new URLSearchParams(location.search).get("share");
