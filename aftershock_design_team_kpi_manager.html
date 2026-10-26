@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>AFTERSHOCK | Design Team KPI Manager</title>
+<style>
+:root{--bg:#090d13;--panel:#121921;--line:#283340;--line2:#364251;--text:#e9eff7;--muted:#8f9fb2;--sub:#65778c;--red:#ef4053;--orange:#ff974e;--green:#48d5a0;--blue:#7aaefc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 Inter,"Segoe UI","Microsoft YaHei",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--line2);background:#232e3b;color:var(--text);padding:9px 12px;border-radius:8px}
+button:hover{background:#324153}
+button.primary{background:#e34153;border-color:#e34153;color:white}
+button.danger{color:#ff8a95}
+button.small{padding:5px 9px;font-size:12px}
+input,select,textarea{width:100%;background:#0e151d;color:var(--text);border:1px solid var(--line2);border-radius:8px;padding:10px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+textarea{min-height:85px;resize:vertical}
+input[type=date]{color-scheme:dark}
+.app{display:grid;grid-template-columns:255px minmax(0,1fr);min-height:100vh}
+.sidebar{background:#10161e;border-right:1px solid var(--line);padding:22px 15px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.brand{padding:4px 8px 18px;border-bottom:1px solid var(--line)}
+.brand strong{font-size:17px;letter-spacing:1px}
+.brand strong span{color:var(--red)}
+.brand small{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.label{font-size:11px;color:var(--sub);font-weight:700;letter-spacing:.8px;margin-bottom:7px}
+.weekbox{padding:0 7px}
+.weekbox input,.weekbox select{margin-bottom:8px}
+.nav{display:grid;gap:5px}
+.nav button{display:flex;align-items:center;text-align:left;gap:10px;background:transparent;border-color:transparent;padding:10px}
+.nav button.active{background:#261e27;border-color:#6d3340}
+.avatar{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;flex-shrink:0;font-weight:800}
+.navtext{min-width:0;flex:1}
+.navtext strong{display:block}
+.navtext small{display:block;color:var(--sub);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navcount{color:var(--muted);font-size:11px}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:14px;display:grid;gap:8px}
+.main{padding:26px 30px 60px;min-width:0;max-width:1800px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.eyebrow{color:var(--orange);font-size:11px;font-weight:800;letter-spacing:1px}
+h1{font-size:24px;margin:3px 0 5px}
+h2{font-size:21px;margin:0}
+h3{font-size:16px;margin:0}
+p{margin:4px 0}
+.muted{color:var(--muted);font-size:12px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:17px}
+.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px;margin-bottom:14px}
+.stat{margin:0;background:linear-gradient(150deg,#18212d,#121921)}
+.stat small{color:var(--muted)}
+.stat strong{display:block;font-size:26px;margin-top:4px}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:13px}
+.sectionhead p{font-size:12px;color:var(--muted)}
+.hero{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero .avatar{width:58px;height:58px;font-size:20px}
+.hero .info{flex:1;min-width:180px}
+.hero .desc{color:var(--muted);font-size:12px}
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:11px;color:#b7c8d9;background:#1b2835;white-space:nowrap}
+.good{color:#73e6b4;background:#16332a;border-color:#2c6150}
+.warn{color:#ffd087;background:#3b2a1b;border-color:#684a30}
+.bad{color:#ff9ba7;background:#3d2029;border-color:#6b3440}
+.neutral{color:#b7c5d7;background:#222b38}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:12px;color:#9faec1;font-weight:600}
+.field.wide{grid-column:1/-1}
+.metric{border:1px solid var(--line);border-radius:10px;background:#151f2a;margin-bottom:8px;overflow:hidden}
+.metric summary{display:grid;grid-template-columns:minmax(0,1.7fr) 110px 100px 90px;gap:10px;align-items:center;padding:12px;cursor:pointer;list-style:none}
+.metric summary::-webkit-details-marker,.record summary::-webkit-details-marker{display:none}
+.metric summary:hover,.record summary:hover{background:#202c3a}
+.metricname{font-weight:700;overflow-wrap:anywhere}
+.metricbody{padding:14px;border-top:1px solid var(--line);background:#111923}
+.record{border:1px solid var(--line);border-radius:10px;margin-bottom:9px;background:#151e29;overflow:hidden}
+.record summary{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer;list-style:none}
+.recordtitle{font-weight:700;flex:1;min-width:0;overflow-wrap:anywhere}
+.recordbody{padding:14px;border-top:1px solid var(--line);background:#111922}
+.placeholder{padding:22px;border:1px dashed var(--line2);border-radius:10px;text-align:center;color:var(--muted);font-size:12px}
+.hidden{display:none!important}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#17202b;color:var(--muted)}
+tr[data-person]{cursor:pointer}
+tr[data-person]:hover td{background:#202c3a}
+.note{font-size:12px;color:var(--muted);padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:12px}
+.progress{height:6px;border-radius:20px;background:#303d4e;overflow:hidden;margin:12px 0}
+.progress span{height:100%;display:block;background:var(--green)}
+.toast{position:fixed;right:20px;bottom:20px;background:#274335;border:1px solid #3e7258;color:#b5f0cd;padding:12px 16px;border-radius:9px;opacity:0;pointer-events:none;transition:.2s;z-index:20}
+.toast.show{opacity:1}
+footer{color:var(--sub);font-size:11px;margin-top:20px}
+@media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.main{padding:20px 15px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){
+ body{font-size:13.5px}
+ .app{display:block}
+ .sidebar{position:static;height:auto;padding:10px 10px 8px;gap:10px;border-right:0;border-bottom:1px solid var(--line)}
+ .brand{padding:2px 4px 9px}
+ .brand strong{font-size:15px}
+ .brand small{font-size:9px;margin-top:3px}
+ .weekbox{padding:0;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+ .weekbox .label{grid-column:1/-1;margin-bottom:0}
+ .weekbox input,.weekbox select{margin:0}
+ #newWeek{grid-column:1/-1}
+ .weekbox p.muted{grid-column:1/-1;margin:0;font-size:11px}
+ .nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .nav button{padding:7px 8px;gap:8px}
+ .avatar{width:26px;height:26px;font-size:11px}
+ .navtext strong{font-size:12.5px}
+ .navtext small{font-size:10px}
+ .navcount{font-size:10px}
+ .sidebar-bottom{margin-top:2px;padding-top:9px;grid-template-columns:1fr 1fr;gap:6px}
+ .sidebar-bottom button{padding:8px 6px;font-size:12px;line-height:1.35}
+ .sidebar-bottom .muted{grid-column:1/-1;text-align:center}
+ .main{padding:14px 10px 40px}
+ .top{margin-bottom:14px;gap:8px}
+ h1{font-size:20px}
+ h2{font-size:17px}
+ h3{font-size:15px}
+ .sectionhead{margin-bottom:10px}
+ .card{padding:12px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:12px}
+ .stat{padding:11px}
+ .stat strong{font-size:20px}
+ .grid{grid-template-columns:1fr}
+ .field.wide{grid-column:auto}
+ input,select,textarea{font-size:16px;padding:9px}
+ textarea{min-height:76px}
+ button{font-size:13px}
+ .hero .avatar{width:46px;height:46px;font-size:16px}
+ .hero .info{min-width:0}
+ .pills{gap:5px}
+ .pill{font-size:10px;padding:3px 7px}
+ .metric summary{grid-template-columns:minmax(0,1fr) 62px 58px;gap:6px;padding:10px;font-size:11px}
+ .metric summary .pill{display:none}
+ .metricbody{padding:10px}
+ .record summary{padding:10px;flex-wrap:wrap;row-gap:4px}
+ .recordbody{padding:10px}
+ th,td{padding:8px;font-size:11px}
+ .toast{left:12px;right:12px;bottom:12px;text-align:center}
+ .actions{width:100%}
+ .actions button{flex:1}
+ footer{margin-top:14px}
+}
+@media print{body{background:white;color:#111}.sidebar,.actions,button{display:none!important}.app{display:block}.main{padding:0}.card,.stat,.record,.metric{background:white;color:#111;box-shadow:none;border-color:#ddd}.metricbody,.recordbody{background:white}.muted,.field label{color:#444}input,select,textarea{background:white;color:#111;border-color:#ddd}.metric,.record{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <strong>AFTER<span>SHOCK</span></strong>
+    <small>DESIGN TEAM · KPI MANAGEMENT</small>
+  </div>
+  <div class="weekbox">
+    <div class="label">REPORTING WEEK</div>
+    <input type="date" id="weekInput" aria-label="选择周次">
+    <select id="weekSelect" aria-label="历史周报"></select>
+    <button id="newWeek" class="primary" style="width:100%">＋ 新建周报</button>
+    <p class="muted">新建周报时可选择结转未完成任务。</p>
+  </div>
+  <div>
+    <div class="label">TEAM MEMBERS</div>
+    <nav class="nav" id="memberNav"></nav>
+  </div>
+  <div class="sidebar-bottom">
+    <button id="teamView">▦ 团队总览</button>
+    <button id="addMember">＋ 添加成员</button>
+    <button id="exportDoc" class="primary">导出完整周报文档（Word）</button>
+    <button id="exportHtml">导出可视化网页报告（HTML）</button>
+    <div class="muted" id="saveStatus">本地自动保存</div>
+  </div>
+</aside>
+<main class="main">
+  <header class="top">
+    <div>
+      <div class="eyebrow">DESIGN PERFORMANCE MANAGEMENT</div>
+      <h1 id="pageTitle">设计团队 KPI 与周任务管理</h1>
+      <div class="muted" id="periodText"></div>
+    </div>
+    <div class="actions"><button id="printPage">打印当前页面 / PDF</button></div>
+  </header>
+  <section class="stats" id="stats"></section>
+  <section id="personView"></section>
+  <section id="teamViewPanel" class="hidden"></section>
+  <footer>数据会自动保存在当前浏览器中，不会同步到 ClickUp 或其他设备。</footer>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+"use strict";
+
+const STORAGE_KEY="aftershock_design_kpi_manager_v4";
+const COLORS=["#f17b59","#487eff","#20c8a0","#26dcd3","#8fbdec","#e7bd64","#48aafa"];
+
+/* 已确认的个人定制 KPI；目标值是建议标准，不代表实际成绩。 */
+const PROFILES=[
+{
+ id:"zoran",name:"Zoran",role:"Design Team Lead / 设计组长",
+ desc:"团队任务管理、重点项目推进、跨部门协调与交付管理",color:COLORS[0],
+ kpis:[
+ ["团队准时交付率",95,"%",30,"gte","确保设计团队按计划完成任务，减少延期对营销活动和产品项目的影响。"],
+ ["重点项目里程碑达成率",90,"%",25,"gte","确保 Christmas Campaign、Chassis Design 和 IP 系列等重点项目持续推进，并按计划取得阶段性成果。"],
+ ["任务规划完整率",95,"%",20,"gte","确保任务分配清晰、负责人明确、交付要求完整，减少因规划不足导致的遗漏和重复沟通。"],
+ ["资源与跨部门阻碍处理率",90,"%",15,"gte","及时识别和协调资源冲突、需求不明确及跨部门依赖，降低问题对项目进度的影响。"],
+ ["周报与项目状态准确率",100,"%",10,"gte","确保项目进度、交付状态、风险和 KPI 数据真实准确，为管理层决策提供可靠依据。"]
+ ]
+},
+{
+ id:"wenmin",name:"Wenmin",role:"Marketing Graphic Designer / 营销平面设计",
+ desc:"静态促销素材、Banner、KV、营销内容",color:COLORS[1],
+ kpis:[
+ ["设计任务准时交付率",95,"%",30,"gte","确保营销素材按照确认的排期完成，支持促销活动及营销项目按时上线。"],
+ ["首轮设计审核通过率",85,"%",25,"gte","提升对设计 Brief、品牌规范和视觉方向的理解，减少因设计方向偏差导致的重复修改。"],
+ ["营销信息准确率",100,"%",25,"gte","确保广告中的价格、促销条件、产品信息及文案准确，避免信息错误影响营销活动。"],
+ ["设计返工率",10,"%",20,"lte","减少因遗漏已确认需求、执行错误或未遵循设计规范导致的重复制作，提高设计效率。"]
+ ]
+},
+{
+ id:"joke",name:"Joke",role:"Creative / Concept Designer / 创意设计",
+ desc:"创意概念、机箱设计、IP 系列视觉及原创设计",color:COLORS[3],
+ kpis:[
+ ["设计任务准时交付率",95,"%",30,"gte","确保原创设计、机箱设计和 IP 系列项目按照确认的排期推进，满足项目交付节点。"],
+ ["创意方向首轮审核通过率",80,"%",35,"gte","提升对创意 Brief、品牌定位和产品视觉方向的理解，减少因方向理解偏差导致的重复探索。"],
+ ["设计返工率",10,"%",35,"lte","减少因遗漏已确认需求、执行错误或未遵循设计规范导致的重复制作，提高设计效率。"]
+ ]
+},
+{
+ id:"jason",name:"Jason",role:"Campaign / Brand Visual Designer / 品牌视觉设计",
+ desc:"Campaign 主视觉、Banner、页面视觉、社媒及活动素材",color:COLORS[4],
+ kpis:[
+ ["设计任务准时交付率",95,"%",30,"gte","确保 Campaign 主视觉、Banner 和页面素材按照确认的排期完成，支持营销活动按时上线。"],
+ ["首轮设计审核通过率",85,"%",35,"gte","提高对 Campaign Brief、品牌视觉方向及营销重点的理解，减少因未正确执行已确认方向而产生的重复修改。"],
+ ["设计返工率",10,"%",35,"lte","减少因遗漏已确认需求、执行错误或未遵循设计规范导致的重复制作，提高设计交付效率。"]
+ ]
+},
+{
+ id:"henry",name:"Henry",role:"Product Visual Designer / 产品视觉设计",
+ desc:"产品场景图精修、京东商品主图设计与优化",color:COLORS[5],
+ kpis:[
+ ["设计任务准时交付率",95,"%",30,"gte","确保产品场景图精修和京东主图按照确认的排期完成，满足产品上架及营销活动需求。"],
+ ["首轮设计审核通过率",85,"%",25,"gte","提升对产品视觉要求、场景构图、光影效果及主图规范的理解，减少因执行偏差导致的重复修改。"],
+ ["产品视觉准确率",100,"%",20,"gte","确保产品外观、结构、颜色及关键细节得到准确呈现，避免精修过程中改变产品实际特征。"],
+ ["设计返工率",10,"%",25,"lte","减少因精修瑕疵、产品细节错误、构图执行偏差或未遵循已确认规范导致的重复制作。"]
+ ]
+},
+{
+ id:"angel",name:"Angel",role:"Graphic Designer / 美工",
+ desc:"日常修图、产品图片处理与素材制作",color:COLORS[6],
+ kpis:[
+ ["每日修图交付数量","","张/工作日",30,"gte","确保完成规定的日常修图工作量，满足产品上架、营销素材及其他设计需求。具体目标数量待根据简单、中等和复杂修图的实际工作量确认。"],
+ ["设计任务准时交付率",95,"%",25,"gte","确保修图和图片处理任务按照确认的排期交付，减少对后续上架和营销工作的影响。"],
+ ["首轮审核通过率",90,"%",20,"gte","确保图片在清晰度、抠图边缘、色彩、瑕疵处理及文件规范方面达到要求，减少重复修改。"],
+ ["设计返工率",10,"%",25,"lte","减少因修图遗漏、抠图不干净、产品细节错误或未遵循已确认规范造成的重复制作。"]
+ ]
+},
+{
+ id:"samuel",name:"Samuel",role:"Web / UI Designer / 网站设计",
+ desc:"SLP、网页 UI、EDM、页面 Banner 与设计交接",color:COLORS[2],
+ kpis:[
+ ["设计任务准时交付率",95,"%",30,"gte","确保网站页面、SLP、EDM 及 Banner 按照确认的排期交付，支持网站更新和营销活动上线。"],
+ ["首轮设计审核通过率",85,"%",25,"gte","提升对页面需求、品牌规范及视觉方向的理解，减少因未正确执行已确认要求而导致的重复修改。"],
+ ["设计交付完整率",95,"%",20,"gte","确保页面设计包含约定的桌面端与移动端布局、必要的页面状态、设计文件及开发所需说明。"],
+ ["设计返工率",10,"%",25,"lte","减少因遗漏需求、布局执行错误、响应式设计缺失或未遵循已确认规范导致的重复制作。"]
+ ]
+}
+];
+
+const LEGACY_DEFAULTS={
+ zoran:["关键项目里程碑达成率","任务规划完整率","阻碍处理及时率","报告数据可追溯率"],
+ wenmin:["营销文案与价格准确率","多尺寸素材规范通过率","首轮内部审核通过率","最终交付文件完整率"],
+ samuel:["UI 开发可实施率","响应式设计覆盖率","设计交接完整率","UI 首次验收通过率"],
+ joke:["创意方向首轮认可率","系列视觉一致性通过率","产品设计重大错误数","可复用创意资产交付率"],
+ jason:["主视觉需求覆盖率","跨渠道视觉一致性通过率","主视觉方向首轮认可率","交付文件规范通过率"],
+ henry:["产品图库交付完整率","产品重大视觉错误数","视觉首次审核通过率","设计原因返工率"],
+ angel:["拍摄清单完成率","素材一次可用率","拍摄质量重拍率","素材归档完整率"]
+};
+
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const dateObj=s=>{const [y,m,d]=(s||todayISO()).split("-").map(Number);return new Date(y,m-1,d||1,12)};
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const monday=s=>{const d=dateObj(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
+const endOfWeek=s=>{const d=dateObj(s);d.setDate(d.getDate()+6);return iso(d)};
+const nextWeek=s=>{const d=dateObj(s);d.setDate(d.getDate()+7);return iso(d)};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=v=>v===""||v==null||!Number.isFinite(Number(v))?null:Number(v);
+
+function createKPI(x){
+ return {id:uid(),name:x[0],target:x[1],unit:x[2],weight:x[3],op:x[4],comment:x[5]||"",actual:""};
+}
+function createPerson(member){
+ return {kpis:(member.kpis||[]).filter(Array.isArray).map(createKPI),tasks:[],blockers:[],plans:[]};
+}
+function initialState(){
+ const w=monday(todayISO()),people={};
+ PROFILES.forEach(m=>people[m.id]={kpis:m.kpis.map(createKPI),tasks:[],blockers:[],plans:[]});
+ return {version:5,members:PROFILES.map(m=>({...m,kpis:m.kpis.map(x=>[...x])})),activeWeek:w,selectedId:"zoran",weeks:{[w]:{people,teamNotes:"",createdAt:new Date().toISOString()}}};
+}
+
+let state;
+try{
+ state=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
+ if(!state||!Array.isArray(state.members)||!state.weeks)state=initialState();
+}catch(e){state=initialState();}
+
+function migrateKpis(){
+ PROFILES.forEach(profile=>{
+  let member=state.members.find(m=>m.id===profile.id);
+  if(!member){member={...profile};state.members.push(member);}
+  Object.assign(member,{name:profile.name,role:profile.role,desc:profile.desc,color:profile.color,kpis:profile.kpis.map(x=>[...x])});
+
+  const currentNames=new Set(profile.kpis.map(x=>x[0]));
+  const legacyNames=new Set(LEGACY_DEFAULTS[profile.id]||[]);
+
+  Object.values(state.weeks).forEach(week=>{
+   week.people ||= {};
+   let p=week.people[profile.id];
+   if(!p){week.people[profile.id]={kpis:profile.kpis.map(createKPI),tasks:[],blockers:[],plans:[]};return;}
+
+   p.kpis=Array.isArray(p.kpis)?p.kpis:[];
+   const oldByName=new Map(p.kpis.map(k=>[k.name,k]));
+   const updated=profile.kpis.map(def=>{
+    const old=oldByName.get(def[0]);
+    return {
+     id:old?.id||uid(),name:def[0],target:def[1],unit:def[2],weight:def[3],op:def[4],
+     actual:old?.actual??"",comment:old?.comment||def[5]||""
+    };
+   });
+   const custom=p.kpis.filter(k=>!legacyNames.has(k.name)&&!currentNames.has(k.name));
+   p.kpis=[...updated,...custom];
+   p.tasks ||= [];p.blockers ||= [];p.plans ||= [];
+  });
+ });
+
+ state.version=5;
+}
+if(!state.weeks[state.activeWeek])state.activeWeek=Object.keys(state.weeks)[0]||monday(todayISO());
+migrateKpis();
+
+function ensureState(){
+ state.members.forEach(m=>Object.values(state.weeks).forEach(w=>{
+  w.people ||= {};
+  if(!w.people[m.id])w.people[m.id]={kpis:[],tasks:[],blockers:[],plans:[]};
+  const p=w.people[m.id];
+  p.kpis=Array.isArray(p.kpis)?p.kpis:[];
+  p.tasks ||= [];p.blockers ||= [];p.plans ||= [];
+ }));
+ if(state.selectedId!=="team"&&!state.members.some(m=>m.id===state.selectedId))state.selectedId=state.members[0]?.id||"team";
+}
+ensureState();
+
+const current=()=>state.weeks[state.activeWeek];
+const selected=()=>state.members.find(m=>m.id===state.selectedId);
+const personData=id=>current().people[id];
+
+function save(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  $("saveStatus").textContent="已自动保存 · "+new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"});
+ }catch(e){
+  $("saveStatus").textContent="自动保存失败，请检查浏览器存储空间";
+  notify("浏览器自动保存失败，请检查存储空间或清理缓存。");
+ }
+}
+function notify(s){
+ const e=$("toast");e.textContent=s;e.classList.add("show");
+ clearTimeout(notify.timer);notify.timer=setTimeout(()=>e.classList.remove("show"),2500);
+}
+function field(label,html,wide=false){return `<div class="field ${wide?"wide":""}"><label>${label}</label>${html}</div>`}
+function input(kind,id,prop,value,placeholder="",type="text",extra=""){
+ return `<input data-kind="${kind}" data-id="${esc(id)}" data-prop="${prop}" type="${type}" value="${esc(value)}" placeholder="${esc(placeholder)}" ${extra}>`;
+}
+function area(kind,id,prop,value,placeholder="",rows=3){
+ return `<textarea data-kind="${kind}" data-id="${esc(id)}" data-prop="${prop}" placeholder="${esc(placeholder)}" rows="${rows}">${esc(value)}</textarea>`;
+}
+function select(kind,id,prop,value,options){
+ return `<select data-kind="${kind}" data-id="${esc(id)}" data-prop="${prop}">${options.map(o=>`<option value="${esc(o[0])}" ${o[0]===value?"selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
+}
+function addButton(kind,label){return `<button class="small" data-action="add" data-kind="${kind}">＋ ${label}</button>`}
+function pill(text,cls="neutral"){return `<span class="pill ${cls}">${esc(text)}</span>`}
+
+function kpiStatus(k){
+ const a=num(k.actual),t=num(k.target);
+ if(a===null)return ["未填写","neutral"];
+ if(t===null)return ["目标待确认","warn"];
+ return (k.op==="lte"?a<=t:a>=t)?["达标","good"]:["未达标","bad"];
+}
+function taskStatus(s){
+ return ({todo:["未开始","neutral"],ongoing:["进行中","warn"],review:["审核中","warn"],blocked:["受阻","bad"],done:["已完成","good"]})[s]||["未开始","neutral"];
+}
+function priorityOptions(){return [["high","高"],["medium","中"],["low","低"]]}
+function countTasks(p){
+ return {total:p.tasks.length,done:p.tasks.filter(t=>t.status==="done").length,active:p.tasks.filter(t=>["ongoing","review","blocked"].includes(t.status)).length};
+}
+function countOpenBlockers(p){return p.blockers.filter(b=>b.status!=="closed").length}
+
+function renderTop(){
+ $("weekInput").value=state.activeWeek;
+ $("weekSelect").innerHTML=Object.keys(state.weeks).sort().reverse().map(w=>`<option value="${w}" ${w===state.activeWeek?"selected":""}>${w} — ${endOfWeek(w)}</option>`).join("");
+ $("periodText").textContent=`统计周期：${state.activeWeek} 至 ${endOfWeek(state.activeWeek)} · 浏览器本地保存`;
+ $("pageTitle").textContent=state.selectedId==="team"?"团队 KPI 与任务总览":"设计团队 KPI 与周任务管理";
+}
+function renderNav(){
+ $("memberNav").innerHTML=state.members.map(m=>{
+  const p=personData(m.id),filled=p.kpis.filter(k=>num(k.actual)!==null).length;
+  return `<button class="${state.selectedId===m.id?"active":""}" data-action="person" data-id="${m.id}">
+   <span class="avatar" style="background:${m.color}22;color:${m.color}">${esc(m.name.slice(0,2).toUpperCase())}</span>
+   <span class="navtext"><strong>${esc(m.name)}</strong><small>${esc(m.role.split("/")[0].trim())}</small></span>
+   <span class="navcount">${filled}/${p.kpis.length}</span>
+  </button>`;
+ }).join("")+`<button class="${state.selectedId==="team"?"active":""}" data-action="team"><span class="avatar">▦</span><span class="navtext"><strong>团队总览</strong><small>任务与 KPI 汇总</small></span></button>`;
+}
+function renderStats(){
+ let totalK=0,filled=0,totalT=0,done=0,blocks=0,plans=0;
+ state.members.forEach(m=>{
+  const p=personData(m.id),t=countTasks(p);
+  totalK+=p.kpis.length;filled+=p.kpis.filter(k=>num(k.actual)!==null).length;
+  totalT+=t.total;done+=t.done;blocks+=countOpenBlockers(p);plans+=p.plans.length;
+ });
+ $("stats").innerHTML=[["已填写 KPI",`${filled}/${totalK}`],["已完成任务",`${done}/${totalT}`],["未解决卡点",blocks],["下周计划",plans]]
+ .map(x=>`<div class="stat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join("");
+}
+
+function renderKPI(p){
+ const weight=p.kpis.reduce((s,k)=>s+(Number(k.weight)||0),0);
+ const filled=p.kpis.filter(k=>num(k.actual)!==null).length;
+ const html=p.kpis.map(k=>{
+  const [status,cls]=kpiStatus(k);
+  const target=k.target===""?"待确认":`${k.op==="lte"?"≤":"≥"} ${k.target} ${k.unit}`;
+  const actual=num(k.actual)===null?"—":`${k.actual} ${k.unit}`;
+  return `<details class="metric">
+   <summary>
+    <span class="metricname">${esc(k.name)}</span>
+    <span class="metric-target">${esc(target)}</span>
+    <span class="metric-actual">${esc(actual)}</span>
+    <span class="metric-status">${pill(status,cls)}</span>
+   </summary>
+   <div class="metricbody"><div class="grid">
+    ${field("指标名称",input("kpi",k.id,"name",k.name,"指标名称"))}
+    ${field("权重 (%)",input("kpi",k.id,"weight",k.weight,"","number",'min="0" max="100" step="1"'))}
+    ${field("目标值",input("kpi",k.id,"target",k.target,"未确认时留空","number",'step="any"'))}
+    ${field("考核方向",select("kpi",k.id,"op",k.op,[["gte","越高越好（≥）"],["lte","越低越好（≤）"]]))}
+    ${field("实际值",input("kpi",k.id,"actual",k.actual,"没有真实数据请留空","number",'step="any"'))}
+    ${field("单位",input("kpi",k.id,"unit",k.unit,"例如 %、张/工作日"))}
+    ${field("考核目的",area("kpi",k.id,"comment",k.comment,"该 KPI 主要考核什么？",3),true)}
+   </div><div style="text-align:right;margin-top:12px"><button class="danger small" data-action="delete" data-kind="kpi" data-id="${k.id}">删除该 KPI</button></div></div>
+  </details>`;
+ }).join("");
+
+ return `<div class="sectionhead">
+  <div><h3>01 · 个人定制 KPI</h3><p>每个人的 KPI 独立设置，只填写目标值、实际值、权重和考核目的。</p></div>
+  ${addButton("kpi","新增个人 KPI")}
+ </div>
+ <div class="note">当前指标权重合计：${weight}% · 已填写实际值：${filled}/${p.kpis.length} 项。实际值未统计时请留空，不要填入估算数字。</div>
+ <div class="progress"><span style="width:${Math.round(filled/Math.max(1,p.kpis.length)*100)}%"></span></div>
+ ${html||'<div class="placeholder">尚未设置个人 KPI。点击“新增个人 KPI”添加。</div>'}`;
+}
+
+function renderTask(t){
+ const [label,cls]=taskStatus(t.status);
+ return `<details class="record"><summary><span class="recordtitle">${esc(t.title||"未命名任务")}</span>${pill(label,cls)}<span class="muted">${esc(t.due||"未定日期")}</span></summary>
+ <div class="recordbody"><div class="grid">
+ ${field("未完成任务名称",input("task",t.id,"title",t.title,"填写尚未完成的任务"))}
+ ${field("目前状态",select("task",t.id,"status",t.status,[["todo","未开始"],["ongoing","进行中"],["review","审核中"],["blocked","受阻"],["done","已完成"]]))}
+ ${field("工作复杂度",select("task",t.id,"complexity",t.complexity,[["low","低"],["medium","中"],["high","高"],["veryhigh","很高"]]))}
+ ${field("预计完成日期",input("task",t.id,"due",t.due,"","date"))}
+ ${field("目前进度 / 已完成部分",area("task",t.id,"result",t.result,"说明已经完成的部分、当前阶段及剩余工作"),true)}
+ ${field("剩余工作 / 验收标准",area("task",t.id,"acceptance",t.acceptance,"还需要完成什么？怎样才算完成？"),true)}
+ ${field("卡点 / 下一步行动",area("task",t.id,"notes",t.notes,"待审核、修改意见、依赖条件或下一步"),true)}
+ ${field("ClickUp / 文件链接",input("task",t.id,"link",t.link,"任务链接或文件链接"),true)}
+ </div><div style="text-align:right;margin-top:10px"><button class="danger small" data-action="delete" data-kind="task" data-id="${t.id}">删除任务</button></div></div></details>`;
+}
+function renderBlocker(b){
+ return `<details class="record"><summary><span class="recordtitle">${esc(b.title||"未命名卡点")}</span>${pill(b.status==="closed"?"已解决":b.status==="inprogress"?"处理中":"待处理",b.status==="closed"?"good":b.status==="inprogress"?"warn":"bad")}</summary>
+ <div class="recordbody"><div class="grid">
+ ${field("问题 / 卡点",input("blocker",b.id,"title",b.title,"清晰描述问题"))}
+ ${field("状态",select("blocker",b.id,"status",b.status,[["open","待处理"],["inprogress","处理中"],["closed","已解决"]]))}
+ ${field("优先级",select("blocker",b.id,"priority",b.priority,priorityOptions()))}
+ ${field("责任人 / 需要谁支持",input("blocker",b.id,"owner",b.owner,"填写具体姓名"))}
+ ${field("预计解决日期",input("blocker",b.id,"due",b.due,"","date"))}
+ ${field("业务影响 / 风险",area("blocker",b.id,"impact",b.impact,"影响哪些交付或业务？"),true)}
+ ${field("解决措施 / 已采取行动",area("blocker",b.id,"action",b.action,"下一步、升级路径或所需支持"),true)}
+ </div><div style="text-align:right;margin-top:10px"><button class="danger small" data-action="delete" data-kind="blocker" data-id="${b.id}">删除卡点</button></div></div></details>`;
+}
+function renderPlan(p){
+ return `<details class="record"><summary><span class="recordtitle">${esc(p.title||"未命名计划")}</span>${pill(({high:"高优先级",medium:"中优先级",low:"低优先级"})[p.priority]||"中优先级",p.priority==="high"?"bad":p.priority==="low"?"good":"warn")}<span class="muted">${esc(p.due||"待定")}</span></summary>
+ <div class="recordbody"><div class="grid">
+ ${field("任务 / 项目名称",input("plan",p.id,"title",p.title,"具体任务名称"))}
+ ${field("优先级",select("plan",p.id,"priority",p.priority,priorityOptions()))}
+ ${field("截止日期",input("plan",p.id,"due",p.due,"","date"))}
+ ${field("负责人（Responsible）",input("plan",p.id,"owner",p.owner,"实际执行人姓名"))}
+ ${field("最终拍板人（Accountable）",input("plan",p.id,"accountable",p.accountable,"最终负责人姓名"))}
+ ${field("预期成果 / 验收标准",area("plan",p.id,"deliverable",p.deliverable,"下周要交付什么，如何验收？"),true)}
+ ${field("依赖条件 / 备注",area("plan",p.id,"notes",p.notes,"Brief、素材、审核、开发等依赖"),true)}
+ </div><div style="text-align:right;margin-top:10px"><button class="danger small" data-action="delete" data-kind="plan" data-id="${p.id}">删除计划</button></div></div></details>`;
+}
+
+function renderPerson(){
+ const m=selected();if(!m)return;
+ const p=personData(m.id),t=countTasks(p);
+ const unfinished=p.tasks.filter(x=>x.status!=="done");
+ $("personView").classList.remove("hidden");$("teamViewPanel").classList.add("hidden");
+ $("personView").innerHTML=`
+ <section class="card"><div class="hero">
+ <span class="avatar" style="width:58px;height:58px;background:${m.color}22;color:${m.color};font-size:20px">${esc(m.name.slice(0,2).toUpperCase())}</span>
+ <div class="info"><h2>${esc(m.name)}</h2><p>${esc(m.role)}</p><p class="hero desc">${esc(m.desc||"")}</p></div>
+ <button data-action="edit-member">编辑人员</button>
+ </div><div class="pills">
+ ${pill("已填写 KPI "+p.kpis.filter(k=>num(k.actual)!==null).length+"/"+p.kpis.length)}
+ ${pill("未完成任务 "+unfinished.length,"warn")}
+ ${pill("已完成任务 "+t.done,"good")}
+ ${pill("未解决卡点 "+countOpenBlockers(p),countOpenBlockers(p)?"bad":"neutral")}
+ </div></section>
+ <section class="card">${renderKPI(p)}</section>
+ <section class="card"><div class="sectionhead"><div><h3>02 · 本周未完成任务及目前进度</h3><p>记录尚未完成的事项、当前阶段、剩余工作、预计完成日期及下一步行动。</p></div>${addButton("task","新增未完成任务")}</div>
+ ${unfinished.map(renderTask).join("")||'<div class="placeholder">本周暂无已录入的未完成任务。</div>'}
+ ${t.done?`<p class="muted">另有 ${t.done} 项任务已标记完成，已从未完成任务列表中隐藏。</p>`:""}
+ </section>
+ <section class="card"><div class="sectionhead"><div><h3>03 · 卡点 & 现存问题</h3><p>记录影响、需要谁支持、解决措施及预计解决日期。</p></div>${addButton("blocker","新增卡点")}</div>
+ ${p.blockers.map(renderBlocker).join("")||'<div class="placeholder">暂无已记录的卡点。</div>'}
+ </section>
+ <section class="card"><div class="sectionhead"><div><h3>04 · 下周工作计划</h3><p>明确成果、负责人及截止日期。</p></div>${addButton("plan","新增计划")}</div>
+ ${p.plans.map(renderPlan).join("")||'<div class="placeholder">尚未录入下周计划。</div>'}
+ </section>`;
+}
+
+function renderTeam(){
+ $("personView").classList.add("hidden");$("teamViewPanel").classList.remove("hidden");
+ const rows=state.members.map(m=>{
+  const p=personData(m.id),t=countTasks(p);
+  return `<tr data-person="${m.id}"><td><strong>${esc(m.name)}</strong><br><span class="muted">${esc(m.role)}</span></td>
+  <td>${p.kpis.filter(k=>num(k.actual)!==null).length}/${p.kpis.length}</td>
+  <td>${p.tasks.filter(t=>t.status!=="done").length}</td><td>${t.done}</td><td>${t.active}</td>
+  <td>${countOpenBlockers(p)}</td><td>${p.plans.length}</td></tr>`;
+ }).join("");
+ $("teamViewPanel").innerHTML=`
+ <section class="card"><div class="sectionhead"><div><h3>团队 KPI 与任务总览</h3><p>汇总当前周实际录入的数据。点击成员行查看详细记录。</p></div></div>
+ <div style="overflow:auto"><table><thead><tr><th>成员 / 岗位</th><th>已填写 KPI</th><th>未完成任务</th><th>已完成</th><th>进行中</th><th>未解决卡点</th><th>下周计划</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+ <section class="card"><div class="sectionhead"><div><h3>部门风险与管理事项</h3><p>记录团队整体风险、资源安排和跨部门依赖。</p></div></div>
+ ${area("team","team","teamNotes",current().teamNotes,"团队整体风险、资源安排及跨部门依赖",5)}</section>`;
+}
+function render(){
+ /* 重新渲染前先记住哪些折叠记录是展开的，以及当前正在编辑的输入框。
+    否则下拉框 / 日期一变化就整个重建 DOM，已展开的记录会被强制收起。 */
+ const openRecords=[...document.querySelectorAll("details[open]")].map(d=>{
+  const f=d.querySelector("[data-kind][data-id]");
+  return f?`${f.dataset.kind}:${f.dataset.id}`:"";
+ }).filter(Boolean);
+ const active=document.activeElement;
+ const focusInfo=active&&active.dataset&&active.dataset.kind&&active.dataset.prop
+  ?{kind:active.dataset.kind,id:active.dataset.id||"",prop:active.dataset.prop,start:active.selectionStart,end:active.selectionEnd}
+  :null;
+
+ renderTop();renderNav();renderStats();
+ if(state.selectedId==="team")renderTeam();else renderPerson();
+
+ if(openRecords.length){
+  document.querySelectorAll("details").forEach(d=>{
+   const f=d.querySelector("[data-kind][data-id]");
+   if(f&&openRecords.includes(`${f.dataset.kind}:${f.dataset.id}`))d.open=true;
+  });
+ }
+ if(focusInfo){
+  const el=document.querySelector(`[data-kind="${focusInfo.kind}"][data-id="${focusInfo.id}"][data-prop="${focusInfo.prop}"]`);
+  if(el){
+   el.focus({preventScroll:true});
+   if(typeof el.setSelectionRange==="function"&&focusInfo.start!=null){
+    try{el.setSelectionRange(focusInfo.start,focusInfo.end)}catch(_){}
+   }
+  }
+ }
+}
+
+function addRecord(kind){
+ const p=personData(state.selectedId);if(!p)return;
+ if(kind==="kpi")p.kpis.push({id:uid(),name:"新 KPI 指标",target:"",unit:"%",weight:0,op:"gte",actual:"",comment:""});
+ if(kind==="task")p.tasks.push({id:uid(),title:"",status:"todo",complexity:"medium",due:"",result:"",acceptance:"",notes:"",link:""});
+ if(kind==="blocker")p.blockers.push({id:uid(),title:"",status:"open",priority:"medium",owner:"",due:"",impact:"",action:""});
+ if(kind==="plan")p.plans.push({id:uid(),title:"",priority:"medium",due:"",owner:selected()?.name||"",accountable:"",deliverable:"",notes:""});
+ save();render();notify("已新增记录");
+}
+function updateRecord(el){
+ const kind=el.dataset.kind,id=el.dataset.id,prop=el.dataset.prop;
+ if(!kind||!prop)return;
+ let target;
+ if(kind==="team")target=current();
+ else{
+  const p=personData(state.selectedId);if(!p)return;
+  const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:p.plans;
+  target=list.find(x=>x.id===id);
+ }
+ if(!target)return;
+ target[prop]=el.value;
+ save();
+}
+
+/* 修复：KPI 输入框的值已保存，但原来的代码没有刷新折叠标题。
+   现在 KPI 字段触发 change 后会重新渲染，标题、状态、侧边栏和统计数字同步更新。 */
+document.addEventListener("input",e=>{
+ if(e.target.matches("[data-kind][data-prop]"))updateRecord(e.target);
+});
+document.addEventListener("change",e=>{
+ if(!e.target.matches("[data-kind][data-prop]"))return;
+ updateRecord(e.target);
+ if(e.target.dataset.kind==="kpi"||e.target.tagName==="SELECT"||e.target.type==="date")render();
+});
+
+function editMember(){
+ const m=selected();if(!m)return;
+ const host=document.createElement("div");host.className="card";
+ host.innerHTML=`<h3 style="margin-bottom:12px">编辑人员信息</h3><div class="grid">
+ ${field("姓名",'<input id="editName" value="'+esc(m.name)+'">')}
+ ${field("岗位",'<input id="editRole" value="'+esc(m.role)+'">')}
+ ${field("工作职责",'<textarea id="editDesc">'+esc(m.desc||"")+'</textarea>',true)}
+ </div><div style="display:flex;gap:8px;margin-top:12px"><button class="primary" id="saveMember">保存</button><button id="cancelMember">取消</button></div>`;
+ $("personView").prepend(host);
+ $("cancelMember").onclick=()=>host.remove();
+ $("saveMember").onclick=()=>{
+  const name=$("editName").value.trim();if(!name){notify("姓名不能为空");return;}
+  m.name=name;m.role=$("editRole").value.trim();m.desc=$("editDesc").value.trim();
+  save();render();
+ };
+}
+function addMember(){
+ const name=prompt("请输入成员姓名：");if(!name||!name.trim())return;
+ const role=prompt("请输入岗位名称：")||"Design Team Member";
+ const desc=prompt("请输入主要工作职责：")||"",id=uid();
+ const m={id,name:name.trim(),role,desc,color:COLORS[state.members.length%COLORS.length],kpis:[]};
+ state.members.push(m);
+ Object.values(state.weeks).forEach(w=>w.people[id]={kpis:[],tasks:[],blockers:[],plans:[]});
+ state.selectedId=id;save();render();
+}
+function deleteRecord(kind,id){
+ const p=personData(state.selectedId);if(!p)return;
+ const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:p.plans;
+ const item=list.find(x=>x.id===id);if(!item)return;
+ if(!confirm(`确定删除「${item.name||item.title||item.id}」吗？`))return;
+ list.splice(list.indexOf(item),1);save();render();
+}
+function switchWeek(value,ask=true){
+ const w=monday(value);
+ if(!state.weeks[w]){
+  const people={};
+  state.members.forEach(m=>{
+   const profile=PROFILES.find(x=>x.id===m.id);
+   people[m.id]={kpis:(profile?profile.kpis:[]).map(createKPI),tasks:[],blockers:[],plans:[]};
+  });
+  if(ask&&confirm("是否结转上一周未完成的任务和未解决卡点？")){
+   state.members.forEach(m=>{
+    const old=personData(m.id);if(!old)return;
+    people[m.id].tasks=old.tasks.filter(t=>t.status!=="done").map(t=>({...t,id:uid(),result:"",notes:`从 ${state.activeWeek} 结转：${t.notes||"请重新确认进度"}`}));
+    people[m.id].blockers=old.blockers.filter(b=>b.status!=="closed").map(b=>({...b,id:uid()}));
+   });
+  }
+  state.weeks[w]={people,teamNotes:"",createdAt:new Date().toISOString()};
+ }
+ state.activeWeek=w;ensureState();save();render();
+}
+function downloadBlob(blob,filename){
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function val(v){return v===null||v===undefined||String(v).trim()===""?"未填写":String(v)}
+function docCell(label,value){return `<tr><th>${esc(label)}</th><td>${esc(val(value)).replace(/\n/g,"<br>")}</td></tr>`}
+function docTable(rows){return `<table class="detail-table"><tbody>${rows.join("")}</tbody></table>`}
+function docSection(title,description,body){return `<section><h3>${esc(title)}</h3><p>${esc(description)}</p>${body}</section>`}
+function docKpis(p){
+ if(!p.kpis.length)return "<p>本周未设置个人 KPI。</p>";
+ return p.kpis.map((k,i)=>{
+  const [status]=kpiStatus(k);
+  return `<div class="item-block"><h4>KPI ${i+1}：${esc(k.name)}</h4>${docTable([
+   docCell("指标名称",k.name),
+   docCell("目标值",k.target===""?"待确认":`${k.op==="lte"?"≤":"≥"} ${k.target} ${k.unit}`),
+   docCell("实际值",num(k.actual)===null?"未填写":`${k.actual} ${k.unit}`),
+   docCell("权重",`${k.weight}%`),docCell("状态",status),docCell("考核目的",k.comment)
+  ])}</div>`;
+ }).join("");
+}
+function docTasks(p){
+ const items=p.tasks.filter(t=>t.status!=="done");
+ if(!items.length)return "<p>本周没有录入未完成任务。</p>";
+ return items.map((t,i)=>`<div class="item-block"><h4>未完成任务 ${i+1}：${esc(t.title||"未命名任务")}</h4>${docTable([
+  docCell("状态",taskStatus(t.status)[0]),docCell("预计完成日期",t.due),
+  docCell("目前进度 / 已完成部分",t.result),docCell("剩余工作 / 验收标准",t.acceptance),
+  docCell("卡点 / 下一步行动",t.notes),docCell("ClickUp / 文件链接",t.link)
+ ])}</div>`).join("");
+}
+function docBlockers(p){
+ if(!p.blockers.length)return "<p>本周未录入卡点。空白不代表已确认不存在风险。</p>";
+ return p.blockers.map((b,i)=>`<div class="item-block"><h4>卡点 ${i+1}：${esc(b.title||"未命名卡点")}</h4>${docTable([
+  docCell("状态",({open:"待处理",inprogress:"处理中",closed:"已解决"})[b.status]),
+  docCell("优先级",({high:"高",medium:"中",low:"低"})[b.priority]),
+  docCell("责任人 / 需要谁支持",b.owner),docCell("预计解决日期",b.due),
+  docCell("业务影响 / 风险",b.impact),docCell("解决措施",b.action)
+ ])}</div>`).join("");
+}
+function docPlans(p){
+ if(!p.plans.length)return "<p>本周未录入下周计划。</p>";
+ return p.plans.map((x,i)=>`<div class="item-block"><h4>计划 ${i+1}：${esc(x.title||"未命名计划")}</h4>${docTable([
+  docCell("优先级",({high:"高",medium:"中",low:"低"})[x.priority]),docCell("截止日期",x.due),
+  docCell("负责人（Responsible）",x.owner),docCell("最终拍板人（Accountable）",x.accountable),
+  docCell("预期成果 / 验收标准",x.deliverable),docCell("依赖条件 / 备注",x.notes)
+ ])}</div>`).join("");
+}
+function buildFullDocument(){
+ const week=state.activeWeek,members=state.members;
+ let done=0,total=0,active=0,blocks=0;
+ members.forEach(m=>{const p=personData(m.id),t=countTasks(p);done+=t.done;total+=t.total;active+=t.active;blocks+=countOpenBlockers(p)});
+ const toc=members.map((m,i)=>`<li>${i+1}. ${esc(m.name)} — ${esc(m.role)}</li>`).join("");
+ const sections=members.map((m,i)=>{
+  const p=personData(m.id),unfinished=p.tasks.filter(t=>t.status!=="done").length;
+  return `<div class="person-page"><div class="person-header"><div class="person-index">TEAM MEMBER ${String(i+1).padStart(2,"0")}</div><h2>${esc(m.name)}</h2><p>${esc(m.role)}</p><p>${esc(m.desc||"")}</p></div>
+   ${docSection("01 · 个人定制 KPI","目标值、实际值、权重及考核目的。",docKpis(p))}
+   ${docSection("02 · 本周未完成任务及目前进度",`本周未完成任务 ${unfinished} 项。`,docTasks(p))}
+   ${docSection("03 · 卡点与现存问题","问题状态、影响、责任人及解决措施。",docBlockers(p))}
+   ${docSection("04 · 下周工作计划","计划内容、负责人、截止日期及验收标准。",docPlans(p))}
+  </div>`;
+ }).join("");
+ return `<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>AFTERSHOCK Design Team Weekly Report ${esc(week)}</title>
+ <style>@page{size:A4;margin:1.7cm 1.6cm}body{font-family:Arial,"Microsoft YaHei",sans-serif;font-size:10pt;color:#202936;line-height:1.55}h1{font-size:25pt;color:#b91f35}h2{font-size:21pt;color:#1a2737}h3{font-size:14pt;color:#b91f35;border-bottom:1.5pt solid #d7dde5;padding-bottom:5pt;margin:20pt 0 8pt}h4{font-size:11pt;color:#263b52;margin:13pt 0 6pt}.cover{padding-top:55pt;min-height:500pt}.meta{margin-top:28pt;padding:13pt;background:#f2f5f8;border-left:4pt solid #b91f35}.summary-grid{width:100%;border-collapse:collapse;margin-top:15pt}.summary-grid td{border:1px solid #d9e0e8;padding:10pt;width:25%}.summary-grid strong{font-size:18pt;color:#b91f35;display:block}.detail-table{width:100%;border-collapse:collapse;table-layout:fixed;margin:4pt 0 10pt}.detail-table th,.detail-table td{border:1px solid #d9e0e8;padding:6pt 7pt;text-align:left;vertical-align:top;word-wrap:break-word}.detail-table th{width:28%;background:#f0f3f7}.item-block{margin:8pt 0 13pt}.person-page{page-break-before:always}.person-header{padding:12pt 14pt;background:#f1f4f8;border-left:5pt solid #b91f35;margin-bottom:15pt}.person-index{font-size:9pt;letter-spacing:1.5pt;color:#b91f35;font-weight:bold}.note{background:#fff8e8;border:1px solid #eed7a3;padding:9pt;margin:10pt 0}</style></head><body>
+ <div class="cover"><h1>AFTERSHOCK 设计团队周报</h1><p>个人 KPI、未完成任务、目前进度、卡点与下周计划</p><div class="meta"><p><strong>统计周期：</strong>${esc(week)} 至 ${esc(endOfWeek(week))}</p><p><strong>生成时间：</strong>${esc(new Date().toLocaleString("zh-CN"))}</p><p><strong>团队成员：</strong>${members.length} 人</p></div>
+ <table class="summary-grid"><tr><td>已完成任务<strong>${done}</strong></td><td>任务总数<strong>${total}</strong></td><td>进行中任务<strong>${active}</strong></td><td>未解决卡点<strong>${blocks}</strong></td></tr></table>
+ <div class="note"><strong>数据说明：</strong>本文件导出所有已录入的 KPI、未完成任务、卡点和计划。未填写的字段会显示“未填写”，不会自动推测成绩。</div><h3>目录</h3><ol>${toc}</ol></div>
+ ${sections}
+ <div class="person-page"><h2>团队整体备注</h2>${docTable([docCell("团队备注 / 风险 / 资源安排",current().teamNotes)])}</div>
+ <\/body><\/html>`;
+}
+function exportFullWordDocument(){
+ save();downloadBlob(new Blob(["\ufeff",buildFullDocument()],{type:"application/msword;charset=utf-8"}),`AFTERSHOCK_Design_Team_Full_Report_${state.activeWeek}.doc`);
+ notify("完整周报文档已导出");
+}
+
+function reportText(value){
+ const v=value===null||value===undefined||String(value).trim()===""?"未填写":String(value);
+ return esc(v).replace(/\n/g,"<br>");
+}
+function reportField(label,value){return `<div class="r-field"><span>${esc(label)}</span><div>${reportText(value)}</div></div>`}
+function reportBadge(label,kind="neutral"){return `<span class="r-badge ${kind}">${esc(label)}</span>`}
+function reportKPI(k, i) {
+  const [status, cls] = kpiStatus(k);
+
+  const target =
+    k.target === "" || k.target == null
+      ? "待确认"
+      : `${k.op === "lte" ? "≤" : "≥"} ${k.target}${k.unit === "%" ? "%" : k.unit ? " " + k.unit : ""}`;
+
+  const actual =
+    num(k.actual) === null
+      ? "未填写"
+      : `${k.actual}${k.unit === "%" ? "%" : k.unit ? " " + k.unit : ""}`;
+
+  return `
+    <article class="r-kpi">
+      <div class="r-kpi-top">
+        <div class="r-kpi-title">
+          <span class="r-kpi-index">${String(i + 1).padStart(2, "0")}</span>
+          <h4>${esc(k.name || "未命名 KPI")}</h4>
+        </div>
+        <span class="r-badge ${cls}">${esc(status)}</span>
+      </div>
+
+      <div class="r-kpi-data">
+        <div class="r-kpi-target">
+          <span>目标值</span>
+          <strong>${esc(target)}</strong>
+        </div>
+
+        <div class="r-kpi-actual">
+          <span>实际值</span>
+          <strong class="${num(k.actual) === null ? "unfilled" : ""}">
+            ${esc(actual)}
+          </strong>
+        </div>
+
+        <div class="r-kpi-weight">
+          <span>权重</span>
+          <strong>${esc(k.weight)}<small>%</small></strong>
+        </div>
+      </div>
+
+      ${
+        k.comment && String(k.comment).trim()
+          ? `
+            <div class="r-comment">
+              <span>考核目的</span>
+              <p>${reportText(k.comment)}</p>
+            </div>
+          `
+          : ""
+      }
+    </article>
+  `;
+}
+
+function reportTask(t){
+ const [status,cls]=taskStatus(t.status);
+ return `<article class="r-item"><div class="r-item-head"><div><h4>${esc(t.title||"未命名任务")}</h4><p class="r-subtitle">预计完成：${esc(t.due||"未定日期")}</p></div>${reportBadge(status,cls)}</div>
+ <div class="r-fields">${reportField("目前进度 / 已完成部分",t.result)}${reportField("剩余工作 / 验收标准",t.acceptance)}${reportField("卡点 / 下一步行动",t.notes)}${reportField("ClickUp / 文件链接",t.link)}</div></article>`;
+}
+function reportBlocker(b){
+ const status=({open:"待处理",inprogress:"处理中",closed:"已解决"})[b.status]||"待处理";
+ const cls=b.status==="closed"?"good":b.status==="inprogress"?"warn":"bad";
+ return `<article class="r-item"><div class="r-item-head"><div><h4>${esc(b.title||"未命名卡点")}</h4><p class="r-subtitle">责任人：${esc(b.owner||"未填写")} · 预计解决：${esc(b.due||"未定日期")}</p></div>${reportBadge(status,cls)}</div>
+ <div class="r-fields">${reportField("业务影响 / 风险",b.impact)}${reportField("解决措施 / 已采取行动",b.action)}</div></article>`;
+}
+function reportPlan(p){
+ const priority=({high:"高",medium:"中",low:"低"})[p.priority]||"未填写";
+ const cls=p.priority==="high"?"bad":p.priority==="low"?"good":"warn";
+ return `<article class="r-item"><div class="r-item-head"><div><h4>${esc(p.title||"未命名计划")}</h4><p class="r-subtitle">截止日期：${esc(p.due||"待定")}</p></div>${reportBadge(priority+"优先级",cls)}</div>
+ <div class="r-fields">${reportField("负责人（Responsible）",p.owner)}${reportField("最终拍板人（Accountable）",p.accountable)}${reportField("预期成果 / 验收标准",p.deliverable)}${reportField("依赖条件 / 备注",p.notes)}</div></article>`;
+}
+function buildVisualHTMLReport() {
+  const week = state.activeWeek;
+  const members = state.members;
+
+  let totalTasks = 0;
+  let doneTasks = 0;
+  let unfinishedTasks = 0;
+  let openBlocks = 0;
+  let totalKpis = 0;
+  let filledKpis = 0;
+  let planCount = 0;
+  let blockerCount = 0;
+
+  members.forEach(m => {
+    const p = personData(m.id);
+    const t = countTasks(p);
+
+    totalTasks += t.total;
+    doneTasks += t.done;
+
+    unfinishedTasks += p.tasks.filter(
+      task => task.status !== "done"
+    ).length;
+
+    openBlocks += countOpenBlockers(p);
+    blockerCount += p.blockers.length;
+    planCount += p.plans.length;
+    totalKpis += p.kpis.length;
+
+    filledKpis += p.kpis.filter(
+      k => num(k.actual) !== null
+    ).length;
+  });
+
+  const dataComplete =
+    totalKpis > 0 && filledKpis === totalKpis;
+
+  const completionRate = Math.round(
+    (filledKpis / Math.max(1, totalKpis)) * 100
+  );
+
+  const nav = members.map(m => `
+    <a href="#member-${esc(m.id)}">
+      <span class="nav-dot" style="background:${m.color}"></span>
+      ${esc(m.name)}
+    </a>
+  `).join("");
+
+  const memberRows = members.map(m => {
+    const p = personData(m.id);
+    const t = countTasks(p);
+
+    const unfinished = p.tasks.filter(
+      task => task.status !== "done"
+    ).length;
+
+    const filled = p.kpis.filter(
+      k => num(k.actual) !== null
+    ).length;
+
+    const percentage = Math.round(
+      (filled / Math.max(1, p.kpis.length)) * 100
+    );
+
+    return `
+      <tr>
+        <td>
+          <a class="member-link" href="#member-${esc(m.id)}">
+            <span class="table-avatar"
+              style="background:${m.color}20;color:${m.color}">
+              ${esc(m.name.slice(0, 2).toUpperCase())}
+            </span>
+
+            <span>
+              <strong>${esc(m.name)}</strong>
+              <small>${esc(m.role)}</small>
+            </span>
+          </a>
+        </td>
+
+        <td>
+          <strong>${filled}/${p.kpis.length}</strong>
+          <div class="mini-progress">
+            <span style="width:${percentage}%"></span>
+          </div>
+        </td>
+
+        <td>${unfinished}</td>
+        <td>${t.done}</td>
+        <td>${countOpenBlockers(p)}</td>
+        <td>${p.plans.length}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const sections = members.map((m, i) => {
+    const p = personData(m.id);
+    const t = countTasks(p);
+
+    const unfinished = p.tasks.filter(
+      task => task.status !== "done"
+    );
+
+    const filled = p.kpis.filter(
+      k => num(k.actual) !== null
+    ).length;
+
+    const kpiWeight = p.kpis.reduce(
+      (sum, k) => sum + (Number(k.weight) || 0),
+      0
+    );
+
+    const percentage = Math.round(
+      (filled / Math.max(1, p.kpis.length)) * 100
+    );
+
+    return `
+      <section class="person-section" id="member-${esc(m.id)}">
+
+        <!-- 人员信息 -->
+        <div class="person-heading">
+          <div class="person-heading-main">
+            <div class="person-avatar"
+              style="background:${m.color}20;color:${m.color}">
+              ${esc(m.name.slice(0, 2).toUpperCase())}
+            </div>
+
+            <div class="person-heading-info">
+              <div class="eyebrow">
+                TEAM MEMBER ${String(i + 1).padStart(2, "0")}
+              </div>
+
+              <h2>${esc(m.name)}</h2>
+              <p class="person-role">${esc(m.role)}</p>
+              <p class="person-desc">${reportText(m.desc)}</p>
+            </div>
+          </div>
+
+          <div class="person-kpi-completion">
+            <strong>
+              ${filled}<span>/${p.kpis.length}</span>
+            </strong>
+            <small>KPI 实际值已填写</small>
+            <div class="mini-progress">
+              <span style="width:${percentage}%"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 个人工作概览 -->
+        <div class="member-stats">
+          <div>
+            <span>未完成任务</span>
+            <strong>${unfinished.length}</strong>
+            <small>当前待完成事项</small>
+          </div>
+
+          <div>
+            <span>已完成任务</span>
+            <strong>${t.done}</strong>
+            <small>已标记完成</small>
+          </div>
+
+          <div>
+            <span>未解决卡点</span>
+            <strong>${countOpenBlockers(p)}</strong>
+            <small>待处理及处理中</small>
+          </div>
+
+          <div>
+            <span>下周计划</span>
+            <strong>${p.plans.length}</strong>
+            <small>已录入计划</small>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">01</span>
+              <div>
+                <h3>个人定制 KPI</h3>
+                <p>考核目标、实际表现及考核目的</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              ${p.kpis.length} 项 · 权重合计 ${kpiWeight}%
+            </span>
+          </div>
+
+          <div class="r-kpi-grid">
+            ${
+              p.kpis.map((k, index) => reportKPI(k, index)).join("")
+              || '<div class="empty-state">尚未设置个人 KPI。</div>'
+            }
+          </div>
+        </section>
+
+        <!-- 未完成任务 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">02</span>
+              <div>
+                <h3>本周未完成任务及目前进度</h3>
+                <p>当前状态、剩余工作和下一步行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              ${unfinished.length} 项未完成
+            </span>
+          </div>
+
+          ${
+            unfinished.map(reportTask).join("")
+            || `
+              <div class="empty-state">
+                <strong>当前没有未完成任务记录</strong>
+                <span>请结合本周实际工作记录确认任务状态。</span>
+              </div>
+            `
+          }
+
+          ${
+            t.done
+              ? `
+                <div class="completed-note">
+                  <span class="completed-icon">✓</span>
+                  本周另有 <strong>${t.done}</strong> 项任务已标记完成。
+                </div>
+              `
+              : ""
+          }
+        </section>
+
+        <!-- 卡点 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">03</span>
+              <div>
+                <h3>卡点与现存问题</h3>
+                <p>问题影响、支持需求和解决行动</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              ${p.blockers.length} 项记录
+            </span>
+          </div>
+
+          ${
+            p.blockers.map(reportBlocker).join("")
+            || `
+              <div class="empty-state">
+                <strong>当前没有卡点记录</strong>
+                <span>空白不代表已经确认不存在问题。</span>
+              </div>
+            `
+          }
+        </section>
+
+        <!-- 下周计划 -->
+        <section class="report-section">
+          <div class="report-section-head">
+            <div class="report-section-title">
+              <span class="section-number">04</span>
+              <div>
+                <h3>下周工作计划</h3>
+                <p>工作成果、负责人和截止日期</p>
+              </div>
+            </div>
+
+            <span class="section-count">
+              ${p.plans.length} 项计划
+            </span>
+          </div>
+
+          ${
+            p.plans.map(reportPlan).join("")
+            || `
+              <div class="empty-state">
+                <strong>尚未录入下周工作计划</strong>
+                <span>请补充任务、责任人、截止日期和预期成果。</span>
+              </div>
+            `
+          }
+        </section>
+
+      </section>
+    `;
+  }).join("");
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>AFTERSHOCK Design Team Weekly Report ${esc(week)}</title>
+
+<style>
+:root {
+  --canvas:#f2f4f7;
+  --surface:#fff;
+  --surface-soft:#f7f8fa;
+  --text:#18212f;
+  --muted:#6c7888;
+  --line:#e1e5eb;
+  --red:#cf263c;
+  --red-dark:#a91f32;
+  --red-soft:#fff0f2;
+  --green:#157b52;
+  --green-soft:#e8f6ef;
+  --amber:#8b5c0a;
+  --amber-soft:#fff4dd;
+  --shadow:0 4px 16px rgba(20,32,48,.035);
+}
+
+* { box-sizing:border-box; }
+
+html {
+  scroll-behavior:smooth;
+  scroll-padding-top:24px;
+}
+
+body {
+  margin:0;
+  background:var(--canvas);
+  color:var(--text);
+  font:14px/1.65 Inter,"Segoe UI","Microsoft YaHei",sans-serif;
+}
+
+a {
+  color:inherit;
+  text-decoration:none;
+}
+
+button {
+  cursor:pointer;
+  border:0;
+  border-radius:8px;
+  padding:10px 14px;
+  background:var(--red);
+  color:white;
+  font-weight:650;
+}
+
+button:hover { background:var(--red-dark); }
+
+.hero {
+  background:#111720;
+  color:#f6f8fb;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero:before {
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:7px;
+  height:100%;
+  background:var(--red);
+}
+
+.hero-inner {
+  max-width:1500px;
+  margin:auto;
+  padding:34px 38px 0;
+}
+
+.topline {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+  border-bottom:1px solid #2b3440;
+  padding-bottom:18px;
+}
+
+.brand {
+  font-size:13px;
+  font-weight:850;
+  letter-spacing:1.8px;
+}
+
+.brand-accent { color:#ff596d; }
+
+.brand-sub {
+  color:#8c9aac;
+  font-weight:500;
+  letter-spacing:1px;
+  margin-left:10px;
+}
+
+.eyebrow {
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:2px;
+  color:#ff6678;
+  text-transform:uppercase;
+}
+
+.report-status {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 11px;
+  border:1px solid #3d4653;
+  border-radius:7px;
+  font-size:11px;
+  font-weight:750;
+}
+
+.status-dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#f1b953;
+}
+
+.report-status.complete .status-dot { background:#4ed39b; }
+
+.hero-main {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:30px;
+  padding:30px 0 26px;
+}
+
+.hero-copy { max-width:850px; }
+
+.hero h1 {
+  font-size:clamp(30px,3.7vw,48px);
+  line-height:1.18;
+  letter-spacing:-1.3px;
+  margin:12px 0 10px;
+}
+
+.hero-description {
+  font-size:14px;
+  color:#b5bfcd;
+  max-width:760px;
+}
+
+.period-card {
+  min-width:220px;
+  border-left:2px solid var(--red);
+  padding:6px 0 6px 16px;
+}
+
+.period-card span {
+  display:block;
+  font-size:10px;
+  color:#8e9bac;
+  letter-spacing:1.3px;
+  font-weight:750;
+}
+
+.period-card strong {
+  display:block;
+  font-size:17px;
+  margin:6px 0;
+}
+
+.period-card small {
+  font-size:11px;
+  color:#8e9bac;
+}
+
+.hero-stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  background:#303946;
+  border-top:1px solid #303946;
+}
+
+.hero-stat {
+  padding:19px 22px;
+  background:#171f2a;
+  min-width:0;
+}
+
+.hero-stat span {
+  display:block;
+  color:#a2afbf;
+  font-size:11px;
+}
+
+.hero-stat strong {
+  display:block;
+  font-size:31px;
+  line-height:1.3;
+  margin:5px 0;
+  color:#fff;
+}
+
+.hero-stat small {
+  font-size:10px;
+  color:#7f8c9d;
+}
+
+.hero-stat.primary-stat strong { color:#ff6376; }
+.hero-stat.warning-stat strong { color:#ffd080; }
+
+.layout {
+  max-width:1500px;
+  margin:auto;
+  padding:28px;
+  display:grid;
+  grid-template-columns:230px minmax(0,1fr);
+  gap:24px;
+  align-items:start;
+}
+
+.toc {
+  position:sticky;
+  top:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.toc-heading {
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:1.2px;
+  color:#758195;
+  margin-bottom:13px;
+}
+
+.toc a {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 8px;
+  border-radius:7px;
+  font-size:12px;
+  color:#536175;
+  margin:2px 0;
+}
+
+.toc a:hover,
+.toc a.active {
+  background:var(--red-soft);
+  color:var(--red);
+  font-weight:750;
+}
+
+.nav-dot {
+  width:8px;
+  height:8px;
+  border-radius:3px;
+  flex-shrink:0;
+}
+
+.toc-divider {
+  height:1px;
+  background:var(--line);
+  margin:10px 0;
+}
+
+.content { min-width:0; }
+
+.overview-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:15px;
+  flex-wrap:wrap;
+  margin:0 0 15px;
+}
+
+.overview-heading h2 {
+  font-size:21px;
+  margin:0;
+}
+
+.overview-heading p {
+  font-size:12px;
+  color:var(--muted);
+  margin:4px 0 0;
+}
+
+.overview-tag {
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:#748094;
+}
+
+.data-alert {
+  display:flex;
+  gap:13px;
+  align-items:flex-start;
+  background:#fff8e8;
+  border:1px solid #f0ddb0;
+  border-left:4px solid #e3a52e;
+  border-radius:9px;
+  padding:14px 16px;
+  margin-bottom:17px;
+}
+
+.data-alert.complete {
+  background:#eef9f3;
+  border-color:#c8e9d8;
+  border-left-color:#299b69;
+}
+
+.alert-icon {
+  width:25px;
+  height:25px;
+  flex-shrink:0;
+  border-radius:7px;
+  background:#f8e8c3;
+  color:#88580b;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+}
+
+.data-alert.complete .alert-icon {
+  background:#d7f0e2;
+  color:#157b52;
+}
+
+.alert-content strong {
+  display:block;
+  font-size:12px;
+  margin-bottom:3px;
+}
+
+.alert-content p {
+  font-size:11px;
+  color:#775e31;
+  margin:0;
+}
+
+.data-alert.complete .alert-content p { color:#386b53; }
+
+.overview-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.overview-card {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:15px 16px;
+  box-shadow:var(--shadow);
+  min-width:0;
+}
+
+.overview-card .metric-label {
+  font-size:11px;
+  color:var(--muted);
+  display:block;
+}
+
+.overview-card strong {
+  display:block;
+  font-size:27px;
+  margin:7px 0 5px;
+}
+
+.overview-card small {
+  font-size:10px;
+  color:#929baa;
+}
+
+.mini-progress {
+  height:4px;
+  background:#e9edf2;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:9px;
+}
+
+.mini-progress span {
+  display:block;
+  height:100%;
+  background:#268c60;
+  border-radius:20px;
+}
+
+.summary-panel,
+.person-section,
+.team-notes {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+}
+
+.summary-panel {
+  padding:18px 19px;
+  margin-bottom:27px;
+}
+
+.panel-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:13px;
+}
+
+.panel-heading h3 { font-size:14px; margin:0; }
+
+.panel-heading p {
+  font-size:11px;
+  color:var(--muted);
+  margin:4px 0 0;
+}
+
+.summary-table-wrap { overflow-x:auto; }
+
+.summary-table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:650px;
+}
+
+.summary-table th,
+.summary-table td {
+  text-align:left;
+  padding:12px 10px;
+  border-bottom:1px solid #edf0f4;
+  vertical-align:middle;
+}
+
+.summary-table th {
+  font-size:10px;
+  font-weight:800;
+  color:#7d8999;
+  background:#f8f9fb;
+}
+
+.summary-table tbody tr:last-child td { border-bottom:0; }
+.summary-table tbody tr:hover td { background:#fafbfd; }
+
+.member-link {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:175px;
+}
+
+.table-avatar {
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:850;
+  flex-shrink:0;
+}
+
+.member-link strong { display:block; font-size:12px; }
+
+.member-link small {
+  display:block;
+  max-width:240px;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:2px;
+}
+
+.person-section {
+  margin:24px 0;
+  overflow:hidden;
+  scroll-margin-top:20px;
+}
+
+.person-heading {
+  padding:23px 24px 18px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.person-heading-main {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
+.person-avatar {
+  width:55px;
+  height:55px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:17px;
+  flex-shrink:0;
+}
+
+.person-heading-info { min-width:0; }
+
+.person-heading-info .eyebrow {
+  font-size:9px;
+  letter-spacing:1.5px;
+}
+
+.person-heading h2 {
+  font-size:23px;
+  margin:4px 0 3px;
+}
+
+.person-role {
+  font-size:12px;
+  color:#455267;
+  font-weight:700;
+  margin:0;
+}
+
+.person-desc {
+  font-size:11px;
+  color:var(--muted);
+  margin:5px 0 0;
+}
+
+.person-kpi-completion {
+  min-width:115px;
+  border-left:1px solid var(--line);
+  padding-left:18px;
+}
+
+.person-kpi-completion>strong {
+  font-size:24px;
+  display:block;
+}
+
+.person-kpi-completion>strong span {
+  font-size:14px;
+  color:#929baa;
+}
+
+.person-kpi-completion>small {
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.member-stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  background:var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.member-stats>div {
+  background:#fafbfc;
+  padding:13px 17px;
+  min-width:0;
+}
+
+.member-stats span {
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.member-stats strong {
+  display:block;
+  font-size:21px;
+  margin:4px 0;
+}
+
+.member-stats small {
+  font-size:10px;
+  color:#929baa;
+}
+
+.report-section { padding:23px 24px 5px; }
+.report-section+.report-section { border-top:1px solid #edf0f4; }
+
+.report-section-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.report-section-title {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.section-number {
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  background:var(--red-soft);
+  color:var(--red);
+  font-size:11px;
+  font-weight:900;
+  flex-shrink:0;
+}
+
+.report-section-head h3 {
+  font-size:15px;
+  margin:0;
+}
+
+.report-section-head p {
+  font-size:11px;
+  color:var(--muted);
+  margin:3px 0 0;
+}
+
+.section-count {
+  font-size:10px;
+  font-weight:750;
+  color:#69778a;
+  background:#f1f3f6;
+  border-radius:6px;
+  padding:5px 8px;
+  white-space:nowrap;
+}
+
+.r-kpi-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+
+.r-kpi {
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  background:#fff;
+  min-width:0;
+}
+
+.r-kpi-top,
+.r-item-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.r-kpi-title {
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  min-width:0;
+}
+
+.r-kpi-index {
+  width:24px;
+  height:24px;
+  border-radius:6px;
+  background:#f1f3f6;
+  color:#68758a;
+  font-size:9px;
+  font-weight:900;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+
+.r-kpi h4 {
+  font-size:12px;
+  line-height:1.5;
+  margin:2px 0 0;
+  overflow-wrap:anywhere;
+}
+
+.r-badge {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  font-weight:850;
+  border-radius:5px;
+  padding:5px 7px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.r-badge.good { color:var(--green); background:var(--green-soft); }
+.r-badge.warn { color:var(--amber); background:var(--amber-soft); }
+.r-badge.bad { color:#b92237; background:#ffebee; }
+.r-badge.neutral { color:#68758a; background:#eef1f5; }
+
+.r-kpi-data {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) 65px;
+  gap:7px;
+  margin-top:13px;
+}
+
+.r-kpi-data>div {
+  border-radius:7px;
+  background:#f6f7f9;
+  padding:10px;
+  min-width:0;
+}
+
+.r-kpi-data span {
+  display:block;
+  font-size:9px;
+  color:#7b8797;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.r-kpi-data strong {
+  display:block;
+  font-size:17px;
+  line-height:1.3;
+  overflow-wrap:anywhere;
+}
+
+.r-kpi-target strong { color:#34445b; }
+
+.r-kpi-actual {
+  background:#f0f8f3!important;
+  border:1px solid #d8eddf;
+}
+
+.r-kpi-actual strong { color:#237c51; }
+.r-kpi-actual strong.unfilled { color:#9099a6; font-size:12px; }
+
+.r-kpi-weight strong { font-size:18px; }
+
+.r-kpi-weight strong small {
+  font-size:10px;
+  color:var(--muted);
+  margin-left:1px;
+}
+
+.r-comment {
+  margin-top:10px;
+  padding:10px 11px;
+  background:#fafbfc;
+  border-left:2px solid #d8dee7;
+  border-radius:0 6px 6px 0;
+}
+
+.r-comment span {
+  display:block;
+  font-size:9px;
+  font-weight:850;
+  color:#758195;
+  margin-bottom:4px;
+}
+
+.r-comment p {
+  font-size:11px;
+  line-height:1.65;
+  color:#4f5d70;
+  margin:0;
+  overflow-wrap:anywhere;
+}
+
+.r-item {
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  background:#fff;
+  margin-bottom:10px;
+  min-width:0;
+}
+
+.r-item-head {
+  padding-bottom:11px;
+  border-bottom:1px solid #edf0f4;
+}
+
+.r-item h4 {
+  font-size:12px;
+  line-height:1.5;
+  margin:0;
+  overflow-wrap:anywhere;
+}
+
+.r-subtitle {
+  font-size:10px;
+  color:var(--muted);
+  margin:5px 0 0;
+}
+
+.r-fields {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-top:11px;
+}
+
+.r-field {
+  padding:10px;
+  background:#f7f8fa;
+  border-radius:7px;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.r-field>span {
+  display:block;
+  font-size:9px;
+  font-weight:750;
+  color:#7d8999;
+  margin-bottom:5px;
+}
+
+.r-field>div {
+  font-size:11px;
+  line-height:1.65;
+  color:#354255;
+  overflow-wrap:anywhere;
+}
+
+.empty-state {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:25px 15px;
+  border:1px dashed #d7dde5;
+  border-radius:9px;
+  background:#fafbfc;
+  text-align:center;
+}
+
+.empty-state strong {
+  font-size:12px;
+  color:#47566a;
+}
+
+.empty-state span {
+  font-size:10px;
+  color:#8b96a5;
+  max-width:450px;
+}
+
+.completed-note {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  background:#edf8f2;
+  border-radius:7px;
+  color:#327453;
+  font-size:11px;
+  margin:8px 0 12px;
+}
+
+.completed-icon {
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#d5efdf;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:900;
+}
+
+.team-notes {
+  padding:20px;
+  margin:24px 0;
+}
+
+.team-notes h2 {
+  font-size:16px;
+  margin:0 0 10px;
+}
+
+.team-notes-content {
+  font-size:12px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+
+.footer {
+  max-width:1500px;
+  margin:auto;
+  padding:0 28px 30px;
+  color:#7c889a;
+  font-size:10px;
+}
+
+@media(max-width:1150px) {
+  .layout { grid-template-columns:200px minmax(0,1fr); gap:15px; padding:20px 15px; }
+  .overview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .r-kpi-grid { grid-template-columns:1fr; }
+  .hero-inner { padding-left:25px; padding-right:25px; }
+}
+
+@media(max-width:850px) {
+  .layout { grid-template-columns:1fr; }
+  .toc { position:static; }
+  .toc-links { display:flex; flex-wrap:wrap; gap:3px; }
+  .toc a { padding:7px; }
+  .hero-main { align-items:flex-start; flex-direction:column; gap:20px; }
+  .period-card { min-width:0; width:100%; }
+  .person-heading { align-items:flex-start; }
+}
+
+@media(max-width:600px) {
+  .hero-inner { padding:20px 15px 0; }
+  .hero h1 { font-size:30px; }
+  .hero-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero-stat { padding:14px; }
+  .hero-stat strong { font-size:25px; }
+  .layout { padding:12px 9px 25px; }
+  .overview-grid { gap:7px; }
+  .overview-card { padding:12px; }
+  .overview-card strong { font-size:23px; }
+  .person-section { margin:15px 0; }
+  .person-heading { padding:16px 13px 14px; gap:12px; }
+  .person-heading-main { gap:10px; }
+  .person-avatar { width:43px; height:43px; font-size:14px; }
+  .person-heading h2 { font-size:20px; }
+  .person-kpi-completion { min-width:75px; padding-left:10px; }
+  .person-kpi-completion>strong { font-size:20px; }
+  .person-kpi-completion>small { font-size:9px; }
+  .member-stats>div { padding:10px; }
+  .member-stats strong { font-size:19px; }
+  .report-section { padding:17px 12px 3px; }
+  .r-kpi-data { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 53px; }
+  .r-kpi-data>div { padding:8px; }
+  .r-kpi-data strong { font-size:15px; }
+  .r-fields { grid-template-columns:1fr; }
+  .summary-panel { padding:12px; }
+  .footer { padding:0 12px 20px; }
+}
+
+@media print {
+  @page { size:A4; margin:11mm; }
+  body { background:#fff; color:#18212f; font-size:10pt; }
+  .hero { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .toc { display:none!important; }
+  .layout { display:block; max-width:none; padding:8px 0; }
+  .hero-inner { padding:20px 22px 0; }
+  .hero-stats,.hero-stat,.person-section,.person-heading,.member-stats,
+  .r-kpi,.r-item,.data-alert,.overview-card,.summary-panel {
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .person-section { box-shadow:none; margin:13px 0; break-before:page; overflow:visible; }
+  .r-kpi,.r-item,.overview-card,.summary-panel { break-inside:avoid; }
+  .footer { padding:8px 0; }
+  a { color:inherit; text-decoration:none; }
+  .r-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .overview-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}
+</style>
+</head>
+
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="topline">
+      <div class="brand">
+        AFTER<span class="brand-accent">SHOCK</span>
+        <span class="brand-sub">DESIGN DEPARTMENT</span>
+      </div>
+
+      <div class="report-status ${dataComplete ? "complete" : ""}">
+        <span class="status-dot"></span>
+        ${dataComplete ? "KPI DATA COMPLETE" : "DATA PENDING"}
+      </div>
+    </div>
+
+    <div class="hero-main">
+      <div class="hero-copy">
+        <div class="eyebrow">WEEKLY PERFORMANCE REPORT</div>
+        <h1>设计团队周报</h1>
+        <p class="hero-description">
+          个人 KPI 表现、未完成任务及进度、卡点与现存问题、下周工作计划。
+        </p>
+      </div>
+
+      <div class="period-card">
+        <span>REPORTING PERIOD</span>
+        <strong>${esc(week)}</strong>
+        <small>至 ${esc(endOfWeek(week))} · 共 ${members.length} 位成员</small>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span>团队成员</span>
+        <strong>${members.length}</strong>
+        <small>当前报告覆盖人员</small>
+      </div>
+
+      <div class="hero-stat primary-stat">
+        <span>KPI 实际值已填写</span>
+        <strong>${filledKpis}<small style="font-size:17px;color:#8c9aac"> / ${totalKpis}</small></strong>
+        <small>以已录入的实际数值为准</small>
+      </div>
+
+      <div class="hero-stat">
+        <span>已录入任务</span>
+        <strong>${totalTasks}</strong>
+        <small>已完成及未完成任务记录</small>
+      </div>
+
+      <div class="hero-stat warning-stat">
+        <span>未解决卡点</span>
+        <strong>${openBlocks}</strong>
+        <small>待处理及处理中</small>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc">
+    <div class="toc-heading">REPORT NAVIGATION</div>
+    <div class="toc-links">
+      <a href="#overview">
+        <span class="nav-dot" style="background:#cf263c"></span>
+        团队执行总览
+      </a>
+    </div>
+
+    <div class="toc-divider"></div>
+    <div class="toc-heading">TEAM MEMBERS</div>
+    <div class="toc-links">${nav}</div>
+
+    <div class="toc-divider"></div>
+    <div class="toc-links">
+      <a href="#team-notes">
+        <span class="nav-dot" style="background:#7f8b9a"></span>
+        团队整体备注
+      </a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <section id="overview">
+      <div class="overview-heading">
+        <div>
+          <h2>团队执行总览</h2>
+          <p>先查看整体数据完整度，再查看每位成员的具体工作和问题。</p>
+        </div>
+        <span class="overview-tag">WEEKLY SUMMARY</span>
+      </div>
+
+      <div class="data-alert ${dataComplete ? "complete" : ""}">
+        <div class="alert-icon">${dataComplete ? "✓" : "!"}</div>
+        <div class="alert-content">
+          <strong>${dataComplete ? "KPI 实际值已全部填写" : "本周报告仍有信息待补充"}</strong>
+          <p>
+            ${
+              dataComplete
+                ? "所有已配置 KPI 均已录入实际值。"
+                : `当前已配置 ${totalKpis} 项 KPI，已填写实际值 ${filledKpis} 项；另有 ${unfinishedTasks} 项未完成任务记录、${blockerCount} 项卡点记录及 ${planCount} 项下周计划记录。空白不代表相关工作或问题不存在，请结合实际情况补充。`
+            }
+          </p>
+        </div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-card">
+          <span class="metric-label">KPI 实际值填写率</span>
+          <strong>${completionRate}%</strong>
+          <small>${filledKpis} / ${totalKpis} 项已填写</small>
+          <div class="mini-progress">
+            <span style="width:${completionRate}%"></span>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <span class="metric-label">未完成任务记录</span>
+          <strong>${unfinishedTasks}</strong>
+          <small>当前导出数据中的未完成事项</small>
+        </div>
+
+        <div class="overview-card">
+          <span class="metric-label">已完成任务记录</span>
+          <strong>${doneTasks}</strong>
+          <small>已明确标记为完成</small>
+        </div>
+
+        <div class="overview-card">
+          <span class="metric-label">下周工作计划</span>
+          <strong>${planCount}</strong>
+          <small>全团队已录入的计划</small>
+        </div>
+      </div>
+
+      <div class="summary-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>成员工作状态一览</h3>
+            <p>快速定位 KPI 未填写、任务待推进及尚未解决的卡点。</p>
+          </div>
+          <span class="overview-tag">TEAM STATUS</span>
+        </div>
+
+        <div class="summary-table-wrap">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>成员 / 岗位</th>
+                <th>KPI 实际值</th>
+                <th>未完成任务</th>
+                <th>已完成任务</th>
+                <th>未解决卡点</th>
+                <th>下周计划</th>
+              </tr>
+            </thead>
+            <tbody>${memberRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    ${sections}
+
+    <section class="team-notes" id="team-notes">
+      <div class="eyebrow">TEAM-WIDE NOTES</div>
+      <h2>团队整体备注、风险与资源需求</h2>
+      <div class="team-notes-content">${reportText(current().teamNotes)}</div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <p>AFTERSHOCK PC · Design Department · ${esc(week)} 至 ${esc(endOfWeek(week))}</p>
+  <p>本报告根据管理工具中已录入的信息生成。未填写的数据不会被推测或自动补齐。</p>
+</footer>
+
+<script>
+document.querySelectorAll(".toc a").forEach(link => {
+  link.addEventListener("click", () => {
+    document.querySelectorAll(".toc a").forEach(item => {
+      item.classList.remove("active");
+    });
+    link.classList.add("active");
+  });
+});
+<\/script>
+<\/body>
+<\/html>`;
+}
+
+function exportVisualHTMLReport(){
+ save();downloadBlob(new Blob(["\ufeff",buildVisualHTMLReport()],{type:"text/html;charset=utf-8"}),`AFTERSHOCK_Design_Team_Visual_Report_${state.activeWeek}.html`);
+ notify("可视化网页报告已导出，可直接用浏览器打开");
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");
+ if(b){
+  const a=b.dataset.action;
+  if(a==="person"){state.selectedId=b.dataset.id;save();render();}
+  if(a==="team"){state.selectedId="team";save();render();}
+  if(a==="add")addRecord(b.dataset.kind);
+  if(a==="delete")deleteRecord(b.dataset.kind,b.dataset.id);
+  if(a==="edit-member")editMember();
+ }
+ const row=e.target.closest("tr[data-person]");
+ if(row){state.selectedId=row.dataset.person;save();render();}
+});
+
+function deleteRecord(kind,id){
+ const p=personData(state.selectedId);if(!p)return;
+ const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:p.plans;
+ const item=list.find(x=>x.id===id);if(!item)return;
+ if(!confirm(`确定删除「${item.name||item.title||item.id}」吗？`))return;
+ list.splice(list.indexOf(item),1);save();render();
+}
+function editMember(){
+ const m=selected();if(!m)return;
+ const host=document.createElement("div");host.className="card";
+ host.innerHTML=`<h3 style="margin-bottom:12px">编辑人员信息</h3><div class="grid">
+ ${field("姓名",'<input id="editName" value="'+esc(m.name)+'">')}
+ ${field("岗位",'<input id="editRole" value="'+esc(m.role)+'">')}
+ ${field("工作职责",'<textarea id="editDesc">'+esc(m.desc||"")+'</textarea>',true)}
+ </div><div style="display:flex;gap:8px;margin-top:12px"><button class="primary" id="saveMember">保存</button><button id="cancelMember">取消</button></div>`;
+ $("personView").prepend(host);
+ $("cancelMember").onclick=()=>host.remove();
+ $("saveMember").onclick=()=>{
+  const name=$("editName").value.trim();if(!name){notify("姓名不能为空");return;}
+  m.name=name;m.role=$("editRole").value.trim();m.desc=$("editDesc").value.trim();save();render();
+ };
+}
+function addMember(){
+ const name=prompt("请输入成员姓名：");if(!name||!name.trim())return;
+ const role=prompt("请输入岗位名称：")||"Design Team Member";
+ const desc=prompt("请输入主要工作职责：")||"",id=uid();
+ const m={id,name:name.trim(),role,desc,color:COLORS[state.members.length%COLORS.length],kpis:[]};
+ state.members.push(m);
+ Object.values(state.weeks).forEach(w=>w.people[id]={kpis:[],tasks:[],blockers:[],plans:[]});
+ state.selectedId=id;save();render();
+}
+function switchWeek(value,ask=true){
+ const w=monday(value);
+ if(!state.weeks[w]){
+  const people={};
+  state.members.forEach(m=>{const profile=PROFILES.find(x=>x.id===m.id);people[m.id]={kpis:(profile?profile.kpis:[]).map(createKPI),tasks:[],blockers:[],plans:[]};});
+  if(ask&&confirm("是否结转上一周未完成的任务和未解决卡点？")){
+   state.members.forEach(m=>{
+    const old=personData(m.id);if(!old)return;
+    people[m.id].tasks=old.tasks.filter(t=>t.status!=="done").map(t=>({...t,id:uid(),result:"",notes:`从 ${state.activeWeek} 结转：${t.notes||"请重新确认进度"}`}));
+    people[m.id].blockers=old.blockers.filter(b=>b.status!=="closed").map(b=>({...b,id:uid()}));
+   });
+  }
+  state.weeks[w]={people,teamNotes:"",createdAt:new Date().toISOString()};
+ }
+ state.activeWeek=w;ensureState();save();render();
+}
+
+$("weekInput").addEventListener("change",e=>{if(e.target.value)switchWeek(e.target.value,true)});
+$("weekSelect").addEventListener("change",e=>switchWeek(e.target.value,false));
+$("newWeek").onclick=()=>switchWeek(nextWeek(state.activeWeek),true);
+$("teamView").onclick=()=>{state.selectedId="team";save();render()};
+$("addMember").onclick=addMember;
+$("exportDoc").onclick=exportFullWordDocument;
+$("exportHtml").onclick=exportVisualHTMLReport;
+$("printPage").onclick=()=>window.print();
+
+render();
+save();
+})();
+</script>
+</body>
+</html>
