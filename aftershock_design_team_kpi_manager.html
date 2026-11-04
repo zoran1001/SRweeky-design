@@ -88,6 +88,16 @@ tr[data-person]:hover td{background:#202c3a}
 .progress{height:6px;border-radius:20px;background:#303d4e;overflow:hidden;margin:12px 0}
 .progress span{height:100%;display:block;background:var(--green)}
 .toast{position:fixed;right:20px;bottom:20px;background:#274335;border:1px solid #3e7258;color:#b5f0cd;padding:12px 16px;border-radius:9px;opacity:0;pointer-events:none;transition:.2s;z-index:20}
+button.ghost{background:#eef1f5;color:#33404f}
+button.ghost:hover{background:#e4e9ef}
+.modal{position:fixed;inset:0;background:rgba(16,24,38,.45);display:none;z-index:30;padding:24px;overflow:auto}
+.modal.show{display:flex}
+.modal-box{background:#fff;border-radius:14px;width:min(760px,100%);margin:auto;padding:20px;box-shadow:0 20px 60px rgba(16,24,38,.25)}
+.modal-box h3{margin:0 0 6px;font-size:16px}
+.modal-box p{margin:0 0 12px;color:#6c7888;font-size:13px;line-height:1.65}
+.modal-box textarea{width:100%;height:300px;font:12px/1.6 Consolas,Monaco,monospace;border:1px solid var(--line,#e1e5eb);border-radius:9px;padding:10px;resize:vertical;color:#18212f}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+@media (max-width:700px){.modal{padding:12px}.modal-box{padding:14px}.modal-box textarea{height:240px}.modal-actions button{flex:1 1 auto}}
 .toast.show{opacity:1}
 footer{color:var(--sub);font-size:11px;margin-top:20px}
 @media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.main{padding:20px 15px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -166,6 +176,8 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
   <div class="sidebar-bottom">
     <button id="teamView">▦ 团队总览</button>
     <button id="addMember">＋ 添加成员</button>
+    <button id="aiTemplate">复制 AI 填写模板</button>
+    <button id="aiImport">导入 AI 填写结果</button>
     <button id="exportDoc" class="primary">导出完整周报文档（Word）</button>
     <button id="exportHtml">导出可视化网页报告（HTML）</button>
     <button id="shareLink">生成分享链接（只读预览）</button>
@@ -187,6 +199,19 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
   <section id="teamViewPanel" class="hidden"></section>
   <footer>数据会自动保存在当前浏览器中，不会同步到 ClickUp 或其他设备。</footer>
 </main>
+</div>
+<div class="modal" id="aiModal">
+ <div class="modal-box">
+  <h3>导入 AI 填写结果</h3>
+  <p>把 AI 返回的 JSON 粘贴到下面，或选择一个 JSON 文件。导入会覆盖本周对应成员的未完成任务、卡点和下周计划，KPI 只更新实际值和考核说明。</p>
+  <textarea id="aiInput" placeholder='{"week":"2026-11-02","members":[{"name":"Zoran","kpis":[{"name":"团队准时交付率","actual":"96","comment":"..."}]}]}'></textarea>
+  <div class="modal-actions">
+   <input type="file" id="aiFile" accept=".json,.txt,application/json" hidden>
+   <button type="button" id="aiPick" class="ghost">选择文件</button>
+   <button type="button" id="aiCancel" class="ghost">取消</button>
+   <button type="button" id="aiApply">导入并填写</button>
+  </div>
+ </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2468,6 +2493,147 @@ $("exportHtml").onclick=exportVisualHTMLReport;
 $("shareLink").onclick=shareReport;
 $("publishShare").onclick=publishFixedReport;
 $("printPage").onclick=()=>window.print();
+
+/* AI 批量填写：页面先给模板 → 粘贴给 AI → AI 返回 JSON → 导回页面自动填写 */
+const AI_TASK_STATUS=["todo","ongoing","review","blocked","done"];
+const AI_BLOCK_STATUS=["open","inprogress","closed"];
+
+function buildAITemplate(){
+ const end=endOfWeek(state.activeWeek);
+ const roster=state.members.map(m=>{
+  const p=personData(m.id)||{kpis:[]};
+  const lines=(p.kpis||[]).map(k=>`    · ${k.name}（目标 ${k.op==="lte"?"≤":"≥"}${k.target}${k.unit||""}，权重 ${k.weight}%）`).join("\n");
+  return `${m.name}（${m.role}）\n${lines||"    · 暂无"}`;
+ }).join("\n\n");
+
+ return [
+  "你是 AFTERSHOCK 设计团队的周报整理助手。请把我提供的本周工作材料整理成下面这个 JSON 结构。",
+  "只输出 JSON，不要解释文字，不要代码块标记。",
+  "",
+  `【周期】${state.activeWeek} 至 ${end}`,
+  "",
+  "【成员与现有 KPI】KPI 的名称、目标值、权重都不能改动，你只需要补充 actual（实际值）和 comment（考核说明）。",
+  roster,
+  "",
+  "【输出 JSON 结构】",
+  "{",
+  `  "week": "${state.activeWeek}",`,
+  '  "members": [',
+  "    {",
+  '      "name": "Zoran",',
+  '      "kpis": [{"name": "团队准时交付率", "actual": "96", "comment": "本周重点项目推进顺利"}],',
+  '      "tasks": [{"title": "任务名称", "status": "ongoing", "complexity": "high", "due": "2026-11-06", "result": "当前进度", "acceptance": "验收标准", "notes": "下一步行动", "link": ""}],',
+  '      "blockers": [{"title": "卡点名称", "status": "open", "priority": "high", "owner": "责任人", "due": "2026-11-08", "impact": "造成的影响", "action": "需要的支持与解决措施"}],',
+  '      "plans": [{"title": "计划内容", "priority": "medium", "due": "2026-11-13", "owner": "负责人", "accountable": "协作人", "deliverable": "预期成果", "notes": "备注"}]',
+  "    }",
+  "  ]",
+  "}",
+  "",
+  "【填写规则】",
+  "1. name 必须和上面列出的成员名完全一致。",
+  '2. actual 只填数字，不带 % 或单位；无法确定的留空字符串 ""。',
+  "3. tasks 填本周未完成或需要跟进的任务；status 只能是 todo、ongoing、review、blocked、done。",
+  "4. blockers 的 status 只能是 open、inprogress、closed。",
+  "5. due 用 YYYY-MM-DD 格式，不确定就留空字符串。",
+  "6. 没有的内容用空数组 []，不要编造数据。",
+  "",
+  "【我的本周材料】（把下面这段换成你要给 AI 的原始记录）",
+  "……"
+ ].join("\n");
+}
+
+function aiText(v,fallback){return v==null||v===""?String(fallback??""):String(v)}
+
+function applyAIData(raw){
+ let text=String(raw||"").trim();
+ if(!text)throw new Error("还没有粘贴任何内容");
+ text=text.replace(/^```[a-zA-Z]*\s*/,"").replace(/```\s*$/,"").trim();
+
+ let data;
+ try{data=JSON.parse(text)}catch(parseError){
+  const start=text.indexOf("{"),finish=text.lastIndexOf("}");
+  if(start<0||finish<=start)throw new Error("没有找到 JSON 内容，请确认 AI 返回的是 JSON");
+  data=JSON.parse(text.slice(start,finish+1));
+ }
+
+ const list=Array.isArray(data&&data.members)?data.members:(Array.isArray(data)?data:null);
+ if(!list||!list.length)throw new Error("JSON 里缺少 members 数组");
+
+ let hit=0,kpiCount=0,taskCount=0,blockerCount=0,planCount=0;
+
+ list.forEach(item=>{
+  const key=String((item&&(item.name||item.id))||"").trim().toLowerCase();
+  if(!key)return;
+  const member=state.members.find(x=>x.id.toLowerCase()===key||x.name.trim().toLowerCase()===key);
+  if(!member)return;
+  const p=personData(member.id);
+  if(!p)return;
+  hit++;
+
+  if(Array.isArray(item.kpis))item.kpis.forEach(k=>{
+   const target=p.kpis.find(x=>x.name===k.name);
+   if(!target)return;
+   const actual=String(k.actual==null?"":k.actual).replace(/[^0-9.\-]/g,"");
+   if(actual!=="")target.actual=actual;
+   if(k.comment)target.comment=String(k.comment);
+   kpiCount++;
+  });
+
+  if(Array.isArray(item.tasks)){
+   p.tasks=item.tasks.map(t=>({
+    id:uid(),title:aiText(t.title),status:AI_TASK_STATUS.includes(t.status)?t.status:"ongoing",
+    complexity:aiText(t.complexity,"medium"),due:aiText(t.due),result:aiText(t.result),
+    acceptance:aiText(t.acceptance),notes:aiText(t.notes),link:aiText(t.link)
+   }));
+   taskCount+=p.tasks.length;
+  }
+
+  if(Array.isArray(item.blockers)){
+   p.blockers=item.blockers.map(b=>({
+    id:uid(),title:aiText(b.title),status:AI_BLOCK_STATUS.includes(b.status)?b.status:"open",
+    priority:aiText(b.priority,"medium"),owner:aiText(b.owner),due:aiText(b.due),
+    impact:aiText(b.impact),action:aiText(b.action)
+   }));
+   blockerCount+=p.blockers.length;
+  }
+
+  if(Array.isArray(item.plans)){
+   p.plans=item.plans.map(x=>({
+    id:uid(),title:aiText(x.title),priority:aiText(x.priority,"medium"),due:aiText(x.due),
+    owner:aiText(x.owner,member.name),accountable:aiText(x.accountable),
+    deliverable:aiText(x.deliverable),notes:aiText(x.notes)
+   }));
+   planCount+=p.plans.length;
+  }
+ });
+
+ if(!hit)throw new Error("没有成员能对上，请检查 JSON 里的 name 是否和页面成员名一致");
+
+ save();render();
+ $("aiModal").classList.remove("show");
+ notify(`已导入 ${hit} 位成员：KPI ${kpiCount} 项、任务 ${taskCount} 条、卡点 ${blockerCount} 条、计划 ${planCount} 条`);
+}
+
+$("aiTemplate").onclick=async()=>{
+ const ok=await copyText(buildAITemplate());
+ if(ok){notify("AI 模板已复制，直接粘贴给 AI 即可");return}
+ $("aiInput").value=buildAITemplate();
+ $("aiModal").classList.add("show");
+ notify("自动复制失败，模板已放到导入框，请手动复制");
+};
+$("aiImport").onclick=()=>{$("aiInput").value="";$("aiModal").classList.add("show")};
+$("aiCancel").onclick=()=>$("aiModal").classList.remove("show");
+$("aiPick").onclick=()=>$("aiFile").click();
+$("aiFile").onchange=async e=>{
+ const file=e.target.files&&e.target.files[0];
+ if(!file)return;
+ $("aiInput").value=await file.text();
+ notify("已读取文件："+file.name);
+};
+$("aiApply").onclick=()=>{
+ try{applyAIData($("aiInput").value)}
+ catch(applyError){notify("导入失败："+applyError.message)}
+};
 
 const shareParam=new URLSearchParams(location.search).get("share");
 if(shareParam){
