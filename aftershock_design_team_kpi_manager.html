@@ -203,7 +203,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
 <div class="modal" id="aiModal">
  <div class="modal-box">
   <h3>粘贴 AI 整理好的文案</h3>
-  <p>把 AI 按模板返回的文案整段粘贴到下面，或选择一个 txt 文件。导入会覆盖本周对应成员的未完成任务、卡点和下周计划，KPI 只更新实际值和考核说明。某一段没有记录时，原有内容会保留。</p>
+  <p>可以直接粘贴完整周报正文（按「### 成员 — 角色」分小节，含个人 KPI、完成工作、未完成任务、卡点、下周计划的写法），也可以粘贴 AI 按模板返回的竖线文案，或选择一个 txt 文件。导入会覆盖本周对应成员的任务、卡点和计划，KPI 只更新实际值；某一段没有内容时原有数据保留。</p>
   <textarea id="aiInput" placeholder='【成员】Zoran&#10;【KPI】&#10;团队准时交付率｜96｜本周重点项目推进顺利&#10;【未完成任务】&#10;圣诞 Campaign 主视觉延展｜进行中｜2026-11-06｜已完成 80%｜按确认 Brief 输出｜等待客户确认'></textarea>
   <div class="modal-actions">
    <input type="file" id="aiFile" accept=".txt,.md,text/plain" hidden>
@@ -2560,10 +2560,7 @@ function normalizeDate(value){
  return m?`${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`:"";
 }
 
-function applyAIText(raw){
- const source=String(raw||"").replace(/\r\n/g,"\n").trim();
- if(!source)throw new Error("还没有粘贴任何内容");
-
+function parsePipeText(source){
  const list=[];
  let block=null,section=null;
 
@@ -2605,7 +2602,95 @@ function applyAIText(raw){
   }
  });
 
- if(!list.length)throw new Error("没有找到【成员】行，请确认粘贴的是 AI 返回的整理结果");
+ if(!list.length)throw new Error("没有找到【成员】行");
+ return list;
+}
+
+function isNarrativeText(source){return /^\s*#{2,4}\s/m.test(source)}
+
+function narrativeStatus(text){
+ const value=String(text||"");
+ if(/审核|Review/.test(value))return "review";
+ if(/受阻|Blocked|停滞/.test(value))return "blocked";
+ if(/制作中|正在制作|进行中|推进中|正在推进/.test(value))return "ongoing";
+ return "todo";
+}
+
+function addNarrativeItem(block,section,text){
+ const clean=String(text||"").replace(/[。；;]+$/,"").trim();
+ if(!clean)return;
+ if(section==="kpis"){
+  const parts=clean.match(/^(.+?)[：:](.*)$/);
+  if(!parts)return;
+  const name=parts[1].replace(/[（(].*?[）)]/g,"").trim();
+  const rest=parts[2]||"";
+  const actual=rest.match(/实际[^\d]{0,6}(\d+(?:\.\d+)?)/);
+  block.kpis.push({name,actual:actual?actual[1]:"",comment:""});
+  return;
+ }
+ if(section==="plans"){
+  block.plans.push({title:clean,priority:"medium",due:"",owner:block.name,accountable:"",deliverable:"",notes:""});
+  return;
+ }
+ block.tasks.push({
+  title:clean,
+  status:section==="done"?"done":narrativeStatus(clean),
+  complexity:"medium",due:"",result:"",acceptance:"",notes:"",link:""
+ });
+}
+
+function parseNarrative(source){
+ const blocks=[];
+ let block=null,section=null;
+
+ source.split("\n").forEach(rawLine=>{
+  const line=rawLine.trim();
+  if(!line)return;
+
+  if(/^#{2,4}\s/.test(line)){
+   const heading=line.match(/^#{2,4}\s*(?:\d+\.\s*)?(.+)$/);
+   const title=heading?heading[1].replace(/\*\*/g,"").trim():"";
+   block={name:title.split(/\s*—\s*|–|\s-\s/)[0].trim(),kpis:[],tasks:[],blockers:[],plans:[]};
+   blocks.push(block);
+   section=null;
+   return;
+  }
+
+  const label=line.match(/^\*\*(.+?)[：:]\s*\*\*$/)||line.match(/^([^：:\n]{2,12})[：:]\s*$/);
+  if(label){
+   const text=label[1];
+   if(/kpi/i.test(text))section="kpis";
+   else if(/完成工作/.test(text))section="done";
+   else if(/未完成/.test(text))section="tasks";
+   else if(/卡点|问题/.test(text))section="blockers";
+   else if(/计划/.test(text))section="plans";
+   else return;
+   return;
+  }
+
+  if(!block||!section)return;
+  if(/尚待统计|实际 KPI/.test(line))return;
+
+  const clean=line.replace(/^[-*•]\s*/,"").replace(/^\d+[.、)]\s*/,"").trim();
+  if(!clean)return;
+
+  if(section==="blockers"){
+   block.blockers.push({title:clean.replace(/[。；;]+$/,""),status:"open",priority:"medium",owner:"",due:"",impact:"",action:""});
+   return;
+  }
+
+  clean.split(/[；;]/).map(x=>x.trim()).filter(Boolean).forEach(part=>addNarrativeItem(block,section,part));
+ });
+
+ return blocks;
+}
+
+function applyAIText(raw){
+ const source=String(raw||"").replace(/\r\n/g,"\n").trim();
+ if(!source)throw new Error("还没有粘贴任何内容");
+
+ const list=isNarrativeText(source)?parseNarrative(source):parsePipeText(source);
+ if(!list.length)throw new Error("没有识别到成员内容，请确认粘贴的是周报正文或 AI 模板结果");
 
  let hit=0,kpiCount=0,taskCount=0,blockerCount=0,planCount=0;
 
