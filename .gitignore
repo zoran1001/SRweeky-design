@@ -1,0 +1,7 @@
+# 成员提交的真实数据，不要上传
+data/
+
+# 临时与本地缓存
+*.tmp
+.screenshots/
+.trae-html-share-packages/

@@ -36,7 +36,6 @@ input[type=date]{color-scheme:dark}
 .navtext strong{display:block}
 .navtext small{display:block;color:var(--sub);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .navcount{color:var(--muted);font-size:11px}
-.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:14px;display:grid;gap:8px}
 .main{padding:26px 30px 60px;min-width:0;max-width:1800px;width:100%}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px}
 .eyebrow{color:var(--orange);font-size:11px;font-weight:800;letter-spacing:1px}
@@ -45,7 +44,12 @@ h2{font-size:21px;margin:0}
 h3{font-size:16px;margin:0}
 p{margin:4px 0}
 .muted{color:var(--muted);font-size:12px}
-.actions{display:flex;gap:7px;flex-wrap:wrap}
+.actions{display:flex;gap:7px;flex-wrap:wrap;position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 8px);display:flex;flex-direction:column;gap:4px;min-width:190px;background:#fff;border:1px solid #e1e5eb;border-radius:10px;padding:7px;box-shadow:0 16px 44px rgba(16,24,38,.18);z-index:25}
+.menu[hidden]{display:none}
+.menu button{background:transparent;border-color:transparent;color:#18212f;text-align:left;padding:9px 12px;font-weight:600}
+.menu button:hover{background:#f2f4f7}
+body.compact #personView .detail-card{display:none}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:17px}
 .stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px;margin-bottom:14px}
 .stat{margin:0;background:linear-gradient(150deg,#18212d,#121921)}
@@ -95,11 +99,38 @@ button.ghost:hover{background:#e4e9ef}
 .modal-box{background:#fff;border-radius:14px;width:min(760px,100%);margin:auto;padding:20px;box-shadow:0 20px 60px rgba(16,24,38,.25)}
 .modal-box h3{margin:0 0 6px;font-size:16px}
 .modal-box p{margin:0 0 12px;color:#6c7888;font-size:13px;line-height:1.65}
-.modal-box textarea{width:100%;height:300px;font:12px/1.6 Consolas,Monaco,monospace;border:1px solid var(--line,#e1e5eb);border-radius:9px;padding:10px;resize:vertical;color:#18212f}
+.modal-box textarea{width:100%;height:300px;font:12px/1.6 Consolas,Monaco,monospace;border:1px solid #e1e5eb;border-radius:9px;padding:10px;resize:vertical;color:#18212f;background:#fff}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
 @media (max-width:700px){.modal{padding:12px}.modal-box{padding:14px}.modal-box textarea{height:240px}.modal-actions button{flex:1 1 auto}}
 .toast.show{opacity:1}
 footer{color:var(--sub);font-size:11px;margin-top:20px}
+/* 成员填写页 */
+.fill{max-width:760px;margin:0 auto;padding:20px 14px 110px}
+.fill-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.fill h1{font-size:20px;margin:0}
+.fill .muted{font-size:12px}
+.kpi-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kpi-row:last-child{border-bottom:0}
+.kpi-row span:last-child{color:var(--muted);white-space:nowrap}
+.fillitem{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:9px;background:#151f2a}
+.fillitem .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.fillitem .row.two{grid-template-columns:1fr 1fr;margin-top:8px}
+.fillitem .row.three{grid-template-columns:1fr 1fr 1fr;margin-top:8px}
+.fillitem textarea{min-height:62px;margin-top:8px}
+.fillitem label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+.fillitem .del{color:#ff8a95}
+.fillbar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 14px;background:#0d141d;border-top:1px solid var(--line);z-index:30}
+.fillbar button{flex:1}
+.fillbar .ghost{flex:0 0 110px}
+.invite-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf0f4;color:#18212f}
+.invite-row:last-child{border-bottom:0}
+.invite-row .who{flex:1;min-width:0}
+.invite-row strong{display:block;font-size:13px}
+.invite-row small{color:#6c7888;font-size:11px}
+.invite-row .linkbox{display:block;width:100%;height:46px;margin-top:6px;padding:6px 8px;font:10.5px/1.45 Consolas,Monaco,monospace;color:#4a5666;background:#f7f9fb;border:1px solid #e1e5eb;border-radius:6px;resize:none;word-break:break-all;cursor:text}
+.invite-row .linkbox:focus{border-color:#7aaefc;outline:none}
+.top-badge{display:inline-block;margin-left:6px;font-size:10px;color:#2f9e72;font-weight:700}
+@media(max-width:700px){.fillitem .row.three{grid-template-columns:1fr 1fr}.fillbar .ghost{flex:0 0 92px}}
 @media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.main{padding:20px 15px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){
  body{font-size:13.5px}
@@ -119,9 +150,6 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
  .navtext strong{font-size:12.5px}
  .navtext small{font-size:10px}
  .navcount{font-size:10px}
- .sidebar-bottom{margin-top:2px;padding-top:9px;grid-template-columns:1fr 1fr;gap:6px}
- .sidebar-bottom button{padding:8px 6px;font-size:12px;line-height:1.35}
- .sidebar-bottom .muted{grid-column:1/-1;text-align:center}
  .main{padding:14px 10px 40px}
  .top{margin-bottom:14px;gap:8px}
  h1{font-size:20px}
@@ -155,7 +183,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
 @media print{body{background:white;color:#111}.sidebar,.actions,button{display:none!important}.app{display:block}.main{padding:0}.card,.stat,.record,.metric{background:white;color:#111;box-shadow:none;border-color:#ddd}.metricbody,.recordbody{background:white}.muted,.field label{color:#444}input,select,textarea{background:white;color:#111;border-color:#ddd}.metric,.record{break-inside:avoid}}
 </style>
 </head>
-<body>
+<body class="compact">
 <div class="app">
 <aside class="sidebar">
   <div class="brand">
@@ -173,17 +201,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
     <div class="label">TEAM MEMBERS</div>
     <nav class="nav" id="memberNav"></nav>
   </div>
-  <div class="sidebar-bottom">
-    <button id="teamView">▦ 团队总览</button>
-    <button id="addMember">＋ 添加成员</button>
-    <button id="aiTemplate">复制 AI 填写模板</button>
-    <button id="aiImport">粘贴 AI 文案导入</button>
-    <button id="exportDoc" class="primary">导出完整周报文档（Word）</button>
-    <button id="exportHtml">导出可视化网页报告（HTML）</button>
-    <button id="shareLink">生成分享链接（只读预览）</button>
-    <button id="publishShare">发布到固定地址（短链接）</button>
-    <div class="muted" id="saveStatus">本地自动保存</div>
-  </div>
+  <div class="muted" id="saveStatus">本地自动保存</div>
 </aside>
 <main class="main">
   <header class="top">
@@ -192,7 +210,23 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
       <h1 id="pageTitle">设计团队 KPI 与周任务管理</h1>
       <div class="muted" id="periodText"></div>
     </div>
-    <div class="actions"><button id="printPage">打印当前页面 / PDF</button></div>
+    <div class="actions">
+      <button id="teamView" class="ghost">团队总览</button>
+      <button id="addMember" class="ghost">＋ 成员</button>
+      <button id="aiImport" class="primary">AI 一键填写</button>
+      <button id="detailToggle" class="ghost">展开详情</button>
+      <button id="moreBtn" class="ghost">⋯ 更多</button>
+      <div class="menu" id="moreMenu" hidden>
+        <button id="exportDoc">导出 Word 周报</button>
+        <button id="exportHtml">导出网页报告</button>
+        <button id="shareLink">生成分享链接</button>
+        <button id="publishShare">发布到固定地址</button>
+        <button id="inviteMembers">邀请成员填写</button>
+        <button id="receiveSubmit">接收成员提交</button>
+        <button id="syncSubmissions">同步成员提交</button>
+        <button id="printPage">打印 / PDF</button>
+      </div>
+    </div>
   </header>
   <section class="stats" id="stats"></section>
   <section id="personView"></section>
@@ -206,7 +240,8 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
   <p>可以直接粘贴完整周报正文（按「### 成员 — 角色」分小节，含个人 KPI、完成工作、未完成任务、卡点、下周计划的写法），也可以粘贴 AI 按模板返回的竖线文案，或选择一个 txt 文件。导入会覆盖本周对应成员的任务、卡点和计划，KPI 只更新实际值；某一段没有内容时原有数据保留。</p>
   <textarea id="aiInput" placeholder='【成员】Zoran&#10;【KPI】&#10;团队准时交付率｜96｜本周重点项目推进顺利&#10;【未完成任务】&#10;圣诞 Campaign 主视觉延展｜进行中｜2026-11-06｜已完成 80%｜按确认 Brief 输出｜等待客户确认'></textarea>
   <div class="modal-actions">
-   <input type="file" id="aiFile" accept=".txt,.md,text/plain" hidden>
+   <input type="file" id="aiFile" accept=".txt,.md,.json,application/json,text/plain" hidden>
+   <button type="button" id="aiTemplate" class="ghost">复制模板</button>
    <button type="button" id="aiPick" class="ghost">选择文件</button>
    <button type="button" id="aiCancel" class="ghost">取消</button>
    <button type="button" id="aiApply">导入并填写</button>
@@ -319,9 +354,6 @@ const num=v=>v===""||v==null||!Number.isFinite(Number(v))?null:Number(v);
 function createKPI(x){
  return {id:uid(),name:x[0],target:x[1],unit:x[2],weight:x[3],op:x[4],comment:x[5]||"",actual:""};
 }
-function createPerson(member){
- return {kpis:(member.kpis||[]).filter(Array.isArray).map(createKPI),tasks:[],blockers:[],plans:[]};
-}
 function initialState(){
  const w=monday(todayISO()),people={};
  PROFILES.forEach(m=>people[m.id]={kpis:m.kpis.map(createKPI),tasks:[],blockers:[],plans:[]});
@@ -369,6 +401,7 @@ if(!state.weeks[state.activeWeek])state.activeWeek=Object.keys(state.weeks)[0]||
 migrateKpis();
 
 function ensureState(){
+ state.submissions=state.submissions&&typeof state.submissions==="object"?state.submissions:{};
  state.members.forEach(m=>Object.values(state.weeks).forEach(w=>{
   w.people ||= {};
   if(!w.people[m.id])w.people[m.id]={kpis:[],tasks:[],blockers:[],plans:[]};
@@ -394,7 +427,8 @@ function save(){
  }
 }
 function notify(s){
- const e=$("toast");e.textContent=s;e.classList.add("show");
+ const e=$("toast")||$("toastFill");if(!e)return;
+ e.textContent=s;e.classList.add("show");
  clearTimeout(notify.timer);notify.timer=setTimeout(()=>e.classList.remove("show"),2500);
 }
 function field(label,html,wide=false){return `<div class="field ${wide?"wide":""}"><label>${label}</label>${html}</div>`}
@@ -434,9 +468,10 @@ function renderTop(){
 function renderNav(){
  $("memberNav").innerHTML=state.members.map(m=>{
   const p=personData(m.id),filled=p.kpis.filter(k=>num(k.actual)!==null).length;
+  const submitted=((state.submissions||{})[state.activeWeek]||{})[m.id];
   return `<button class="${state.selectedId===m.id?"active":""}" data-action="person" data-id="${m.id}">
    <span class="avatar" style="background:${m.color}22;color:${m.color}">${esc(m.name.slice(0,2).toUpperCase())}</span>
-   <span class="navtext"><strong>${esc(m.name)}</strong><small>${esc(m.role.split("/")[0].trim())}</small></span>
+   <span class="navtext"><strong>${esc(m.name)}</strong><small>${esc(m.role.split("/")[0].trim())}${submitted?'<span class="top-badge">已提交</span>':""}</small></span>
    <span class="navcount">${filled}/${p.kpis.length}</span>
   </button>`;
  }).join("")+`<button class="${state.selectedId==="team"?"active":""}" data-action="team"><span class="avatar">▦</span><span class="navtext"><strong>团队总览</strong><small>任务与 KPI 汇总</small></span></button>`;
@@ -531,6 +566,7 @@ function renderPerson(){
  const p=personData(m.id),t=countTasks(p);
  const unfinished=p.tasks.filter(x=>x.status!=="done");
  $("personView").classList.remove("hidden");$("teamViewPanel").classList.add("hidden");
+ $("detailToggle").style.display="";
  $("personView").innerHTML=`
  <section class="card"><div class="hero">
  <span class="avatar" style="width:58px;height:58px;background:${m.color}22;color:${m.color};font-size:20px">${esc(m.name.slice(0,2).toUpperCase())}</span>
@@ -541,22 +577,24 @@ function renderPerson(){
  ${pill("未完成任务 "+unfinished.length,"warn")}
  ${pill("已完成任务 "+t.done,"good")}
  ${pill("未解决卡点 "+countOpenBlockers(p),countOpenBlockers(p)?"bad":"neutral")}
+ ${((state.submissions||{})[state.activeWeek]||{})[m.id]?pill("本周已提交","good"):""}
  </div></section>
  <section class="card">${renderKPI(p)}</section>
- <section class="card"><div class="sectionhead"><div><h3>02 · 本周未完成任务及目前进度</h3><p>记录尚未完成的事项、当前阶段、剩余工作、预计完成日期及下一步行动。</p></div>${addButton("task","新增未完成任务")}</div>
+ <section class="card detail-card"><div class="sectionhead"><div><h3>02 · 本周未完成任务及目前进度</h3><p>记录尚未完成的事项、当前阶段、剩余工作、预计完成日期及下一步行动。</p></div>${addButton("task","新增未完成任务")}</div>
  ${unfinished.map(renderTask).join("")||'<div class="placeholder">本周暂无已录入的未完成任务。</div>'}
  ${t.done?`<p class="muted">另有 ${t.done} 项任务已标记完成，已从未完成任务列表中隐藏。</p>`:""}
  </section>
- <section class="card"><div class="sectionhead"><div><h3>03 · 卡点 & 现存问题</h3><p>记录影响、需要谁支持、解决措施及预计解决日期。</p></div>${addButton("blocker","新增卡点")}</div>
+ <section class="card detail-card"><div class="sectionhead"><div><h3>03 · 卡点 & 现存问题</h3><p>记录影响、需要谁支持、解决措施及预计解决日期。</p></div>${addButton("blocker","新增卡点")}</div>
  ${p.blockers.map(renderBlocker).join("")||'<div class="placeholder">暂无已记录的卡点。</div>'}
  </section>
- <section class="card"><div class="sectionhead"><div><h3>04 · 下周工作计划</h3><p>明确成果、负责人及截止日期。</p></div>${addButton("plan","新增计划")}</div>
+ <section class="card detail-card"><div class="sectionhead"><div><h3>04 · 下周工作计划</h3><p>明确成果、负责人及截止日期。</p></div>${addButton("plan","新增计划")}</div>
  ${p.plans.map(renderPlan).join("")||'<div class="placeholder">尚未录入下周计划。</div>'}
  </section>`;
 }
 
 function renderTeam(){
  $("personView").classList.add("hidden");$("teamViewPanel").classList.remove("hidden");
+ $("detailToggle").style.display="none";
  const rows=state.members.map(m=>{
   const p=personData(m.id),t=countTasks(p);
   return `<tr data-person="${m.id}"><td><strong>${esc(m.name)}</strong><br><span class="muted">${esc(m.role)}</span></td>
@@ -2325,8 +2363,8 @@ async function inflateBytes(bytes){
  const ds=new DecompressionStream("deflate-raw");
  return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer());
 }
-async function encodeSharePayload(){
- let json=JSON.stringify(state),bytes=new TextEncoder().encode(json),flag="j";
+async function encodeSharePayload(source=state){
+ let json=JSON.stringify(source),bytes=new TextEncoder().encode(json),flag="j";
  if(window.CompressionStream){
   try{bytes=await deflateBytes(bytes);flag="z"}catch(e){bytes=new TextEncoder().encode(json);flag="j"}
  }
@@ -2435,54 +2473,6 @@ document.addEventListener("click",e=>{
  if(row){state.selectedId=row.dataset.person;save();render();}
 });
 
-function deleteRecord(kind,id){
- const p=personData(state.selectedId);if(!p)return;
- const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:p.plans;
- const item=list.find(x=>x.id===id);if(!item)return;
- if(!confirm(`确定删除「${item.name||item.title||item.id}」吗？`))return;
- list.splice(list.indexOf(item),1);save();render();
-}
-function editMember(){
- const m=selected();if(!m)return;
- const host=document.createElement("div");host.className="card";
- host.innerHTML=`<h3 style="margin-bottom:12px">编辑人员信息</h3><div class="grid">
- ${field("姓名",'<input id="editName" value="'+esc(m.name)+'">')}
- ${field("岗位",'<input id="editRole" value="'+esc(m.role)+'">')}
- ${field("工作职责",'<textarea id="editDesc">'+esc(m.desc||"")+'</textarea>',true)}
- </div><div style="display:flex;gap:8px;margin-top:12px"><button class="primary" id="saveMember">保存</button><button id="cancelMember">取消</button></div>`;
- $("personView").prepend(host);
- $("cancelMember").onclick=()=>host.remove();
- $("saveMember").onclick=()=>{
-  const name=$("editName").value.trim();if(!name){notify("姓名不能为空");return;}
-  m.name=name;m.role=$("editRole").value.trim();m.desc=$("editDesc").value.trim();save();render();
- };
-}
-function addMember(){
- const name=prompt("请输入成员姓名：");if(!name||!name.trim())return;
- const role=prompt("请输入岗位名称：")||"Design Team Member";
- const desc=prompt("请输入主要工作职责：")||"",id=uid();
- const m={id,name:name.trim(),role,desc,color:COLORS[state.members.length%COLORS.length],kpis:[]};
- state.members.push(m);
- Object.values(state.weeks).forEach(w=>w.people[id]={kpis:[],tasks:[],blockers:[],plans:[]});
- state.selectedId=id;save();render();
-}
-function switchWeek(value,ask=true){
- const w=monday(value);
- if(!state.weeks[w]){
-  const people={};
-  state.members.forEach(m=>{const profile=PROFILES.find(x=>x.id===m.id);people[m.id]={kpis:(profile?profile.kpis:[]).map(createKPI),tasks:[],blockers:[],plans:[]};});
-  if(ask&&confirm("是否结转上一周未完成的任务和未解决卡点？")){
-   state.members.forEach(m=>{
-    const old=personData(m.id);if(!old)return;
-    people[m.id].tasks=old.tasks.filter(t=>t.status!=="done").map(t=>({...t,id:uid(),result:"",notes:`从 ${state.activeWeek} 结转：${t.notes||"请重新确认进度"}`}));
-    people[m.id].blockers=old.blockers.filter(b=>b.status!=="closed").map(b=>({...b,id:uid()}));
-   });
-  }
-  state.weeks[w]={people,teamNotes:"",createdAt:new Date().toISOString()};
- }
- state.activeWeek=w;ensureState();save();render();
-}
-
 $("weekInput").addEventListener("change",e=>{if(e.target.value)switchWeek(e.target.value,true)});
 $("weekSelect").addEventListener("change",e=>switchWeek(e.target.value,false));
 $("newWeek").onclick=()=>switchWeek(nextWeek(state.activeWeek),true);
@@ -2492,7 +2482,24 @@ $("exportDoc").onclick=exportFullWordDocument;
 $("exportHtml").onclick=exportVisualHTMLReport;
 $("shareLink").onclick=shareReport;
 $("publishShare").onclick=publishFixedReport;
-$("printPage").onclick=()=>window.print();
+$("printPage").onclick=()=>{document.body.classList.remove("compact");$("detailToggle").textContent="展开详情";window.print()};
+
+/* 顶部「⋯ 更多」菜单：点开/点空白关闭 */
+$("moreBtn").onclick=e=>{e.stopPropagation();$("moreMenu").hidden=!$("moreMenu").hidden};
+document.addEventListener("click",e=>{
+ const menu=$("moreMenu");
+ if(menu.hidden)return;
+ if(e.target.closest("#moreMenu")){
+  if(e.target.closest("button"))menu.hidden=true;
+  return;
+ }
+ if(!e.target.closest("#moreBtn"))menu.hidden=true;
+});
+/* 主视图默认只显示概览，需要时展开任务/卡点/计划 */
+$("detailToggle").onclick=()=>{
+ const compact=document.body.classList.toggle("compact");
+ $("detailToggle").textContent=compact?"展开详情":"收起详情";
+};
 
 /* AI 批量填写：页面先给模板 → 粘贴给 AI → AI 返回纯文本文案 → 粘贴回页面自动填写 */
 const AI_TASK_STATUS=["todo","ongoing","review","blocked","done"];
@@ -2742,7 +2749,10 @@ function applyAIText(raw){
 
  if(!hit)throw new Error("没有成员能对上，请检查 AI 文案里的【成员】名称是否和页面成员一致");
 
- save();render();
+ save();
+ document.body.classList.remove("compact");
+ $("detailToggle").textContent="展开详情";
+ render();
  $("aiModal").classList.remove("show");
  notify(`已导入 ${hit} 位成员：KPI ${kpiCount} 项、任务 ${taskCount} 条、卡点 ${blockerCount} 条、计划 ${planCount} 条`);
 }
@@ -2768,13 +2778,345 @@ $("aiApply").onclick=()=>{
  catch(applyError){notify("导入失败："+applyError.message)}
 };
 
+/* ========== 成员专属填写 + 提交码回传 ========== */
+
+function showModal({title,desc,body,wide=false}){
+ const wrap=document.createElement("div");wrap.className="modal show";
+ wrap.innerHTML=`<div class="modal-box"${wide?' style="width:min(880px,100%)"':""}>
+  <h3>${esc(title)}</h3><p>${esc(desc)}</p>${body}
+  <div class="modal-actions"><button class="ghost" data-close>关闭</button></div></div>`;
+ wrap.addEventListener("click",e=>{if(e.target===wrap||e.target.closest("[data-close]"))wrap.remove()});
+ document.body.appendChild(wrap);
+ return wrap;
+}
+
+async function buildFillLink(memberId){
+ const m=state.members.find(x=>x.id===memberId);if(!m)return"";
+ const p=personData(memberId)||{kpis:[],tasks:[],blockers:[],plans:[]};
+ const payload={m:{id:m.id,name:m.name,role:m.role,desc:m.desc||"",color:m.color},w:state.activeWeek,
+  k:p.kpis.map(k=>({n:k.name,t:k.target,u:k.unit,w:k.weight,o:k.op})),
+  d:{t:p.tasks,b:p.blockers,p:p.plans}};
+ const u=new URL(location.href);u.search="";u.hash="";
+ u.searchParams.set("fill",await encodeSharePayload(payload));
+ return u.href;
+}
+
+async function inviteMembers(){
+ save();
+ const wrap=showModal({title:"邀请成员填写",desc:"成员打开链接后只能看到自己的 KPI（只读）和任务、卡点、下周计划。有同步服务器时，他点提交你这边就能收到；没有服务器时，会生成一段提交码由你手动导入。",body:'<div id="inviteList"><p>正在准备链接…</p></div>',wide:true});
+ const host=wrap.querySelector("#inviteList");
+ try{
+  const online=await hasServer();
+  if(online){
+   const roster={week:state.activeWeek,members:state.members.map(m=>{
+    const p=personData(m.id)||{kpis:[],tasks:[],blockers:[],plans:[]};
+    return {id:m.id,name:m.name,role:m.role,desc:m.desc||"",color:m.color,
+     kpis:p.kpis.map(k=>({n:k.name,t:k.target,u:k.unit,w:k.weight,o:k.op})),
+     tasks:p.tasks,blockers:p.blockers,plans:p.plans};
+   })};
+   const r=await fetch("/api/roster",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(roster)});
+   if(!r.ok)throw new Error("服务器返回 "+r.status);
+   const out=await r.json();
+   const lack=state.members.filter(m=>!out.tokens||!out.tokens[m.id]);
+   if(lack.length)throw new Error("服务器没给这些成员分链接："+lack.map(m=>m.name).join("、")+"，请刷新页面后重试");
+   const base=out.base||location.origin;
+   host.innerHTML=state.members.map(m=>{
+    const link=`${base}/f/${out.tokens[m.id]}`;
+    return `<div class="invite-row"><div class="who"><strong>${esc(m.name)}</strong><small>${esc(link)}</small></div><button class="ghost small" data-copy-link="${esc(link)}">复制链接</button></div>`;
+   }).join("")+`<p style="margin:10px 0 0;color:#6c7888;font-size:12px">成员提交后，你点「同步成员提交」即可合并；页面打开着时每 60 秒也会自动检查一次。<br>链接用的是服务器自动识别的地址（${esc(base)}），同事连同一个 WiFi 就能打开。</p>`;
+   return;
+  }
+  if(location.protocol==="file:"){
+   host.innerHTML='<p>没有检测到同步服务器。请先在文件夹里运行 <b>node server.js</b>，再用 http://localhost:8787 打开本页。</p>';
+   return;
+  }
+  const tip='<p style="margin:0 0 10px;padding:9px 11px;border:1px solid #f0c8a0;background:#fdf3e7;color:#a8611f;font-size:12px;border-radius:8px">没有连上同步服务器（你现在是用 <b>'+esc(location.host||"本地文件")+'</b> 打开的），所以下面是旧的「长链接 + 提交码」方式。<br>想要短链接、成员点提交你这边自动收到：先双击 <b>start-server.bat</b>，再用窗口里显示的 <b>http://局域网IP:8787</b> 打开本页，然后再点「邀请成员填写」。</p>';
+  const rows=await Promise.all(state.members.map(async m=>({m,link:await buildFillLink(m.id)})));
+  const links=rows.map(r=>r.link);
+  const dup=links.some((l,i)=>links.indexOf(l)!==i);
+  const dupTip=dup?'<p style="margin:0 0 10px;padding:9px 11px;border:1px solid #f0b0b0;background:#fdeaea;color:#a83232;font-size:12px;border-radius:8px">注意：检测到有多条链接内容完全一样，说明当前数据异常（可能是成员编号重复）。请刷新页面后重试。</p>':"";
+  host.innerHTML=tip+dupTip+rows.map(r=>`<div class="invite-row"><div class="who"><strong>${esc(r.m.name)}</strong><small>${esc(r.m.role)}</small><textarea readonly class="linkbox" spellcheck="false" onclick="this.select()">${esc(r.link)}</textarea></div><button class="ghost small" data-copy-link="${esc(r.link)}">复制链接</button></div>`).join("");
+ }catch(e){host.innerHTML='<p>链接生成失败：'+esc(e.message)+'</p>'}
+ wrap.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-copy-link]");if(!b)return;
+  const name=b.closest(".invite-row").querySelector("strong").textContent;
+  const ok=await copyText(b.dataset.copyLink);
+  if(!ok){
+   const box=b.closest(".invite-row").querySelector(".linkbox");
+   if(box){box.focus();box.select()}
+  }
+  notify(ok?"链接已复制，发给 "+name:"复制失败，链接已帮你选中，按 Ctrl+C 复制");
+ });
+}
+
+function receiveSubmission(text){
+ const src=String(text||"").replace(/\r\n/g,"\n").trim();
+ if(!src)throw new Error("还没有粘贴提交码");
+ const week=(src.match(/【周期】\s*(\d{4}-\d{2}-\d{2})/)||[])[1]||"";
+ const list=parsePipeText(src);
+ if(list.length!==1)throw new Error("一次只能导入一位成员，请检查提交码是否完整");
+ const item=list[0];
+ const target=item.name.trim().toLowerCase();
+ const member=state.members.find(x=>x.name.trim().toLowerCase()===target||x.id.toLowerCase()===target);
+ if(!member)throw new Error("找不到成员「"+item.name+"」，请确认提交码里的姓名和页面一致");
+ if(week&&week!==state.activeWeek){
+  if(!confirm(`这条提交属于 ${week} 那一周，当前显示的是 ${state.activeWeek}。是否切换到 ${week} 并导入？`))return false;
+  switchWeek(week,false);
+ }
+ const p=personData(member.id);
+ p.tasks=item.tasks.map(t=>{
+  const title=aiText(t.title);
+  const old=p.tasks.find(x=>String(x.title||"").trim()===title.trim());
+  return {id:uid(),title,status:AI_TASK_STATUS.includes(t.status)?t.status:"ongoing",complexity:old?old.complexity:"medium",due:aiText(t.due),result:aiText(t.result),acceptance:aiText(t.acceptance),notes:aiText(t.notes),link:aiText(t.link)};
+ });
+ p.blockers=item.blockers.map(b=>({id:uid(),title:aiText(b.title),status:AI_BLOCK_STATUS.includes(b.status)?b.status:"open",priority:aiText(b.priority,"medium"),owner:aiText(b.owner),due:aiText(b.due),impact:aiText(b.impact),action:aiText(b.action)}));
+ p.plans=item.plans.map(x=>({id:uid(),title:aiText(x.title),priority:aiText(x.priority,"medium"),due:aiText(x.due),owner:aiText(x.owner,member.name),accountable:aiText(x.accountable),deliverable:aiText(x.deliverable),notes:aiText(x.notes)}));
+ state.submissions[state.activeWeek]||={};
+ state.submissions[state.activeWeek][member.id]={at:new Date().toISOString()};
+ state.selectedId=member.id;
+ save();
+ document.body.classList.remove("compact");
+ $("detailToggle").textContent="展开详情";
+ render();
+ notify(`${member.name} 的提交已导入：任务 ${p.tasks.length} 条、卡点 ${p.blockers.length} 条、计划 ${p.plans.length} 条`);
+ return true;
+}
+
+function openReceiveSubmission(){
+ const wrap=showModal({title:"接收成员提交",desc:"把成员发回来的提交码整段粘贴进来。导入会覆盖该成员本周的任务、卡点和下周计划，KPI 不受影响。",body:'<textarea id="subInput" placeholder="【成员】Zoran&#10;【周期】2026-10-26&#10;【KPI】&#10;【未完成任务】&#10;任务｜ongoing｜2026-11-06｜…"></textarea>'});
+ wrap.querySelector(".modal-actions").insertAdjacentHTML("afterbegin",'<button class="primary" id="subApply">导入到本周</button>');
+ wrap.querySelector("#subApply").onclick=()=>{
+  try{if(receiveSubmission(wrap.querySelector("#subInput").value)!==false)wrap.remove()}
+  catch(err){notify("导入失败："+err.message)}
+ };
+}
+
+/* ----- 成员填写页（?fill=数据）----- */
+const FILL_KEY="aftershock_fill_draft";
+const FILL_TASK_OPTS=[["todo","未开始"],["ongoing","进行中"],["review","审核中"],["blocked","受阻"],["done","已完成"]];
+const FILL_BLOCK_OPTS=[["open","未解决"],["inprogress","处理中"],["closed","已解决"]];
+const FILL_PRIO_OPTS=[["high","高"],["medium","中"],["low","低"]];
+let fillData=null;
+const fillArr=g=>g==="t"?fillData.d.t:g==="b"?fillData.d.b:fillData.d.p;
+
+function fillSelect(field,opts,value,i){
+ return `<select data-fill="${field}" data-index="${i}">${opts.map(o=>`<option value="${o[0]}" ${o[0]===value?"selected":""}>${o[1]}</option>`).join("")}</select>`;
+}
+function saveFillDraft(){
+ if(!fillData)return;
+ try{localStorage.setItem(fillData.key,JSON.stringify({d:fillData.d,at:Date.now()}))}catch(e){}
+}
+function fillItemHTML(g,item,i){
+ if(g==="t")return `<div class="fillitem">
+  <div class="row"><input data-fill="t.title" data-index="${i}" value="${esc(item.title||"")}" placeholder="任务名称"><button class="small del" data-del="t" data-index="${i}">删除</button></div>
+  <div class="row two"><div><label>状态</label>${fillSelect("t.status",FILL_TASK_OPTS,item.status||"ongoing",i)}</div><div><label>预计完成</label><input type="date" data-fill="t.due" data-index="${i}" value="${esc(item.due||"")}"></div></div>
+  <textarea data-fill="t.notes" data-index="${i}" placeholder="当前进度 / 剩余工作 / 需要谁支持">${esc(item.notes||"")}</textarea>
+ </div>`;
+ if(g==="b")return `<div class="fillitem">
+  <div class="row"><input data-fill="b.title" data-index="${i}" value="${esc(item.title||"")}" placeholder="卡点或问题"><button class="small del" data-del="b" data-index="${i}">删除</button></div>
+  <div class="row two"><div><label>状态</label>${fillSelect("b.status",FILL_BLOCK_OPTS,item.status||"open",i)}</div><div><label>优先级</label>${fillSelect("b.priority",FILL_PRIO_OPTS,item.priority||"medium",i)}</div></div>
+  <div class="row two"><div><label>需要谁支持</label><input data-fill="b.owner" data-index="${i}" value="${esc(item.owner||"")}" placeholder="如客户/产品/开发"></div><div><label>预计解决</label><input type="date" data-fill="b.due" data-index="${i}" value="${esc(item.due||"")}"></div></div>
+  <textarea data-fill="b.impact" data-index="${i}" placeholder="影响、需要什么帮助">${esc(item.impact||"")}</textarea>
+ </div>`;
+ return `<div class="fillitem">
+  <div class="row"><input data-fill="p.title" data-index="${i}" value="${esc(item.title||"")}" placeholder="计划名称"><button class="small del" data-del="p" data-index="${i}">删除</button></div>
+  <div class="row two"><div><label>优先级</label>${fillSelect("p.priority",FILL_PRIO_OPTS,item.priority||"medium",i)}</div><div><label>截止日期</label><input type="date" data-fill="p.due" data-index="${i}" value="${esc(item.due||"")}"></div></div>
+  <textarea data-fill="p.deliverable" data-index="${i}" placeholder="要交付的成果">${esc(item.deliverable||"")}</textarea>
+ </div>`;
+}
+function renderFillLists(){
+ if(!fillData)return;
+ const k=fillData.k||[];
+ $("fillKpi").innerHTML=k.length?k.map(x=>`<div class="kpi-row"><span>${esc(x.n)}</span><span>${x.o==="lte"?"≤":"≥"}${esc(x.t)}${esc(x.u||"")} · 权重 ${esc(x.w||0)}%</span></div>`).join(""):'<p class="muted">本周还没有设定 KPI。</p>';
+ [["t","fillT","本周暂无未完成任务"],["b","fillB","暂无卡点"],["p","fillP","暂无下周计划"]].forEach(([g,id,empty])=>{
+  const list=fillArr(g);
+  $(id).innerHTML=list.length?list.map((x,i)=>fillItemHTML(g,x,i)).join(""):`<div class="placeholder">${empty}</div>`;
+ });
+}
+function buildSubmissionCode(){
+ const c=v=>String(v==null?"":v).replace(/\r?\n/g," / ").replace(/[｜|]/g,"／").trim();
+ const d=fillData.d;
+ const lines=[`【成员】${fillData.m.name}`,`【周期】${fillData.w}`,"【KPI】","【未完成任务】"];
+ d.t.forEach(t=>lines.push([c(t.title),t.status||"ongoing",c(t.due),c(t.result),c(t.acceptance),c(t.notes),c(t.link)].join("｜")));
+ lines.push("【卡点】");
+ d.b.forEach(b=>lines.push([c(b.title),b.status||"open",b.priority||"medium",c(b.owner),c(b.due),c(b.impact),c(b.action)].join("｜")));
+ lines.push("【下周计划】");
+ d.p.forEach(x=>lines.push([c(x.title),x.priority||"medium",c(x.due),c(x.owner),c(x.accountable),c(x.deliverable),c(x.notes)].join("｜")));
+ return lines.join("\n");
+}
+function fillError(title,msg){
+ document.body.style.visibility="visible";
+ document.documentElement.style.visibility="visible";
+ document.body.innerHTML=`<div style="max-width:520px;margin:80px auto;padding:24px;border:1px solid #283340;border-radius:12px;background:#121921;color:#e9eff7;font:14px/1.7 'Microsoft YaHei',sans-serif">
+  <h3 style="margin:0 0 8px">${esc(title)}</h3><p style="color:#8f9fb2;margin:0">${esc(msg)}</p>
+  <p style="color:#65778c;margin:12px 0 0;font-size:12px">请让负责人重新生成你的填写链接。</p></div>`;
+}
+function mountFillPage(){
+ const color=fillData.m.color||"#f17b59";
+ document.body.className="";
+ document.body.innerHTML=`<div class="fill">
+  <div class="fill-head">
+   <span class="avatar" style="width:46px;height:46px;font-size:15px;background:${color}22;color:${color}">${esc(fillData.m.name.slice(0,2).toUpperCase())}</span>
+   <div><h1>${esc(fillData.m.name)}</h1><div class="muted">${esc(fillData.m.role)} · ${fillData.w} 至 ${endOfWeek(fillData.w)}</div></div>
+  </div>
+  <div class="note">KPI 由负责人统一评定，你只需要填写下面三块。${fillData.online?"填完点底部「提交给负责人」，提交后负责人那边就能看到。":"填完点底部「生成提交码」，把生成的文字发给负责人即可。"}${fillData.hasDraft?" 已恢复你上次没提交的草稿。":""}</div>
+  <section class="card"><div class="sectionhead"><div><h3>KPI（只读）</h3><p>目标由负责人设定，这里只做参考。</p></div></div><div id="fillKpi"></div></section>
+  <section class="card"><div class="sectionhead"><div><h3>未完成任务</h3><p>还没做完的事、目前进度和预计完成时间。</p></div><button class="small" data-add="t">＋ 新增</button></div><div id="fillT"></div></section>
+  <section class="card"><div class="sectionhead"><div><h3>卡点 &amp; 现存问题</h3><p>影响进度的事，需要谁支持。</p></div><button class="small" data-add="b">＋ 新增</button></div><div id="fillB"></div></section>
+  <section class="card"><div class="sectionhead"><div><h3>下周工作计划</h3><p>下周准备交付的成果和截止时间。</p></div><button class="small" data-add="p">＋ 新增</button></div><div id="fillP"></div></section>
+  <p class="muted" style="text-align:center;font-size:11px">填写内容会自动保存在这台设备，关掉页面再打开可以继续填。</p>
+  <div class="fillbar"><button class="primary" id="fillSubmit">${fillData.online?"提交给负责人":"生成提交码"}</button></div>
+ </div>
+ <div class="toast" id="toastFill"></div>`;
+ renderFillLists();
+ document.body.style.visibility="visible";
+ document.documentElement.style.visibility="visible";
+ saveFillDraft();
+ $("fillSubmit").onclick=async()=>{
+  const total=fillData.d.t.length+fillData.d.b.length+fillData.d.p.length;
+  if(!total){notify("还没有填写任何内容");return}
+  const btn=$("fillSubmit");
+  if(fillData.online){
+   const old=btn.textContent;btn.disabled=true;btn.textContent="正在提交…";
+   try{
+    const r=await fetch(`/api/fill/${fillData.token}`,{method:"POST",headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({tasks:fillData.d.t,blockers:fillData.d.b,plans:fillData.d.p})});
+    if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error||("提交失败（"+r.status+"）"))}
+    try{localStorage.removeItem(fillData.key)}catch(e){}
+    btn.textContent="已提交 ✓";notify("已提交给负责人，可以关掉页面了");
+   }catch(e){btn.disabled=false;btn.textContent=old;notify("提交失败："+e.message)}
+   return;
+  }
+  const code=buildSubmissionCode();
+  const wrap=showModal({title:"把这段提交码发给负责人",desc:"复制后粘贴到微信或飞书发给负责人即可。提交码只包含你本周的任务、卡点和下周计划。",body:`<textarea readonly id="codeBox">${esc(code)}</textarea>`,wide:true});
+  wrap.querySelector(".modal-actions").insertAdjacentHTML("afterbegin",'<button class="primary" id="copyCode">复制提交码</button>');
+  wrap.querySelector("#copyCode").onclick=async()=>{const ok=await copyText(code);notify(ok?"提交码已复制，直接粘贴发给负责人":"复制失败，请手动全选复制")};
+  const ok=await copyText(code);
+  notify(ok?"提交码已复制，直接粘贴发给负责人":"请点「复制提交码」手动复制");
+ };
+}
+
+async function startFillMode(raw){
+ let data;
+ try{data=await decodeSharePayload(raw)}catch(e){fillError("链接打不开","链接可能在转发时被截断或复制不完整。");return}
+ if(!data||!data.m||!data.d){fillError("链接内容不完整","这条链接缺少成员信息。");return}
+ const key=`${FILL_KEY}_${data.m.id}_${data.w}`;
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
+ fillData={m:data.m,w:data.w,k:data.k||[],key,hasDraft:!!saved,online:false,token:null,
+  d:saved&&saved.d?saved.d:{t:data.d.t||[],b:data.d.b||[],p:data.d.p||[]}};
+ mountFillPage();
+}
+
+/* 服务器模式：链接形如 /f/a1b2c3d4e5，数据从服务器读取，提交也直接回写服务器 */
+async function startServerFill(token){
+ try{
+  const r=await fetch(`/api/fill/${encodeURIComponent(token)}`,{cache:"no-store"});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(data.error||("链接无效（"+r.status+"）"));
+  const key=`${FILL_KEY}_${token}`;
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
+  const base=data.submitted
+   ?{t:data.submitted.tasks||[],b:data.submitted.blockers||[],p:data.submitted.plans||[]}
+   :{t:(data.data&&data.data.t)||[],b:(data.data&&data.data.b)||[],p:(data.data&&data.data.p)||[]};
+  fillData={m:data.member,w:data.week,k:data.kpis||[],key,hasDraft:!!saved,online:true,token,
+   d:saved&&saved.d?saved.d:base};
+  mountFillPage();
+ }catch(e){fillError("链接打不开",e.message)}
+}
+
+/* 填写页的输入与增删（平时 fillData 为空，不影响主界面） */
+document.addEventListener("input",e=>{
+ if(!fillData)return;
+ const f=e.target.dataset&&e.target.dataset.fill;if(!f)return;
+ const [g,prop]=f.split(".");
+ const i=Number(e.target.dataset.index||0);
+ const arr=fillArr(g);
+ if(arr[i]){arr[i][prop]=e.target.value;saveFillDraft()}
+});
+document.addEventListener("click",e=>{
+ if(!fillData)return;
+ const add=e.target.closest("[data-add]");
+ if(add){
+  const g=add.dataset.add;
+  const defaults={t:()=>({id:uid(),title:"",status:"ongoing",complexity:"medium",due:"",result:"",acceptance:"",notes:"",link:""}),
+   b:()=>({id:uid(),title:"",status:"open",priority:"medium",owner:"",due:"",impact:"",action:""}),
+   p:()=>({id:uid(),title:"",priority:"medium",due:"",owner:fillData.m.name,accountable:"",deliverable:"",notes:""})};
+  fillArr(g).push(defaults[g]());
+  saveFillDraft();renderFillLists();
+  const box=document.querySelector(`#fill${g.toUpperCase()} .fillitem:last-child input`);
+  if(box)box.focus();
+  return;
+ }
+ const del=e.target.closest("[data-del]");
+ if(del){
+  const g=del.dataset.del,i=Number(del.dataset.index);
+  const arr=fillArr(g);if(!arr[i])return;
+  if(!confirm("确定删除这条内容吗？"))return;
+  arr.splice(i,1);saveFillDraft();renderFillLists();
+ }
+});
+
+/* 判断当前是不是跑在同步服务器上（GitHub Pages / 本地双击都会返回 false） */
+function hasServer(){
+ return fetch("/api/health",{cache:"no-store"}).then(r=>r.ok).catch(()=>false);
+}
+/* 从服务器拉取本周已提交的内容，合并进主界面；silent=true 时不弹提示 */
+async function syncSubmissions(silent=false){
+ try{
+  const r=await fetch(`/api/submissions?week=${encodeURIComponent(state.activeWeek)}`,{cache:"no-store"});
+  if(!r.ok)throw new Error("服务器返回 "+r.status);
+  const out=await r.json();
+  const subs=out.submissions||[];
+  if(!subs.length){if(!silent)notify("本周还没有成员提交");return 0}
+  state.submissions[state.activeWeek]=state.submissions[state.activeWeek]||{};
+  let fresh=0;
+  subs.forEach(s=>{
+   const m=state.members.find(x=>x.id===s.memberId)||state.members.find(x=>x.name===s.name);
+   if(!m)return;
+   const known=state.submissions[state.activeWeek][m.id];
+   if(known&&known.at===s.submittedAt)return;   // 已经同步过，跳过
+   const p=personData(m.id);if(!p)return;
+   p.tasks=(s.data.tasks||[]).map(t=>({...t,id:t.id||uid()}));
+   p.blockers=(s.data.blockers||[]).map(b=>({...b,id:b.id||uid()}));
+   p.plans=(s.data.plans||[]).map(x=>({...x,id:x.id||uid()}));
+   state.submissions[state.activeWeek][m.id]={at:s.submittedAt,online:true};
+   fresh++;
+  });
+  if(fresh){save();render();notify(`已同步 ${fresh} 位成员的提交`)}
+  else if(!silent)notify("没有新的提交");
+  return fresh;
+ }catch(e){if(!silent)notify("同步失败："+e.message);return 0}
+}
+
+$("inviteMembers").onclick=inviteMembers;
+$("receiveSubmit").onclick=openReceiveSubmission;
+$("syncSubmissions").onclick=()=>syncSubmissions(false);
+
 const shareParam=new URLSearchParams(location.search).get("share");
-if(shareParam){
+const fillParam=new URLSearchParams(location.search).get("fill");
+const fillToken=(location.pathname.match(/^\/f\/([A-Za-z0-9_-]+)\/?$/)||[])[1];
+if(fillToken){
+ document.documentElement.style.visibility="hidden";
+ startServerFill(fillToken);
+}else if(fillParam){
+ document.documentElement.style.visibility="hidden";
+ startFillMode(fillParam);
+}else if(shareParam){
  document.documentElement.style.visibility="hidden";
  showSharedReport(shareParam);
 }else{
  render();
  save();
+ // 服务器模式：进入页面先静默同步一次，之后每 60 秒检查有没有新提交
+ if(location.protocol!=="file:"){
+  hasServer().then(ok=>{
+   if(!ok)return;
+   syncSubmissions(true);
+   setInterval(()=>{if(!document.hidden)syncSubmissions(true)},60000);
+  });
+ }
 }
 })();
 </script>
