@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Startup')+'\AFTERSHOCK-sync.lnk');$s.TargetPath='%~dp0start-server.bat';$s.WorkingDirectory='%~dp0';$s.WindowStyle=7;$s.Save()"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Startup')+'\AFTERSHOCK-sync.lnk');$s.TargetPath='%~dp0start-server.bat';$s.Arguments='--quiet';$s.WorkingDirectory='%~dp0';$s.WindowStyle=7;$s.Save()"
 
 if errorlevel 1 (
   echo.

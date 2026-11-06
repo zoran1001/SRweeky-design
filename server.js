@@ -148,6 +148,7 @@ function sendPage(res, file) {
 
 /* ---------- 接口 ---------- */
 
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://" + (req.headers.host || "localhost"));
   const pathname = url.pathname;
@@ -210,7 +211,6 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, {
         week,
         member: { id: m.id, name: m.name, role: m.role, desc: m.desc, color: m.color },
-        kpis: m.kpis,
         data: m.seed,
         submitted: sub
       });
@@ -234,6 +234,27 @@ const server = http.createServer(async (req, res) => {
       };
       saveDB(db);
       return json(res, 200, { ok: true, submittedAt: db.weeks[week].subs[memberId].submittedAt });
+    }
+
+    // 4.5 兼容旧的长链接：页面发现服务器在跑，就直接按成员身份提交
+    if (pathname === "/api/submit" && req.method === "POST") {
+      const body = await readBody(req);
+      const week = String(body.week || "");
+      const memberId = String(body.memberId || "");
+      const db = loadDB();
+      const bucket = db.weeks[week];
+      if (!bucket || !bucket.members || !bucket.members[memberId]) {
+        return json(res, 404, { error: "服务器里没有你本周的名册，请让负责人再点一次「邀请成员填写」" });
+      }
+      bucket.subs = bucket.subs || {};
+      bucket.subs[memberId] = {
+        tasks: Array.isArray(body.tasks) ? body.tasks : [],
+        blockers: Array.isArray(body.blockers) ? body.blockers : [],
+        plans: Array.isArray(body.plans) ? body.plans : [],
+        submittedAt: new Date().toISOString()
+      };
+      saveDB(db);
+      return json(res, 200, { ok: true, submittedAt: bucket.subs[memberId].submittedAt });
     }
 
     // 5. 会长同步：取本周所有提交
@@ -268,11 +289,11 @@ const server = http.createServer(async (req, res) => {
       return sendPage(res, PAGES[pathname]);
     }
 
-    // 8. 其他静态资源（只放行常见类型，且不许跳出根目录）
+    // 8. 其他静态资源（不许跳出根目录、不许读 data 目录）
     const ext = path.extname(pathname).toLowerCase();
     if (MIME[ext]) {
       const full = path.join(ROOT, path.normalize(pathname).replace(/^([.][.][/\\])+/, ""));
-      if (full.startsWith(ROOT)) {
+      if (full.startsWith(ROOT) && !full.startsWith(DATA_DIR)) {
         return fs.readFile(full, (err, buf) => {
           if (err) { res.writeHead(404); res.end("Not found"); return; }
           res.writeHead(200, { "Content-Type": MIME[ext], "Cache-Control": ext === ".html" ? "no-store" : "no-cache" });
@@ -286,6 +307,30 @@ const server = http.createServer(async (req, res) => {
   } catch (e) {
     json(res, 500, { error: e.message || "服务器内部错误" });
   }
+});
+
+// 双击启动器时自动打开浏览器（开机自启用 --quiet 时不会弹页面）
+function openPage() {
+  if (process.env.AFTERSHOCK_OPEN !== "1") return;
+  const lan = Object.values(os.networkInterfaces()).flat()
+    .find(n => n && n.family === "IPv4" && !n.internal);
+  const url = "http://" + (lan ? lan.address : "localhost") + ":" + PORT + "/";
+  require("child_process").exec('start "" "' + url + '"', () => {});
+}
+
+// 端口被占用时不要甩一堆报错：说明服务其实已经在跑了
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    const lan = Object.values(os.networkInterfaces()).flat()
+      .find(n => n && n.family === "IPv4" && !n.internal);
+    console.log("");
+    console.log("  服务已经在运行了，不用再启动一次，帮你直接打开页面。");
+    console.log("  管理界面：   http://" + (lan ? lan.address : "localhost") + ":" + PORT);
+    openPage();
+  } else {
+    console.log("  启动失败：" + err.message);
+  }
+  setTimeout(() => process.exit(0), 800);
 });
 
 server.listen(PORT, () => {
@@ -304,4 +349,5 @@ server.listen(PORT, () => {
   console.log("  数据文件：   " + DB_FILE);
   console.log("  停止服务：   Ctrl + C");
   console.log("");
+  openPage();
 });

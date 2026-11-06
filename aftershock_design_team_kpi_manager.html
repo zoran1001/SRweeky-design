@@ -19,7 +19,7 @@ input,select,textarea{width:100%;background:#0e151d;color:var(--text);border:1px
 input:focus,select:focus,textarea:focus{border-color:var(--blue)}
 textarea{min-height:85px;resize:vertical}
 input[type=date]{color-scheme:dark}
-.app{display:grid;grid-template-columns:255px minmax(0,1fr);min-height:100vh}
+.app{display:grid;grid-template-columns:clamp(210px,17vw,320px) minmax(0,1fr);min-height:100vh}
 .sidebar{background:#10161e;border-right:1px solid var(--line);padding:22px 15px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
 .brand{padding:4px 8px 18px;border-bottom:1px solid var(--line)}
 .brand strong{font-size:17px;letter-spacing:1px}
@@ -34,7 +34,7 @@ input[type=date]{color-scheme:dark}
 .avatar{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;flex-shrink:0;font-weight:800}
 .navtext{min-width:0;flex:1}
 .navtext strong{display:block}
-.navtext small{display:block;color:var(--sub);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navtext small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;overflow-wrap:anywhere;color:var(--sub);font-size:11px}
 .navcount{color:var(--muted);font-size:11px}
 .main{padding:26px 30px 60px;min-width:0;max-width:1800px;width:100%}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px}
@@ -183,7 +183,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
 @media print{body{background:white;color:#111}.sidebar,.actions,button{display:none!important}.app{display:block}.main{padding:0}.card,.stat,.record,.metric{background:white;color:#111;box-shadow:none;border-color:#ddd}.metricbody,.recordbody{background:white}.muted,.field label{color:#444}input,select,textarea{background:white;color:#111;border-color:#ddd}.metric,.record{break-inside:avoid}}
 </style>
 </head>
-<body class="compact">
+<body>
 <div class="app">
 <aside class="sidebar">
   <div class="brand">
@@ -214,7 +214,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
       <button id="teamView" class="ghost">团队总览</button>
       <button id="addMember" class="ghost">＋ 成员</button>
       <button id="aiImport" class="primary">AI 一键填写</button>
-      <button id="detailToggle" class="ghost">展开详情</button>
+      <button id="detailToggle" class="ghost">收起详情</button>
       <button id="moreBtn" class="ghost">⋯ 更多</button>
       <div class="menu" id="moreMenu" hidden>
         <button id="exportDoc">导出 Word 周报</button>
@@ -2383,8 +2383,11 @@ async function decodeSharePayload(payload){
 async function copyText(text){
  try{await navigator.clipboard.writeText(text);return true}catch(e){}
  try{
-  const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
-  document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();return ok;
+  const ta=document.createElement("textarea");ta.value=text;
+  ta.style.position="fixed";ta.style.left="-9999px";ta.style.top="0";ta.style.opacity="0";
+  document.body.appendChild(ta);
+  ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);
+  const ok=document.execCommand("copy");ta.remove();return ok;
  }catch(e){return false}
 }
 async function shareReport(){
@@ -2482,7 +2485,7 @@ $("exportDoc").onclick=exportFullWordDocument;
 $("exportHtml").onclick=exportVisualHTMLReport;
 $("shareLink").onclick=shareReport;
 $("publishShare").onclick=publishFixedReport;
-$("printPage").onclick=()=>{document.body.classList.remove("compact");$("detailToggle").textContent="展开详情";window.print()};
+$("printPage").onclick=()=>{document.body.classList.remove("compact");$("detailToggle").textContent="收起详情";window.print()};
 
 /* 顶部「⋯ 更多」菜单：点开/点空白关闭 */
 $("moreBtn").onclick=e=>{e.stopPropagation();$("moreMenu").hidden=!$("moreMenu").hidden};
@@ -2751,7 +2754,7 @@ function applyAIText(raw){
 
  save();
  document.body.classList.remove("compact");
- $("detailToggle").textContent="展开详情";
+ $("detailToggle").textContent="收起详情";
  render();
  $("aiModal").classList.remove("show");
  notify(`已导入 ${hit} 位成员：KPI ${kpiCount} 项、任务 ${taskCount} 条、卡点 ${blockerCount} 条、计划 ${planCount} 条`);
@@ -2794,7 +2797,6 @@ async function buildFillLink(memberId){
  const m=state.members.find(x=>x.id===memberId);if(!m)return"";
  const p=personData(memberId)||{kpis:[],tasks:[],blockers:[],plans:[]};
  const payload={m:{id:m.id,name:m.name,role:m.role,desc:m.desc||"",color:m.color},w:state.activeWeek,
-  k:p.kpis.map(k=>({n:k.name,t:k.target,u:k.unit,w:k.weight,o:k.op})),
   d:{t:p.tasks,b:p.blockers,p:p.plans}};
  const u=new URL(location.href);u.search="";u.hash="";
  u.searchParams.set("fill",await encodeSharePayload(payload));
@@ -2803,8 +2805,28 @@ async function buildFillLink(memberId){
 
 async function inviteMembers(){
  save();
- const wrap=showModal({title:"邀请成员填写",desc:"成员打开链接后只能看到自己的 KPI（只读）和任务、卡点、下周计划。有同步服务器时，他点提交你这边就能收到；没有服务器时，会生成一段提交码由你手动导入。",body:'<div id="inviteList"><p>正在准备链接…</p></div>',wide:true});
+ const wrap=showModal({title:"邀请成员填写",desc:"成员打开链接后只能看到自己这一页：任务、卡点、下周计划，看不到 KPI，也看不到别人的内容。有同步服务器时，他点提交你这边就能收到；没有服务器时，会生成一段提交码由你手动导入。",body:'<div id="inviteList"><p>正在准备链接…</p></div>',wide:true});
  const host=wrap.querySelector("#inviteList");
+ // 先把「复制链接」的点击规则挂上，避免下面提前 return 时按钮失去响应
+ wrap.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-copy-link]");if(!b)return;
+  const row=b.closest(".invite-row");
+  const name=row&&row.querySelector("strong")?row.querySelector("strong").textContent:"成员";
+  const ok=await copyText(b.dataset.copyLink);
+  if(!ok){
+   const box=row&&row.querySelector(".linkbox");
+   if(box){box.focus();box.select()}
+   else if(row){
+    // 短链接模式下没有输入框，就把链接文字选中，方便手动 Ctrl+C
+    const small=row.querySelector("small");
+    if(small){
+     const range=document.createRange();range.selectNodeContents(small);
+     const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    }
+   }
+  }
+  notify(ok?"链接已复制，发给 "+name:"复制失败，链接已帮你选中，按 Ctrl+C 复制");
+ });
  try{
   const online=await hasServer();
   if(online){
@@ -2837,16 +2859,6 @@ async function inviteMembers(){
   const dupTip=dup?'<p style="margin:0 0 10px;padding:9px 11px;border:1px solid #f0b0b0;background:#fdeaea;color:#a83232;font-size:12px;border-radius:8px">注意：检测到有多条链接内容完全一样，说明当前数据异常（可能是成员编号重复）。请刷新页面后重试。</p>':"";
   host.innerHTML=tip+dupTip+rows.map(r=>`<div class="invite-row"><div class="who"><strong>${esc(r.m.name)}</strong><small>${esc(r.m.role)}</small><textarea readonly class="linkbox" spellcheck="false" onclick="this.select()">${esc(r.link)}</textarea></div><button class="ghost small" data-copy-link="${esc(r.link)}">复制链接</button></div>`).join("");
  }catch(e){host.innerHTML='<p>链接生成失败：'+esc(e.message)+'</p>'}
- wrap.addEventListener("click",async e=>{
-  const b=e.target.closest("[data-copy-link]");if(!b)return;
-  const name=b.closest(".invite-row").querySelector("strong").textContent;
-  const ok=await copyText(b.dataset.copyLink);
-  if(!ok){
-   const box=b.closest(".invite-row").querySelector(".linkbox");
-   if(box){box.focus();box.select()}
-  }
-  notify(ok?"链接已复制，发给 "+name:"复制失败，链接已帮你选中，按 Ctrl+C 复制");
- });
 }
 
 function receiveSubmission(text){
@@ -2876,7 +2888,7 @@ function receiveSubmission(text){
  state.selectedId=member.id;
  save();
  document.body.classList.remove("compact");
- $("detailToggle").textContent="展开详情";
+ $("detailToggle").textContent="收起详情";
  render();
  notify(`${member.name} 的提交已导入：任务 ${p.tasks.length} 条、卡点 ${p.blockers.length} 条、计划 ${p.plans.length} 条`);
  return true;
@@ -2905,6 +2917,29 @@ function fillSelect(field,opts,value,i){
 function saveFillDraft(){
  if(!fillData)return;
  try{localStorage.setItem(fillData.key,JSON.stringify({d:fillData.d,at:Date.now()}))}catch(e){}
+ paintSubmitState();
+}
+/* 当前填写内容的指纹，用来判断提交之后有没有再改过 */
+function fillSnapshot(){
+ if(!fillData)return "";
+ return JSON.stringify({t:fillData.d.t||[],b:fillData.d.b||[],p:fillData.d.p||[]});
+}
+/* 底部按钮状态：未提交=提交；已提交=更新提交；改了内容会提示 */
+function paintSubmitState(){
+ const btn=$("fillSubmit"),line=$("fillSubState");
+ if(!btn)return;
+ if(!fillData.online){if(line)line.textContent="";return}
+ const dirty=!!fillData.baseline&&fillSnapshot()!==fillData.baseline;
+ const empty=!fillData.d.t.length&&!fillData.d.b.length&&!fillData.d.p.length;
+ if(fillData.submittedAt){
+  btn.disabled=false;
+  btn.textContent="更新提交";
+  if(line)line.textContent=empty
+   ?"内容已全部清空，点「更新提交」让负责人那边也一起清空"
+   :dirty
+   ?"内容有改动，点「更新提交」把最新版本发过去"
+   :"上次提交 "+new Date(fillData.submittedAt).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})+"，有变动可再次提交覆盖";
+ }else if(line)line.textContent="";
 }
 function fillItemHTML(g,item,i){
  if(g==="t")return `<div class="fillitem">
@@ -2926,8 +2961,6 @@ function fillItemHTML(g,item,i){
 }
 function renderFillLists(){
  if(!fillData)return;
- const k=fillData.k||[];
- $("fillKpi").innerHTML=k.length?k.map(x=>`<div class="kpi-row"><span>${esc(x.n)}</span><span>${x.o==="lte"?"≤":"≥"}${esc(x.t)}${esc(x.u||"")} · 权重 ${esc(x.w||0)}%</span></div>`).join(""):'<p class="muted">本周还没有设定 KPI。</p>';
  [["t","fillT","本周暂无未完成任务"],["b","fillB","暂无卡点"],["p","fillP","暂无下周计划"]].forEach(([g,id,empty])=>{
   const list=fillArr(g);
   $(id).innerHTML=list.length?list.map((x,i)=>fillItemHTML(g,x,i)).join(""):`<div class="placeholder">${empty}</div>`;
@@ -2959,13 +2992,12 @@ function mountFillPage(){
    <span class="avatar" style="width:46px;height:46px;font-size:15px;background:${color}22;color:${color}">${esc(fillData.m.name.slice(0,2).toUpperCase())}</span>
    <div><h1>${esc(fillData.m.name)}</h1><div class="muted">${esc(fillData.m.role)} · ${fillData.w} 至 ${endOfWeek(fillData.w)}</div></div>
   </div>
-  <div class="note">KPI 由负责人统一评定，你只需要填写下面三块。${fillData.online?"填完点底部「提交给负责人」，提交后负责人那边就能看到。":"填完点底部「生成提交码」，把生成的文字发给负责人即可。"}${fillData.hasDraft?" 已恢复你上次没提交的草稿。":""}</div>
-  <section class="card"><div class="sectionhead"><div><h3>KPI（只读）</h3><p>目标由负责人设定，这里只做参考。</p></div></div><div id="fillKpi"></div></section>
+  <div class="note">你只需要填写下面三块（KPI 由负责人统一管理，不在成员页面显示）。${fillData.online?"填完点底部「提交给负责人」，提交后负责人那边就能看到。":"填完点底部「生成提交码」，把生成的文字发给负责人即可。"}${fillData.hasDraft?" 已恢复你上次没提交的草稿。":""}</div>
   <section class="card"><div class="sectionhead"><div><h3>未完成任务</h3><p>还没做完的事、目前进度和预计完成时间。</p></div><button class="small" data-add="t">＋ 新增</button></div><div id="fillT"></div></section>
   <section class="card"><div class="sectionhead"><div><h3>卡点 &amp; 现存问题</h3><p>影响进度的事，需要谁支持。</p></div><button class="small" data-add="b">＋ 新增</button></div><div id="fillB"></div></section>
   <section class="card"><div class="sectionhead"><div><h3>下周工作计划</h3><p>下周准备交付的成果和截止时间。</p></div><button class="small" data-add="p">＋ 新增</button></div><div id="fillP"></div></section>
   <p class="muted" style="text-align:center;font-size:11px">填写内容会自动保存在这台设备，关掉页面再打开可以继续填。</p>
-  <div class="fillbar"><button class="primary" id="fillSubmit">${fillData.online?"提交给负责人":"生成提交码"}</button></div>
+  <div class="fillbar" style="flex-wrap:wrap"><p id="fillSubState" style="flex:1 1 100%;margin:0;text-align:center;font-size:11px;color:#8f9fb2"></p><button class="primary" id="fillSubmit">${fillData.online?"提交给负责人":"生成提交码"}</button></div>
  </div>
  <div class="toast" id="toastFill"></div>`;
  renderFillLists();
@@ -2974,16 +3006,27 @@ function mountFillPage(){
  saveFillDraft();
  $("fillSubmit").onclick=async()=>{
   const total=fillData.d.t.length+fillData.d.b.length+fillData.d.p.length;
-  if(!total){notify("还没有填写任何内容");return}
+  // 没填过东西才拦；已经提交过的人把内容全删空，必须允许提交空内容，否则负责人那边永远清不掉
+  if(!total){
+   if(!fillData.submittedAt){notify("还没有填写任何内容");return}
+   if(!confirm("你已经把内容全部删空了，提交后负责人那边也会一并清空。确定提交吗？"))return;
+  }
   const btn=$("fillSubmit");
   if(fillData.online){
    const old=btn.textContent;btn.disabled=true;btn.textContent="正在提交…";
    try{
-    const r=await fetch(`/api/fill/${fillData.token}`,{method:"POST",headers:{"Content-Type":"application/json"},
-     body:JSON.stringify({tasks:fillData.d.t,blockers:fillData.d.b,plans:fillData.d.p})});
+    const url=fillData.token?`/api/fill/${fillData.token}`:"/api/submit";
+    const payload=fillData.token
+     ?{tasks:fillData.d.t,blockers:fillData.d.b,plans:fillData.d.p}
+     :{memberId:fillData.m.id,week:fillData.w,tasks:fillData.d.t,blockers:fillData.d.b,plans:fillData.d.p};
+    const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
     if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error||("提交失败（"+r.status+"）"))}
+    const out=await r.json().catch(()=>({}));
     try{localStorage.removeItem(fillData.key)}catch(e){}
-    btn.textContent="已提交 ✓";notify("已提交给负责人，可以关掉页面了");
+    fillData.submittedAt=out.submittedAt||new Date().toISOString();
+    fillData.baseline=fillSnapshot();
+    paintSubmitState();
+    notify("已提交给负责人；之后改了内容，再点「更新提交」就能覆盖旧版本");
    }catch(e){btn.disabled=false;btn.textContent=old;notify("提交失败："+e.message)}
    return;
   }
@@ -3003,7 +3046,8 @@ async function startFillMode(raw){
  const key=`${FILL_KEY}_${data.m.id}_${data.w}`;
  let saved=null;
  try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch(e){}
- fillData={m:data.m,w:data.w,k:data.k||[],key,hasDraft:!!saved,online:false,token:null,
+ const online=await hasServer();
+ fillData={m:data.m,w:data.w,k:data.k||[],key,hasDraft:!!saved,online,token:null,
   d:saved&&saved.d?saved.d:{t:data.d.t||[],b:data.d.b||[],p:data.d.p||[]}};
  mountFillPage();
 }
@@ -3020,7 +3064,9 @@ async function startServerFill(token){
   const base=data.submitted
    ?{t:data.submitted.tasks||[],b:data.submitted.blockers||[],p:data.submitted.plans||[]}
    :{t:(data.data&&data.data.t)||[],b:(data.data&&data.data.b)||[],p:(data.data&&data.data.p)||[]};
-  fillData={m:data.member,w:data.week,k:data.kpis||[],key,hasDraft:!!saved,online:true,token,
+  fillData={m:data.member,w:data.week,key,hasDraft:!!saved,online:true,token,
+   submittedAt:(data.submitted&&data.submitted.submittedAt)||"",
+   baseline:data.submitted?JSON.stringify({t:base.t,b:base.b,p:base.p}):"",
    d:saved&&saved.d?saved.d:base};
   mountFillPage();
  }catch(e){fillError("链接打不开",e.message)}

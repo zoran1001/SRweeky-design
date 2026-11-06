@@ -12,9 +12,14 @@ if errorlevel 1 (
   exit /b 1
 )
 
+rem --quiet : start without opening the browser (used by autostart)
+set AFTERSHOCK_OPEN=1
+if "%~1"=="--quiet" set AFTERSHOCK_OPEN=
+
 echo.
 echo   Starting the sync server. Keep this window open.
 echo   Closing this window stops the server.
+echo   The management page will open in your browser automatically.
 echo.
 
 node server.js
