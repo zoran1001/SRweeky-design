@@ -213,14 +213,11 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
     <div class="actions">
       <button id="teamView" class="ghost">团队总览</button>
       <button id="addMember" class="ghost">＋ 成员</button>
-      <button id="aiImport" class="primary">AI 一键填写</button>
       <button id="detailToggle" class="ghost">收起详情</button>
       <button id="moreBtn" class="ghost">⋯ 更多</button>
       <div class="menu" id="moreMenu" hidden>
         <button id="exportDoc">导出 Word 周报</button>
         <button id="exportHtml">导出网页报告</button>
-        <button id="shareLink">生成分享链接</button>
-        <button id="publishShare">发布到固定地址</button>
         <button id="inviteMembers">邀请成员填写</button>
         <button id="receiveSubmit">接收成员提交</button>
         <button id="syncSubmissions">同步成员提交</button>
@@ -233,20 +230,6 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
   <section id="teamViewPanel" class="hidden"></section>
   <footer>数据会自动保存在当前浏览器中，不会同步到 ClickUp 或其他设备。</footer>
 </main>
-</div>
-<div class="modal" id="aiModal">
- <div class="modal-box">
-  <h3>粘贴 AI 整理好的文案</h3>
-  <p>可以直接粘贴完整周报正文（按「### 成员 — 角色」分小节，含个人 KPI、完成工作、未完成任务、卡点、下周计划的写法），也可以粘贴 AI 按模板返回的竖线文案，或选择一个 txt 文件。导入会覆盖本周对应成员的任务、卡点和计划，KPI 只更新实际值；某一段没有内容时原有数据保留。</p>
-  <textarea id="aiInput" placeholder='【成员】Zoran&#10;【KPI】&#10;团队准时交付率｜96｜本周重点项目推进顺利&#10;【未完成任务】&#10;圣诞 Campaign 主视觉延展｜进行中｜2026-11-06｜已完成 80%｜按确认 Brief 输出｜等待客户确认'></textarea>
-  <div class="modal-actions">
-   <input type="file" id="aiFile" accept=".txt,.md,.json,application/json,text/plain" hidden>
-   <button type="button" id="aiTemplate" class="ghost">复制模板</button>
-   <button type="button" id="aiPick" class="ghost">选择文件</button>
-   <button type="button" id="aiCancel" class="ghost">取消</button>
-   <button type="button" id="aiApply">导入并填写</button>
-  </div>
- </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2390,78 +2373,6 @@ async function copyText(text){
   const ok=document.execCommand("copy");ta.remove();return ok;
  }catch(e){return false}
 }
-async function shareReport(){
- if(location.protocol==="file:"){notify("本地文件方式无法生成分享链接，请用线上地址（如 GitHub Pages）生成");return}
- try{
-  save();
-  const url=new URL(location.href);url.search="";url.hash="";
-  url.searchParams.set("share",await encodeSharePayload());
-  const ok=await copyText(url.href);
-  notify(ok?"分享链接已复制，审核人员打开即可只读预览":"复制失败，链接已放到地址栏，请手动复制");
-  if(!ok)history.replaceState(null,"",url.href);
- }catch(e){notify("生成分享链接失败："+e.message)}
-}
-const GH_TOKEN_KEY="aftershock_github_token";
-function fixedShareURL(){
- const u=new URL(location.href);u.search="";u.hash="";
- u.pathname=u.pathname.replace(/[^/]*$/,"share.html");
- return u.href;
-}
-function utf8ToBase64(s){
- const b=new TextEncoder().encode(s);let bin="";
- for(let i=0;i<b.length;i+=0x8000)bin+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));
- return btoa(bin);
-}
-async function publishFixedReport(){
- if(location.protocol==="file:"){notify("本地文件方式无法发布，请用线上地址（如 GitHub Pages）打开后再发布");return}
- let token=localStorage.getItem(GH_TOKEN_KEY)||"";
- if(!token){
-  token=(prompt("首次发布需要 GitHub 访问令牌（只保存在本浏览器）。\n\n生成方法：GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token\nRepository access：只选 SRweeky-design\nPermissions → Contents：Read and write\n\n把令牌粘贴到这里：")||"").trim();
-  if(!token)return;
-  localStorage.setItem(GH_TOKEN_KEY,token);
- }
- save();
- notify("正在发布到固定地址…");
- try{
-  const api="https://api.github.com/repos/zoran1001/SRweeky-design/contents/share.html";
-  const headers={Authorization:"Bearer "+token,Accept:"application/vnd.github+json"};
-  let sha="";
-  const head=await fetch(api,{headers});
-  if(head.ok){sha=(await head.json()).sha}
-  else if(head.status!==404)throw new Error("读取仓库失败（"+head.status+"）");
-  const payload={message:"发布最新周报预览 "+state.activeWeek,content:utf8ToBase64(buildVisualHTMLReport())};
-  if(sha)payload.sha=sha;
-  const res=await fetch(api,{method:"PUT",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(payload)});
-  if(!res.ok){
-   const err=await res.json().catch(()=>({}));
-   if(res.status===401)localStorage.removeItem(GH_TOKEN_KEY);
-   if(res.status===403)throw new Error("令牌没有写入权限，请到 GitHub 令牌设置里把 Contents 改成 Read and write，再点一次发布");
-   throw new Error(err.message||("发布失败（"+res.status+"）"));
-  }
-  const url=fixedShareURL();
-  await copyText(url);
-  notify("已发布，固定链接已复制："+url);
- }catch(e){notify("发布失败："+e.message)}
-}
-async function showSharedReport(payload){
- try{
-  const data=await decodeSharePayload(payload);
-  if(!data||!Array.isArray(data.members)||!data.weeks)throw new Error("链接数据无效");
-  state=data;
-  if(!state.activeWeek||!state.weeks[state.activeWeek])state.activeWeek=Object.keys(state.weeks)[0];
-  ensureState();
-  document.open();
-  document.write(buildVisualHTMLReport());
-  document.close();
- }catch(e){
-  document.documentElement.style.visibility="visible";
-  document.body.innerHTML=`<div style="max-width:520px;margin:80px auto;padding:24px;border:1px solid #283340;border-radius:12px;background:#121921;color:#e9eff7;font:14px/1.7 'Microsoft YaHei',sans-serif">
-   <h3 style="margin:0 0 8px">分享链接无法打开</h3>
-   <p style="color:#8f9fb2;margin:0">${esc(e.message)}</p>
-   <p style="color:#65778c;margin:12px 0 0;font-size:12px">链接可能在传递过程中被截断，请让分享者重新生成或改用文件导出。</p>
-  </div>`;
- }
-}
 document.addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");
  if(b){
@@ -2483,8 +2394,6 @@ $("teamView").onclick=()=>{state.selectedId="team";save();render()};
 $("addMember").onclick=addMember;
 $("exportDoc").onclick=exportFullWordDocument;
 $("exportHtml").onclick=exportVisualHTMLReport;
-$("shareLink").onclick=shareReport;
-$("publishShare").onclick=publishFixedReport;
 $("printPage").onclick=()=>{document.body.classList.remove("compact");$("detailToggle").textContent="收起详情";window.print()};
 
 /* 顶部「⋯ 更多」菜单：点开/点空白关闭 */
@@ -2504,59 +2413,12 @@ $("detailToggle").onclick=()=>{
  $("detailToggle").textContent=compact?"展开详情":"收起详情";
 };
 
-/* AI 批量填写：页面先给模板 → 粘贴给 AI → AI 返回纯文本文案 → 粘贴回页面自动填写 */
+/* 提交码文本解析：成员把生成的文字发回来时用 */
 const AI_TASK_STATUS=["todo","ongoing","review","blocked","done"];
 const AI_BLOCK_STATUS=["open","inprogress","closed"];
 const AI_TASK_STATUS_MAP={"未开始":"todo","进行中":"ongoing","审核中":"review","受阻":"blocked","已完成":"done","todo":"todo","ongoing":"ongoing","review":"review","blocked":"blocked","done":"done"};
 const AI_BLOCK_STATUS_MAP={"待处理":"open","处理中":"inprogress","已解决":"closed","open":"open","inprogress":"inprogress","closed":"closed"};
 const AI_PRIORITY_MAP={"高":"high","中":"medium","低":"low","high":"high","medium":"medium","low":"low"};
-
-function buildAITemplate(){
- const end=endOfWeek(state.activeWeek);
- const roster=state.members.map(m=>{
-  const p=personData(m.id)||{kpis:[]};
-  const lines=(p.kpis||[]).map(k=>`    · ${k.name}（目标 ${k.op==="lte"?"≤":"≥"}${k.target}${k.unit||""}，权重 ${k.weight}%）`).join("\n");
-  return `${m.name}（${m.role}）\n${lines||"    · 暂无"}`;
- }).join("\n\n");
-
- return [
-  "你是 AFTERSHOCK 设计团队的周报整理助手。请把我提供的本周工作材料整理成下面的纯文本格式。",
-  "不要输出 JSON，不要输出表格，不要写解释或总结，直接按格式逐行输出。",
-  "",
-  `【周期】${state.activeWeek} 至 ${end}`,
-  "",
-  "【成员与现有 KPI】KPI 名称必须原样使用，不要新增或删除；你只需要写实际值和说明。",
-  roster,
-  "",
-  "【输出格式】每个成员依次输出下面四段，字段用全角竖线｜分隔，一行一条记录。",
-  "",
-  "【成员】Zoran",
-  "【KPI】",
-  "团队准时交付率｜96｜本周重点项目推进顺利",
-  "【未完成任务】",
-  "圣诞 Campaign 主视觉延展｜进行中｜2026-11-06｜已完成 80%｜按确认 Brief 输出｜等待客户确认｜",
-  "【卡点】",
-  "产品图缺少素材｜待处理｜高｜Wenmin｜2026-11-08｜影响产品上架节奏｜请电商提供原图",
-  "【下周计划】",
-  "京东主图优化｜中｜2026-11-13｜Henry｜Wenmin｜完成 10 张主图｜需产品资料",
-  "",
-  "【字段顺序】",
-  "KPI：名称｜实际值｜说明",
-  "未完成任务：任务名称｜状态｜截止日期｜当前进度｜验收标准｜下一步行动｜链接",
-  "卡点：卡点名称｜状态｜优先级｜责任人｜截止日期｜造成的影响｜需要的支持",
-  "下周计划：计划内容｜优先级｜截止日期｜负责人｜协作人｜预期成果｜备注",
-  "",
-  "【填写规则】",
-  "1. 【成员】后面必须和上面列出的成员名完全一致，成员要全部输出。",
-  "2. 任务状态只能写：未开始、进行中、审核中、受阻、已完成。",
-  "3. 卡点状态只能写：待处理、处理中、已解决；优先级只能写：高、中、低。",
-  "4. 日期写成 2026-11-06 这种格式，不确定就留空。",
-  "5. 某一段没有内容时，保留标题、不写记录即可，不要编造数据。",
-  "",
-  "【我的本周材料】（把下面这段换成你要给 AI 的原始记录）",
-  "……"
- ].join("\n");
-}
 
 function aiText(v,fallback){return v==null||v===""?String(fallback??""):String(v)}
 
@@ -2615,171 +2477,6 @@ function parsePipeText(source){
  if(!list.length)throw new Error("没有找到【成员】行");
  return list;
 }
-
-function isNarrativeText(source){return /^\s*#{2,4}\s/m.test(source)}
-
-function narrativeStatus(text){
- const value=String(text||"");
- if(/审核|Review/.test(value))return "review";
- if(/受阻|Blocked|停滞/.test(value))return "blocked";
- if(/制作中|正在制作|进行中|推进中|正在推进/.test(value))return "ongoing";
- return "todo";
-}
-
-function addNarrativeItem(block,section,text){
- const clean=String(text||"").replace(/[。；;]+$/,"").trim();
- if(!clean)return;
- if(section==="kpis"){
-  const parts=clean.match(/^(.+?)[：:](.*)$/);
-  if(!parts)return;
-  const name=parts[1].replace(/[（(].*?[）)]/g,"").trim();
-  const rest=parts[2]||"";
-  const actual=rest.match(/实际[^\d]{0,6}(\d+(?:\.\d+)?)/);
-  block.kpis.push({name,actual:actual?actual[1]:"",comment:""});
-  return;
- }
- if(section==="plans"){
-  block.plans.push({title:clean,priority:"medium",due:"",owner:block.name,accountable:"",deliverable:"",notes:""});
-  return;
- }
- block.tasks.push({
-  title:clean,
-  status:section==="done"?"done":narrativeStatus(clean),
-  complexity:"medium",due:"",result:"",acceptance:"",notes:"",link:""
- });
-}
-
-function parseNarrative(source){
- const blocks=[];
- let block=null,section=null;
-
- source.split("\n").forEach(rawLine=>{
-  const line=rawLine.trim();
-  if(!line)return;
-
-  if(/^#{2,4}\s/.test(line)){
-   const heading=line.match(/^#{2,4}\s*(?:\d+\.\s*)?(.+)$/);
-   const title=heading?heading[1].replace(/\*\*/g,"").trim():"";
-   block={name:title.split(/\s*—\s*|–|\s-\s/)[0].trim(),kpis:[],tasks:[],blockers:[],plans:[]};
-   blocks.push(block);
-   section=null;
-   return;
-  }
-
-  const label=line.match(/^\*\*(.+?)[：:]\s*\*\*$/)||line.match(/^([^：:\n]{2,12})[：:]\s*$/);
-  if(label){
-   const text=label[1];
-   if(/kpi/i.test(text))section="kpis";
-   else if(/完成工作/.test(text))section="done";
-   else if(/未完成/.test(text))section="tasks";
-   else if(/卡点|问题/.test(text))section="blockers";
-   else if(/计划/.test(text))section="plans";
-   else return;
-   return;
-  }
-
-  if(!block||!section)return;
-  if(/尚待统计|实际 KPI/.test(line))return;
-
-  const clean=line.replace(/^[-*•]\s*/,"").replace(/^\d+[.、)]\s*/,"").trim();
-  if(!clean)return;
-
-  if(section==="blockers"){
-   block.blockers.push({title:clean.replace(/[。；;]+$/,""),status:"open",priority:"medium",owner:"",due:"",impact:"",action:""});
-   return;
-  }
-
-  clean.split(/[；;]/).map(x=>x.trim()).filter(Boolean).forEach(part=>addNarrativeItem(block,section,part));
- });
-
- return blocks;
-}
-
-function applyAIText(raw){
- const source=String(raw||"").replace(/\r\n/g,"\n").trim();
- if(!source)throw new Error("还没有粘贴任何内容");
-
- const list=isNarrativeText(source)?parseNarrative(source):parsePipeText(source);
- if(!list.length)throw new Error("没有识别到成员内容，请确认粘贴的是周报正文或 AI 模板结果");
-
- let hit=0,kpiCount=0,taskCount=0,blockerCount=0,planCount=0;
-
- list.forEach(item=>{
-  const key=String((item&&(item.name||item.id))||"").trim().toLowerCase();
-  if(!key)return;
-  const member=state.members.find(x=>x.id.toLowerCase()===key||x.name.trim().toLowerCase()===key);
-  if(!member)return;
-  const p=personData(member.id);
-  if(!p)return;
-  hit++;
-
-  if(item.kpis.length)item.kpis.forEach(k=>{
-   const target=p.kpis.find(x=>x.name===k.name);
-   if(!target)return;
-   const actual=String(k.actual==null?"":k.actual).replace(/[^0-9.\-]/g,"");
-   if(actual!=="")target.actual=actual;
-   if(k.comment)target.comment=String(k.comment);
-   kpiCount++;
-  });
-
-  if(item.tasks.length){
-   p.tasks=item.tasks.map(t=>({
-    id:uid(),title:aiText(t.title),status:AI_TASK_STATUS.includes(t.status)?t.status:"ongoing",
-    complexity:aiText(t.complexity,"medium"),due:aiText(t.due),result:aiText(t.result),
-    acceptance:aiText(t.acceptance),notes:aiText(t.notes),link:aiText(t.link)
-   }));
-   taskCount+=p.tasks.length;
-  }
-
-  if(item.blockers.length){
-   p.blockers=item.blockers.map(b=>({
-    id:uid(),title:aiText(b.title),status:AI_BLOCK_STATUS.includes(b.status)?b.status:"open",
-    priority:aiText(b.priority,"medium"),owner:aiText(b.owner),due:aiText(b.due),
-    impact:aiText(b.impact),action:aiText(b.action)
-   }));
-   blockerCount+=p.blockers.length;
-  }
-
-  if(item.plans.length){
-   p.plans=item.plans.map(x=>({
-    id:uid(),title:aiText(x.title),priority:aiText(x.priority,"medium"),due:aiText(x.due),
-    owner:aiText(x.owner,member.name),accountable:aiText(x.accountable),
-    deliverable:aiText(x.deliverable),notes:aiText(x.notes)
-   }));
-   planCount+=p.plans.length;
-  }
- });
-
- if(!hit)throw new Error("没有成员能对上，请检查 AI 文案里的【成员】名称是否和页面成员一致");
-
- save();
- document.body.classList.remove("compact");
- $("detailToggle").textContent="收起详情";
- render();
- $("aiModal").classList.remove("show");
- notify(`已导入 ${hit} 位成员：KPI ${kpiCount} 项、任务 ${taskCount} 条、卡点 ${blockerCount} 条、计划 ${planCount} 条`);
-}
-
-$("aiTemplate").onclick=async()=>{
- const ok=await copyText(buildAITemplate());
- if(ok){notify("AI 模板已复制，直接粘贴给 AI 即可");return}
- $("aiInput").value=buildAITemplate();
- $("aiModal").classList.add("show");
- notify("自动复制失败，模板已放到导入框，请手动复制");
-};
-$("aiImport").onclick=()=>{$("aiInput").value="";$("aiModal").classList.add("show")};
-$("aiCancel").onclick=()=>$("aiModal").classList.remove("show");
-$("aiPick").onclick=()=>$("aiFile").click();
-$("aiFile").onchange=async e=>{
- const file=e.target.files&&e.target.files[0];
- if(!file)return;
- $("aiInput").value=await file.text();
- notify("已读取文件："+file.name);
-};
-$("aiApply").onclick=()=>{
- try{applyAIText($("aiInput").value)}
- catch(applyError){notify("导入失败："+applyError.message)}
-};
 
 /* ========== 成员专属填写 + 提交码回传 ========== */
 
@@ -3140,7 +2837,6 @@ $("inviteMembers").onclick=inviteMembers;
 $("receiveSubmit").onclick=openReceiveSubmission;
 $("syncSubmissions").onclick=()=>syncSubmissions(false);
 
-const shareParam=new URLSearchParams(location.search).get("share");
 const fillParam=new URLSearchParams(location.search).get("fill");
 const fillToken=(location.pathname.match(/^\/f\/([A-Za-z0-9_-]+)\/?$/)||[])[1];
 if(fillToken){
@@ -3149,9 +2845,6 @@ if(fillToken){
 }else if(fillParam){
  document.documentElement.style.visibility="hidden";
  startFillMode(fillParam);
-}else if(shareParam){
- document.documentElement.style.visibility="hidden";
- showSharedReport(shareParam);
 }else{
  render();
  save();
