@@ -49,6 +49,9 @@ p{margin:4px 0}
 .menu[hidden]{display:none}
 .menu button{background:transparent;border-color:transparent;color:#18212f;text-align:left;padding:9px 12px;font-weight:600}
 .menu button:hover{background:#f2f4f7}
+.menu-sep{height:1px;background:#e1e5eb;margin:4px 6px}
+.menu button.danger{color:#c0392b}
+.menu button.danger:hover{background:#fdecea}
 body.compact #personView .detail-card{display:none}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:17px}
 .stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px;margin-bottom:14px}
@@ -195,7 +198,7 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
     <input type="date" id="weekInput" aria-label="选择周次">
     <select id="weekSelect" aria-label="历史周报"></select>
     <button id="newWeek" class="primary" style="width:100%">＋ 新建周报</button>
-    <p class="muted">新建周报时可选择结转未完成任务。</p>
+    <p class="muted">新建周报会清空所有填写内容，KPI 只保留指标、清空实际值。</p>
   </div>
   <div>
     <div class="label">TEAM MEMBERS</div>
@@ -222,6 +225,8 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
         <button id="receiveSubmit">接收成员提交</button>
         <button id="syncSubmissions">同步成员提交</button>
         <button id="printPage">打印 / PDF</button>
+        <div class="menu-sep"></div>
+        <button id="clearWeek" class="danger">清除本周数据</button>
       </div>
     </div>
   </header>
@@ -689,24 +694,34 @@ function deleteRecord(kind,id){
  if(!confirm(`确定删除「${item.name||item.title||item.id}」吗？`))return;
  list.splice(list.indexOf(item),1);save();render();
 }
-function switchWeek(value,ask=true){
+function switchWeek(value){
  const w=monday(value);
  if(!state.weeks[w]){
   const people={};
   state.members.forEach(m=>{
    const profile=PROFILES.find(x=>x.id===m.id);
-   people[m.id]={kpis:(profile?profile.kpis:[]).map(createKPI),tasks:[],blockers:[],plans:[]};
+   const prev=personData(m.id);
+   const kpis=prev&&prev.kpis.length
+    ? prev.kpis.map(k=>({...k,id:uid(),actual:""}))
+    : (profile?profile.kpis.map(createKPI):[]);
+   people[m.id]={kpis,tasks:[],blockers:[],plans:[]};
   });
-  if(ask&&confirm("是否结转上一周未完成的任务和未解决卡点？")){
-   state.members.forEach(m=>{
-    const old=personData(m.id);if(!old)return;
-    people[m.id].tasks=old.tasks.filter(t=>t.status!=="done").map(t=>({...t,id:uid(),result:"",notes:`从 ${state.activeWeek} 结转：${t.notes||"请重新确认进度"}`}));
-    people[m.id].blockers=old.blockers.filter(b=>b.status!=="closed").map(b=>({...b,id:uid()}));
-   });
-  }
   state.weeks[w]={people,teamNotes:"",createdAt:new Date().toISOString()};
  }
  state.activeWeek=w;ensureState();save();render();
+}
+/* 清空当前这一周的填写内容：KPI 指标保留，只清掉实际值和各类记录 */
+function clearWeekData(){
+ const w=state.activeWeek;
+ if(!confirm(`确定清除 ${w} 这一周的所有填写内容吗？\n\n会清空：KPI 实际值、任务、卡点、下周计划、团队备注\n会保留：成员名单、KPI 指标本身\n\n此操作无法撤销。`))return;
+ const week=current();
+ state.members.forEach(m=>{
+  const p=week.people[m.id];if(!p)return;
+  p.kpis=(p.kpis||[]).map(k=>({...k,actual:""}));
+  p.tasks=[];p.blockers=[];p.plans=[];
+ });
+ week.teamNotes="";
+ save();render();notify(`${w} 这一周的数据已清除`);
 }
 function downloadBlob(blob,filename){
  const url=URL.createObjectURL(blob),a=document.createElement("a");
@@ -2387,9 +2402,9 @@ document.addEventListener("click",e=>{
  if(row){state.selectedId=row.dataset.person;save();render();}
 });
 
-$("weekInput").addEventListener("change",e=>{if(e.target.value)switchWeek(e.target.value,true)});
-$("weekSelect").addEventListener("change",e=>switchWeek(e.target.value,false));
-$("newWeek").onclick=()=>switchWeek(nextWeek(state.activeWeek),true);
+$("weekInput").addEventListener("change",e=>{if(e.target.value)switchWeek(e.target.value)});
+$("weekSelect").addEventListener("change",e=>switchWeek(e.target.value));
+$("newWeek").onclick=()=>switchWeek(nextWeek(state.activeWeek));
 $("teamView").onclick=()=>{state.selectedId="team";save();render()};
 $("addMember").onclick=addMember;
 $("exportDoc").onclick=exportFullWordDocument;
@@ -2570,7 +2585,7 @@ function receiveSubmission(text){
  if(!member)throw new Error("找不到成员「"+item.name+"」，请确认提交码里的姓名和页面一致");
  if(week&&week!==state.activeWeek){
   if(!confirm(`这条提交属于 ${week} 那一周，当前显示的是 ${state.activeWeek}。是否切换到 ${week} 并导入？`))return false;
-  switchWeek(week,false);
+  switchWeek(week);
  }
  const p=personData(member.id);
  p.tasks=item.tasks.map(t=>{
@@ -2836,6 +2851,7 @@ async function syncSubmissions(silent=false){
 $("inviteMembers").onclick=inviteMembers;
 $("receiveSubmit").onclick=openReceiveSubmission;
 $("syncSubmissions").onclick=()=>syncSubmissions(false);
+$("clearWeek").onclick=clearWeekData;
 
 const fillParam=new URLSearchParams(location.search).get("fill");
 const fillToken=(location.pathname.match(/^\/f\/([A-Za-z0-9_-]+)\/?$/)||[])[1];
