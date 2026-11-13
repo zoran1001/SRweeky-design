@@ -248,12 +248,9 @@ footer{color:var(--sub);font-size:11px;margin-top:20px}
 const STORAGE_KEY="aftershock_design_kpi_manager_v4";
 const COLORS=["#f17b59","#487eff","#20c8a0","#26dcd3","#8fbdec","#e7bd64","#48aafa"];
 
-/* KPI 配置版本：每次调整默认 KPI 时 +1，迁移只对新建周报生效，不改历史周报 */
-const KPI_CONFIG_VERSION=2;
+const KPI_CONFIG_VERSION=3;
 /* 统一的返工口径：只统计确认属于设计师责任的质量问题 */
 const REWORK_RULE="只统计确认属于设计师责任的返工：未按已确认 Brief 执行、遗漏明确要求、拼写 / 排版 / 对齐等执行错误、图片精修质量不达已确认标准、产品视觉 / 颜色 / 结构处理错误、已指出的问题重复出现。更换文案 / 标题 / 副标题、更换产品 / SKU / 型号、修改价格与促销信息、需求方改变设计方向、上级要求进一步优化、原始素材质量不合格、等待上游资料、审核延迟、审核通过后新增要求，均不计入。责任无法确认时标记「待确认」，不计入返工。同一任务多次退回只计一次。";
-/* Joke 负责的机箱设计专项，作为进度记录，不作为里程碑数量 */
-const SPECIAL_PROJECTS=["Lilith","Inarius","Diablo","Mephisto"];
 
 /* 已确认的个人定制 KPI；目标值是建议标准，不代表实际成绩。 */
 const PROFILES=[
@@ -347,13 +344,9 @@ function kpiTemplateOf(m){
  const list=(m.kpis&&m.kpis.length?m.kpis:profile?profile.kpis:[])||[];
  return list.map(x=>Array.isArray(x)?createKPI(x):{id:uid(),name:x.name||"新 KPI 指标",target:x.target??"",unit:x.unit||"%",weight:x.weight??0,op:x.op||"gte",comment:x.comment||"",actual:""});
 }
-/* Joke 的机箱设计专项占位记录：只有项目名，其他内容留空由本人填写 */
-function specialTemplate(){
- return SPECIAL_PROJECTS.map(name=>({id:uid(),name,stage:"",done:"",review:"",next:"",eta:""}));
-}
 function initialState(){
  const w=monday(todayISO()),people={};
- PROFILES.forEach(m=>people[m.id]={kpis:m.kpis.map(createKPI),tasks:[],blockers:[],plans:[],special:m.id==="joke"?specialTemplate():[]});
+ PROFILES.forEach(m=>people[m.id]={kpis:m.kpis.map(createKPI),tasks:[],blockers:[],plans:[]});
  return {version:5,kpiVersion:KPI_CONFIG_VERSION,members:PROFILES.map(m=>({...m,kpis:m.kpis.map(x=>[...x])})),activeWeek:w,selectedId:"zoran",weeks:{[w]:{people,teamNotes:"",createdAt:new Date().toISOString()}}};
 }
 
@@ -363,14 +356,6 @@ try{
  if(!state||!Array.isArray(state.members)||!state.weeks)state=initialState();
 }catch(e){state=initialState();}
 
-/* 当周是否是“空白周”：没有填过 KPI 实际值，也没有任何任务 / 卡点 / 计划 */
-function isBlankWeek(week){
- if(!week||!week.people)return true;
- return Object.values(week.people).every(p=>!p||(
-  (p.kpis||[]).every(k=>num(k.actual)===null)&&
-  !(p.tasks||[]).length&&!(p.blockers||[]).length&&!(p.plans||[]).length
- ));
-}
 /* 迁移前先备份，备份只做一次 */
 function backupBeforeMigration(fromVersion){
  const key=`${STORAGE_KEY}_backup_v${fromVersion}`;
@@ -378,11 +363,12 @@ function backupBeforeMigration(fromVersion){
   if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(state));
  }catch(e){}
 }
-/* 版本化 KPI 迁移：
-   1. 只更新成员默认 KPI 模板，供【新建周报】使用；
+/* 迁移逻辑说明：
+   1. 先备份整份数据，再执行迁移；
    2. 历史周报的 KPI 名称 / 目标 / 单位 / 权重 / 实际值一律不改；
-   3. 当前周只有在完全空白的情况下才套用新口径，避免覆盖已经填写的实际值；
-   4. 版本号写入 state，重复刷新不会重复迁移。 */
+   3. 当前周直接套用新的 KPI 配置，同名指标保留已填实际值；
+   4. 版本号写入 state，重复刷新不会重复迁移；
+   5. 清理已下线的机箱专项字段。 */
 function migrateKpis(){
  const from=Number(state.kpiVersion)||1;
  if(from>=KPI_CONFIG_VERSION){state.kpiVersion=KPI_CONFIG_VERSION;return false}
@@ -397,18 +383,19 @@ function migrateKpis(){
  Object.values(state.weeks).forEach(week=>{
   week.people||={};
   state.members.forEach(m=>{
-   if(!week.people[m.id])week.people[m.id]={kpis:[],tasks:[],blockers:[],plans:[],special:[]};
+   if(!week.people[m.id])week.people[m.id]={kpis:[],tasks:[],blockers:[],plans:[]};
+   delete week.people[m.id].special;
   });
  });
 
- /* 当前周完全空白时，直接换成新的 KPI 口径；有数据就原样保留 */
+ /* 当前周直接套用新的 KPI 配置，同名指标保留已填实际值；历史周保持原样 */
  const active=state.weeks[state.activeWeek];
- if(active&&isBlankWeek(active)){
+ if(active){
   state.members.forEach(m=>{
    const p=active.people[m.id];
    if(!p)return;
-   p.kpis=kpiTemplateOf(m).map(k=>({...k,actual:""}));
-   if(m.id==="joke"&&!(p.special||[]).length)p.special=specialTemplate();
+   const oldByName=new Map((p.kpis||[]).map(k=>[k.name,k]));
+   p.kpis=kpiTemplateOf(m).map(k=>({...k,actual:oldByName.get(k.name)?.actual||""}));
   });
  }
 
@@ -423,10 +410,10 @@ function ensureState(){
  state.submissions=state.submissions&&typeof state.submissions==="object"?state.submissions:{};
  state.members.forEach(m=>Object.values(state.weeks).forEach(w=>{
   w.people ||= {};
-  if(!w.people[m.id])w.people[m.id]={kpis:[],tasks:[],blockers:[],plans:[],special:[]};
+  if(!w.people[m.id])w.people[m.id]={kpis:[],tasks:[],blockers:[],plans:[]};
   const p=w.people[m.id];
   p.kpis=Array.isArray(p.kpis)?p.kpis:[];
-  p.tasks ||= [];p.blockers ||= [];p.plans ||= [];p.special ||= [];
+  p.tasks ||= [];p.blockers ||= [];p.plans ||= [];
  }));
  if(state.selectedId!=="team"&&!state.members.some(m=>m.id===state.selectedId))state.selectedId=state.members[0]?.id||"team";
 }
@@ -541,7 +528,6 @@ function renderKPI(p){
   <li><strong>返工率</strong>：只计算确认属于设计师责任的质量问题。换文案、换产品 / SKU、改价格、需求方改方向、素材不合格、审核延迟、审核后新增要求，都不算设计师返工；同一任务多次退回只计一次，责任不明时标记「待确认」。</li>
   <li><strong>准时交付率</strong>：以首次正式提交进入审核的时间为准。截止日期前首次进入 Review 即视为按时，审核人员延迟反馈不算设计师逾期。</li>
   <li><strong>Angel 修图数量</strong>：按独立 SKU 数量统计，同一 SKU 多个任务只计一次，一个任务含多个 SKU 分别计；图片附件数和任务数不算。</li>
-  <li><strong>机箱设计</strong>：Lilith、Inarius、Diablo、Mephisto 作为专项设计进度记录，不按项目数量折算里程碑。</li>
   <li><strong>审核等待</strong>：不算设计师制作时间。没有真实数据时留空或标记「待确认」，不估算、不虚构。</li>
  </ul></details>
  <div class="progress"><span style="width:${Math.round(filled/Math.max(1,p.kpis.length)*100)}%"></span></div>
@@ -573,22 +559,6 @@ function renderBlocker(b){
  ${field("业务影响 / 风险",area("blocker",b.id,"impact",b.impact,"影响哪些交付或业务？"),true)}
  ${field("解决措施 / 已采取行动",area("blocker",b.id,"action",b.action,"下一步、升级路径或所需支持"),true)}
  </div><div style="text-align:right;margin-top:10px"><button class="danger small" data-action="delete" data-kind="blocker" data-id="${b.id}">删除卡点</button></div></div></details>`;
-}
-const SPECIAL_STAGES=[["","未填写"],["concept","概念阶段"],["sketch","草图"],["model","建模"],["render","渲染"],["review","内部审核"],["revise","修改中"],["done","已完成"]];
-const SPECIAL_REVIEW=[["","未提交"],["pending","待审核"],["reviewing","审核中"],["approved","已通过"],["changes","需修改"],["hold","暂停"]];
-const specialStageText=v=>(SPECIAL_STAGES.find(x=>x[0]===v)||["",""])[1]||v||"未填写";
-const specialReviewText=v=>(SPECIAL_REVIEW.find(x=>x[0]===v)||["",""])[1]||v||"未提交";
-function renderSpecial(s){
- const rv=({approved:"good",changes:"bad",hold:"bad",reviewing:"warn",pending:"warn"})[s.review]||"neutral";
- return `<details class="record"><summary><span class="recordtitle">${esc(s.name||"未命名专项")}</span>${pill(specialReviewText(s.review),rv)}<span class="muted">${esc(s.eta||"预计完成日期待定")}</span></summary>
- <div class="recordbody"><div class="grid">
- ${field("角色 / 项目名称",input("special",s.id,"name",s.name,"例如 Lilith"))}
- ${field("当前设计阶段",select("special",s.id,"stage",s.stage,SPECIAL_STAGES))}
- ${field("当前审核状态",select("special",s.id,"review",s.review,SPECIAL_REVIEW))}
- ${field("预计完成日期",input("special",s.id,"eta",s.eta,"","date"))}
- ${field("本周实际完成内容",area("special",s.id,"done",s.done,"本周实际推进到什么程度"),true)}
- ${field("下一步工作",area("special",s.id,"next",s.next,"下一步要做什么、需要谁确认"),true)}
- </div><div style="text-align:right;margin-top:10px"><button class="danger small" data-action="delete" data-kind="special" data-id="${s.id}">删除专项</button></div></div></details>`;
 }
 function renderPlan(p){
  return `<details class="record"><summary><span class="recordtitle">${esc(p.title||"未命名计划")}</span>${pill(({high:"高优先级",medium:"中优先级",low:"低优先级"})[p.priority]||"中优先级",p.priority==="high"?"bad":p.priority==="low"?"good":"warn")}<span class="muted">${esc(p.due||"待定")}</span></summary>
@@ -631,10 +601,7 @@ function renderPerson(){
  </section>
  <section class="card detail-card"><div class="sectionhead"><div><h3>04 · 下周工作计划</h3><p>明确成果、负责人及截止日期。</p></div>${addButton("plan","新增计划")}</div>
  ${p.plans.map(renderPlan).join("")||'<div class="placeholder">尚未录入下周计划。</div>'}
- </section>
- ${(p.special&&p.special.length)?`<section class="card detail-card"><div class="sectionhead"><div><h3>05 · 机箱设计专项进度</h3><p>按角色分别记录设计阶段与审核状态。专项进度只作为过程记录，不按项目数量折算里程碑，也不自动计入返工率。</p></div>${addButton("special","新增专项")}</div>
- ${p.special.map(renderSpecial).join("")}
- </section>`:""}`;
+ </section>`;
 }
 
 function renderTeam(){
@@ -691,7 +658,6 @@ function addRecord(kind){
  if(kind==="task")p.tasks.push({id:uid(),title:"",status:"todo",complexity:"medium",due:"",result:"",acceptance:"",notes:"",link:""});
  if(kind==="blocker")p.blockers.push({id:uid(),title:"",status:"open",priority:"medium",owner:"",due:"",impact:"",action:""});
  if(kind==="plan")p.plans.push({id:uid(),title:"",priority:"medium",due:"",owner:selected()?.name||"",accountable:"",deliverable:"",notes:""});
- if(kind==="special"){p.special||(p.special=[]);p.special.push({id:uid(),name:"新专项",stage:"",done:"",review:"",next:"",eta:""})}
  save();render();notify("已新增记录");
 }
 function updateRecord(el){
@@ -701,7 +667,7 @@ function updateRecord(el){
  if(kind==="team")target=current();
  else{
   const p=personData(state.selectedId);if(!p)return;
-  const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:kind==="special"?p.special:p.plans;
+  const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:p.plans;
   target=list.find(x=>x.id===id);
  }
  if(!target)return;
@@ -742,12 +708,12 @@ function addMember(){
  const desc=prompt("请输入主要工作职责：")||"",id=uid();
  const m={id,name:name.trim(),role,desc,color:COLORS[state.members.length%COLORS.length],kpis:[]};
  state.members.push(m);
- Object.values(state.weeks).forEach(w=>w.people[id]={kpis:[],tasks:[],blockers:[],plans:[],special:[]});
+ Object.values(state.weeks).forEach(w=>w.people[id]={kpis:[],tasks:[],blockers:[],plans:[]});
  state.selectedId=id;save();render();
 }
 function deleteRecord(kind,id){
  const p=personData(state.selectedId);if(!p)return;
- const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:kind==="special"?p.special:p.plans;
+ const list=kind==="kpi"?p.kpis:kind==="task"?p.tasks:kind==="blocker"?p.blockers:p.plans;
  const item=list.find(x=>x.id===id);if(!item)return;
  if(!confirm(`确定删除「${item.name||item.title||item.id}」吗？`))return;
  list.splice(list.indexOf(item),1);save();render();
@@ -759,8 +725,7 @@ function switchWeek(value){
   state.members.forEach(m=>{
    people[m.id]={
     kpis:kpiTemplateOf(m),
-    tasks:[],blockers:[],plans:[],
-    special:m.id==="joke"?specialTemplate():[]
+    tasks:[],blockers:[],plans:[]
    };
   });
   state.weeks[w]={people,teamNotes:"",createdAt:new Date().toISOString()};
@@ -827,14 +792,6 @@ function docPlans(p){
   docCell("预期成果 / 验收标准",x.deliverable),docCell("依赖条件 / 备注",x.notes)
  ])}</div>`).join("");
 }
-function docSpecial(p){
- if(!p.special||!p.special.length)return "<p>本周未录入机箱设计专项。</p>";
- return p.special.map((x,i)=>`<div class="item-block"><h4>专项 ${i+1}：${esc(x.name||"未命名专项")}</h4>${docTable([
-  docCell("角色名称",x.name),docCell("当前设计阶段",specialStageText(x.stage)),
-  docCell("本周实际完成内容",x.done),docCell("当前审核状态",specialReviewText(x.review)),
-  docCell("下一步工作",x.next),docCell("预计完成日期",x.eta)
- ])}</div>`).join("");
-}
 function buildFullDocument(){
  const week=state.activeWeek,members=state.members;
  let done=0,total=0,active=0,blocks=0;
@@ -847,7 +804,6 @@ function buildFullDocument(){
    ${docSection("02 · 本周未完成任务及目前进度",`本周未完成任务 ${unfinished} 项。`,docTasks(p))}
    ${docSection("03 · 卡点与现存问题","问题状态、影响、责任人及解决措施。",docBlockers(p))}
    ${docSection("04 · 下周工作计划","计划内容、负责人、截止日期及验收标准。",docPlans(p))}
-   ${(p.special&&p.special.length)?docSection("05 · 机箱设计专项进度","按角色记录设计阶段、本周完成内容、审核状态与下一步；专项进度不计作里程碑数量，也不自动计入返工率。",docSpecial(p)):""}
   </div>`;
  }).join("");
  return `<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>AFTERSHOCK Design Team Weekly Report ${esc(week)}</title>
@@ -942,12 +898,6 @@ function reportPlan(p){
  const cls=p.priority==="high"?"bad":p.priority==="low"?"good":"warn";
  return `<article class="r-item"><div class="r-item-head"><div><h4>${esc(p.title||"未命名计划")}</h4><p class="r-subtitle">截止日期：${esc(p.due||"待定")}</p></div>${reportBadge(priority+"优先级",cls)}</div>
  <div class="r-fields">${reportField("负责人（Responsible）",p.owner)}${reportField("最终拍板人（Accountable）",p.accountable)}${reportField("预期成果 / 验收标准",p.deliverable)}${reportField("依赖条件 / 备注",p.notes)}</div></article>`;
-}
-function reportSpecial(s){
- const rv=({approved:"已通过",changes:"需修改",hold:"暂停",reviewing:"审核中",pending:"待审核"})[s.review]||"未提交";
- const cls=s.review==="approved"?"good":(s.review==="changes"||s.review==="hold")?"bad":"warn";
- return `<article class="r-item"><div class="r-item-head"><div><h4>${esc(s.name||"未命名专项")}</h4><p class="r-subtitle">设计阶段：${esc(specialStageText(s.stage))} · 预计完成：${esc(s.eta||"待定")}</p></div>${reportBadge(rv,cls)}</div>
- <div class="r-fields">${reportField("本周实际完成内容",s.done)}${reportField("下一步工作",s.next)}</div></article>`;
 }
 function buildVisualHTMLReport() {
   const week = state.activeWeek;
@@ -1240,26 +1190,6 @@ function buildVisualHTMLReport() {
             `
           }
         </section>
-
-        ${
-          (p.special && p.special.length)
-          ? `
-        <!-- 机箱设计专项 -->
-        <section class="report-section">
-          <div class="report-section-head">
-            <div class="report-section-title">
-              <span class="section-number">05</span>
-              <div>
-                <h3>机箱设计专项进度</h3>
-                <p>按角色记录阶段与审核状态，不计作里程碑数量</p>
-              </div>
-            </div>
-            <span class="section-count">${p.special.length} 个专项</span>
-          </div>
-          ${p.special.map(reportSpecial).join("")}
-        </section>
-        ` : ""
-        }
 
       </section>
     `;
