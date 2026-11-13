@@ -92,9 +92,6 @@ th{background:#17202b;color:var(--muted)}
 tr[data-person]{cursor:pointer}
 tr[data-person]:hover td{background:#202c3a}
 .note{font-size:12px;color:var(--muted);padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:12px}
-.note summary{cursor:pointer;color:#e9eff7;font-weight:600}
-.note ul{margin:8px 0 2px;padding-left:18px;line-height:1.75}
-.note li{margin:2px 0}
 .progress{height:6px;border-radius:20px;background:#303d4e;overflow:hidden;margin:12px 0}
 .progress span{height:100%;display:block;background:var(--green)}
 .toast{position:fixed;right:20px;bottom:20px;background:#274335;border:1px solid #3e7258;color:#b5f0cd;padding:12px 16px;border-radius:9px;opacity:0;pointer-events:none;transition:.2s;z-index:20}
@@ -524,12 +521,6 @@ function renderKPI(p){
   ${addButton("kpi","新增个人 KPI")}
  </div>
  <div class="note">当前指标权重合计：${weight}% · 已填写实际值：${filled}/${p.kpis.length} 项。实际值未统计时请留空，不要填入估算数字。</div>
- <details class="note"><summary>考核口径说明（点击展开）</summary><ul>
-  <li><strong>返工率</strong>：只计算确认属于设计师责任的质量问题。换文案、换产品 / SKU、改价格、需求方改方向、素材不合格、审核延迟、审核后新增要求，都不算设计师返工；同一任务多次退回只计一次，责任不明时标记「待确认」。</li>
-  <li><strong>准时交付率</strong>：以首次正式提交进入审核的时间为准。截止日期前首次进入 Review 即视为按时，审核人员延迟反馈不算设计师逾期。</li>
-  <li><strong>Angel 修图数量</strong>：按独立 SKU 数量统计，同一 SKU 多个任务只计一次，一个任务含多个 SKU 分别计；图片附件数和任务数不算。</li>
-  <li><strong>审核等待</strong>：不算设计师制作时间。没有真实数据时留空或标记「待确认」，不估算、不虚构。</li>
- </ul></details>
  <div class="progress"><span style="width:${Math.round(filled/Math.max(1,p.kpis.length)*100)}%"></span></div>
  ${html||'<div class="placeholder">尚未设置个人 KPI。点击“新增个人 KPI”添加。</div>'}`;
 }
